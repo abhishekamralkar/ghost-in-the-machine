@@ -1,5 +1,5 @@
 # Kids Summer Internship 2026
-### A Hands-On Tech Curriculum for 5th Graders (Age 9-10)
+### A Hands-On Tech Curriculum for Anyone Starting from Zero
 
 ---
 
