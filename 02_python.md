@@ -1,14 +1,25 @@
 # Module 2: Python — Making the Computer Do What YOU Want
 
+```
+LEVEL 2 UNLOCKED: Code Wizard
+==============================
+Linux lets you command your computer. Python lets you BUILD things.
+Games. Calculators. Story generators. AI chatbots.
+This is where programming really starts.
+```
+
 ## What Is Python?
 
 Python is a **programming language** — a way to write instructions the computer understands.
 
 Why Python?
-- It reads almost like English
-- It's used everywhere: Netflix, Instagram, NASA, and AI research all use Python
-- It's free
-- It runs on Linux, Windows, Mac, and Raspberry Pi
+- It reads almost like English — no weird symbols everywhere
+- Netflix uses it to recommend shows. NASA uses it to analyze space data. Instagram is built with it.
+- It's free and runs on Linux, Windows, Mac, and Raspberry Pi
+- The AI you'll control in Module 3 is written in Python
+
+> **Fun Fact:** Python is named after Monty Python's Flying Circus (a British comedy show),
+> NOT the snake. Though the snake logo is cooler. 🐍
 
 ---
 
@@ -365,6 +376,8 @@ for i in range(1, 13):
     result = number * i
     print(f"{number} x {i:2} = {result}")
 ```
+
+**Super Challenge:** After printing the table, ask the user a random question from it and check if they get it right. Use `import random` and `random.randint(1, 12)` to pick a random number.
 
 ---
 
@@ -908,6 +921,157 @@ import random
 import math
 import os
 ```
+
+---
+
+---
+
+## Big Project: Text RPG Battle Game ⚔️
+
+This is your **Module 2 capstone** — a real game that uses everything you learned.
+A hero fights a monster, turn by turn. Attack, defend, use potions, and win.
+
+```python
+import random
+
+def show_status(name, hp, max_hp, potions):
+    bar_filled = int((hp / max_hp) * 10)
+    bar = "█" * bar_filled + "░" * (10 - bar_filled)
+    print(f"\n  {name}: [{bar}] {hp}/{max_hp} HP  | Potions: {potions}")
+
+def hero_attack(hero_atk):
+    damage = random.randint(hero_atk - 3, hero_atk + 3)
+    critical = random.random() < 0.15   # 15% chance of critical hit
+    if critical:
+        damage *= 2
+        print(f"  ⚡ CRITICAL HIT! You strike for {damage} damage!")
+    else:
+        print(f"  ⚔️  You attack for {damage} damage!")
+    return damage
+
+def monster_attack(monster_atk, is_defending):
+    damage = random.randint(monster_atk - 2, monster_atk + 2)
+    if is_defending:
+        damage = damage // 2
+        print(f"  🛡️  The monster strikes for {damage} damage (blocked half!)")
+    else:
+        print(f"  🔥 The monster attacks for {damage} damage!")
+    return damage
+
+def battle(hero_name, monster_name):
+    # Hero stats
+    hero_max_hp = 50
+    hero_hp     = hero_max_hp
+    hero_atk    = 10
+    potions     = 2
+
+    # Monster stats
+    monster_max_hp = 40
+    monster_hp     = monster_max_hp
+    monster_atk    = 8
+
+    turn = 1
+    print(f"\n{'='*40}")
+    print(f"  ⚔️  {hero_name} vs {monster_name}! ⚔️")
+    print(f"{'='*40}")
+
+    while hero_hp > 0 and monster_hp > 0:
+        print(f"\n--- Turn {turn} ---")
+        show_status(hero_name, hero_hp, hero_max_hp, potions)
+        show_status(monster_name, monster_hp, monster_max_hp, 0)
+
+        print("\nWhat do you do?")
+        print("  1) Attack")
+        print("  2) Defend (take half damage this turn)")
+        if potions > 0:
+            print(f"  3) Drink potion (heal 20 HP) — {potions} left")
+
+        choice = input("\nYour move: ").strip()
+        is_defending = False
+
+        if choice == "1":
+            dmg = hero_attack(hero_atk)
+            monster_hp -= dmg
+
+        elif choice == "2":
+            is_defending = True
+            print("  🛡️  You raise your shield and brace for impact!")
+
+        elif choice == "3" and potions > 0:
+            heal = min(20, hero_max_hp - hero_hp)
+            hero_hp += heal
+            potions -= 1
+            print(f"  🧪 You drink a potion and recover {heal} HP!")
+
+        else:
+            print("  Invalid choice — you fumble and lose your turn!")
+
+        # Monster attacks back (if still alive)
+        if monster_hp > 0:
+            dmg = monster_attack(monster_atk, is_defending)
+            hero_hp -= dmg
+            hero_hp = max(0, hero_hp)
+
+        turn += 1
+
+    print(f"\n{'='*40}")
+    if hero_hp > 0:
+        print(f"  🏆 VICTORY! {hero_name} defeated {monster_name}!")
+        print(f"  You finished with {hero_hp} HP remaining.")
+    else:
+        print(f"  💀 DEFEATED! {monster_name} won this time...")
+        print(f"  Train harder and try again!")
+    print(f"{'='*40}\n")
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+print("=== TEXT RPG BATTLE ===")
+hero_name = input("Enter your hero's name: ").strip() or "Hero"
+
+monsters = [
+    "Cave Goblin",
+    "Fire Drake",
+    "Shadow Wraith",
+    "Stone Golem",
+    "Zombie Pirate",
+]
+
+import random
+monster = random.choice(monsters)
+print(f"\nA wild {monster} appears!")
+
+battle(hero_name, monster)
+
+again = input("Play again? (y/n): ").strip().lower()
+if again == "y":
+    monster = random.choice(monsters)
+    print(f"\nA {monster} steps out of the shadows...")
+    battle(hero_name, monster)
+```
+
+Run it:
+```bash
+python3 rpg_battle.py
+```
+
+### RPG Bonus Challenges 🏆
+
+1. Add a **second monster** that the hero fights if they win the first battle
+2. Add an **"Escape"** option that sometimes works (use `random.random() < 0.5`)
+3. Add a **different weapon** choice at the start that changes the hero's attack power
+4. Track **total gold earned** — each monster drops 5–20 gold when defeated
+5. Add a **boss monster** with 80 HP that only appears as the third fight
+
+---
+
+## 🏆 Module 2 Badge: Code Wizard
+
+Earn this badge by completing:
+- [ ] The number guessing game
+- [ ] The RPG battle game
+- [ ] At least 1 RPG bonus challenge
+- [ ] The mad libs story generator
+- [ ] The to-do list
 
 ---
 

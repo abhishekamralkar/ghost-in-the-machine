@@ -1,19 +1,32 @@
 # Module 4: Final Project — AI Tombstone Display with Raspberry Pi
 
+```
+LEVEL 4 UNLOCKED: Robot Builder
+=================================
+This is the final boss. You're not just writing code —
+you're building a physical device with real hardware.
+A tiny computer. A screen. A button. An AI brain.
+All built and programmed by YOU.
+```
+
 ## Project Overview
 
 ### What Are We Building?
 
 A **Raspberry Pi** that:
 1. Generates spooky Halloween-style tombstone epitaphs using Ollama AI
-2. Displays them on a small screen (OLED or LCD)
-3. Cycles through new messages every few seconds
-4. Has a button to request a new message on demand
+2. Displays them on a small OLED screen
+3. Cycles through new messages every few seconds automatically
+4. Has a button you press to get a new message on demand
+
+This is a REAL device — not a simulation. When you're done, you can put it in a
+Halloween display, show your friends, or give it as a gift.
 
 This project uses **everything you learned**:
-- Linux: to set up the Pi, manage files, run scripts
-- Python: to write the program
-- AI (Ollama): to generate creative tombstone messages
+- Linux: to set up the Pi, SSH into it, manage files, run scripts
+- Python: to write the entire program
+- AI (Ollama): to generate creative messages on the fly
+- Hardware: real wires, a real screen, a real button
 
 ---
 
@@ -688,12 +701,50 @@ Congratulations! Your tombstone project combines:
 
 ---
 
+## 🏆 Module 4 Badge: Robot Builder
+
+Earn the final badge by completing:
+- [ ] Set up Raspberry Pi OS and connect via SSH
+- [ ] Wire the OLED display and see it light up
+- [ ] Wire the button and see it register presses
+- [ ] Run `test_ai.py` and generate 3 epitaphs
+- [ ] Run the full `tombstone.py` with all three parts working together
+- [ ] Set it up to start automatically on boot
+
+---
+
+## ⭐ Grand Champion: Bonus Master Badge
+
+Earn ALL of these across the whole summer:
+- [ ] Module 0: Explain RAM vs Storage to a real person
+- [ ] Module 1: Complete all 4 bonus challenges for the Dragon Hoard
+- [ ] Module 2: Complete all 5 RPG bonus challenges
+- [ ] Module 3: Complete the AI Dungeon Master bonus
+- [ ] Module 4: Add at least 2 of the 5 bonus features to the tombstone
+
+---
+
 ## You Did It!
 
+```
+ ██████╗ ██████╗ ███╗   ██╗ ██████╗ ██████╗  █████╗ ████████╗███████╗██╗
+██╔════╝██╔═══██╗████╗  ██║██╔════╝ ██╔══██╗██╔══██╗╚══██╔══╝██╔════╝██║
+██║     ██║   ██║██╔██╗ ██║██║  ███╗██████╔╝███████║   ██║   ███████╗██║
+██║     ██║   ██║██║╚██╗██║██║   ██║██╔══██╗██╔══██║   ██║   ╚════██║╚═╝
+╚██████╗╚██████╔╝██║ ╚████║╚██████╔╝██║  ██║██║  ██║   ██║   ███████║██╗
+ ╚═════╝ ╚═════╝ ╚═╝  ╚═══╝ ╚═════╝ ╚═╝  ╚═╝╚═╝  ╚═╝   ╚═╝   ╚══════╝╚═╝
+```
+
 You started this summer not knowing what a terminal was.
-Now you have built an AI-powered physical computing device.
+
+Now you have:
+- Navigated Linux like a pro
+- Written programs in Python that actually DO things
+- Controlled an AI with your own code
+- **Built a physical device** — a real computer with a real screen and real wires
 
 That is genuinely impressive. Most adults cannot do what you just did.
+Real engineers at real companies do this exact kind of work every day.
 
 Keep building. Keep breaking things. Keep learning.
 

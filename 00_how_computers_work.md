@@ -1,10 +1,16 @@
 # Module 0: How Computers Work — Before We Start
 
+```
+LEVEL 0 UNLOCKED: Know Your Machine
+====================================
+Before you can command a computer, you have to understand it.
+A computer is not magic — it's a very fast, very obedient machine.
+Once you understand the parts, everything else clicks.
+```
+
 ## Why Does This Matter?
 
-Before you can command a computer, you need to understand what it actually is.
-A computer is not magic — it's a very fast, very obedient machine made of specific parts.
-Once you understand the parts, everything else (Linux, Python, AI) will make much more sense.
+Think about Minecraft. When you mine a block and put it in a chest, when you craft a sword, when you load a world — there's a real computer doing all of that. This module pulls back the curtain and shows you HOW.
 
 ---
 
@@ -20,9 +26,15 @@ makes decisions, and runs every program on your computer.
 **Real-world analogy:** The CPU is like a chef in a kitchen. It reads the recipe
 (your program), follows each step in order, and produces the result.
 
+**Gaming analogy:** In Minecraft, every time you swing a sword, place a block,
+or a Creeper explodes — the CPU calculated all of that. Fast CPUs = smooth gameplay.
+
 - Modern CPUs can execute **billions of instructions per second**
 - Your phone has a CPU. Your Raspberry Pi has a CPU.
 - When your computer feels "slow," the CPU is usually too busy
+
+> **Fun Fact:** The CPU in your Raspberry Pi runs at 1.8 billion cycles per second.
+> That means it can do 1,800,000,000 tiny steps every single second. 🤯
 
 ```
 You type a command
@@ -47,6 +59,9 @@ It's fast to read and write, but it forgets everything when you turn the compute
 you spread your books and papers across the desk. When you're done and pack up,
 the desk is empty again — nothing was saved permanently.
 
+**Gaming analogy:** RAM is like your Minecraft **hotbar** — only 9 slots, super fast to
+grab, but when you close the game it's reset. Storage (below) is like your **chest**.
+
 - More RAM = you can have more programs open at the same time
 - Raspberry Pi 4 comes with 1GB, 2GB, or 4GB of RAM
 - When a program crashes with "out of memory," RAM is full
@@ -61,9 +76,15 @@ It keeps your data even when the power is off.
 **Real-world analogy:** Storage is like your backpack or bookshelf.
 Your homework goes in the backpack, and it's still there tomorrow morning.
 
+**Gaming analogy:** Storage is like your Minecraft **chest** or **Ender chest**.
+Everything in there stays saved even after you quit the game.
+
 - Much slower than RAM, but permanent
-- The Raspberry Pi uses a **MicroSD card** as its storage
+- The Raspberry Pi uses a **MicroSD card** as its storage (like a camera card!)
 - When you save a Python file, it goes onto storage
+
+> **Fun Fact:** A MicroSD card the size of your fingernail can hold 32 billion bytes.
+> That's enough to store 8,000 songs or 16 full Minecraft worlds!
 
 ---
 
@@ -206,13 +227,37 @@ and tells the kernel what to do. You'll learn bash commands in Module 1.
 
 ## Quick Quiz — Test Yourself
 
+Answer these, then check below. No peeking!
+
 1. What does CPU stand for, and what does it do?
 2. What is the difference between RAM and storage?
 3. If you write a Python file and then turn off the computer, where is the file saved?
 4. Name one input device and one output device on a Raspberry Pi.
 5. How many bits are in one byte?
+6. BONUS: In Minecraft terms, what is RAM and what is storage?
 
-**Answers:** 1) Central Processing Unit — it executes instructions. 2) RAM is fast but temporary; storage is slow but permanent. 3) On the MicroSD card (storage). 4) Button = input, OLED display = output. 5) Eight.
+<details>
+<summary>Show Answers</summary>
+
+1. Central Processing Unit — it executes instructions. The brain.
+2. RAM is fast but forgotten when you turn off. Storage is slow but permanent.
+3. On the MicroSD card (storage).
+4. Button = input, OLED display = output.
+5. Eight bits in one byte.
+6. RAM = hotbar (fast, temporary). Storage = chest (slow, permanent).
+
+</details>
+
+---
+
+## 🏆 Module 0 Badge Challenge
+
+Complete ALL of these to earn the **"Know Your Machine"** badge:
+
+- [ ] Explain to a friend (or parent!) what RAM does using the hotbar analogy
+- [ ] Describe what would happen if your computer had zero RAM
+- [ ] Figure out: how many bytes is the word `"Minecraft"`? (each letter = 1 byte)
+- [ ] Answer: what happens to everything in RAM when the lights go out?
 
 ---
 

@@ -1,5 +1,14 @@
 # Module 3: AI with Ollama — Your Own Personal AI
 
+```
+LEVEL 3 UNLOCKED: AI Master
+============================
+Most people just USE AI. You're going to CONTROL it.
+Give it a personality. Make it a pirate. Make it a dragon.
+Make it quiz you. Make it write your story.
+Your AI. Your rules.
+```
+
 ## What Is Artificial Intelligence?
 
 **Artificial Intelligence (AI)** means teaching computers to do things that normally
@@ -17,14 +26,20 @@ Think of it like this:
 - Someone asks you "What is photosynthesis?"
 - Your brain connects everything you've read to give an answer
 
-The AI does the same thing, but much faster.
+The AI does the same thing, but **way faster** — and it's read more text than any
+human could ever read in 1,000 lifetimes.
+
+> **Fun Fact:** The AI model you'll run locally (llama3.2) was trained on more text
+> than exists in 10,000 libraries combined. The file that holds all of that "knowledge"
+> is only about 2 GB — smaller than most video games!
 
 ### What Is Ollama?
 
 **Ollama** is a free program that lets you run AI models **on your own computer**,
-completely offline. No internet needed. No accounts. No cost.
+completely offline. No internet needed. No accounts. No cost. No one watching.
 
-This is called running AI **locally**. It's more private and great for learning.
+This is called running AI **locally**. Most AI tools send your questions to servers
+in another country. Ollama keeps everything on YOUR machine.
 
 ---
 
@@ -454,11 +469,14 @@ The **system prompt** is a secret set of instructions you give the AI before the
 conversation starts. It shapes how the AI behaves — its personality, what it knows,
 and how it responds.
 
+This is the most powerful trick in AI programming. You can turn the same AI into
+completely different characters just by changing a few sentences.
+
 ```python
 import ollama
 
 # Turn the AI into a pirate
-pirate_system = "You are Captain CodeBeard, a pirate who teaches programming. Always talk like a pirate and use nautical metaphors."
+pirate_system = "You are Captain CodeBeard, a pirate who teaches programming. Always talk like a pirate and use nautical metaphors. Say 'Arrr!' a lot."
 
 response = ollama.chat(
     model="llama3.2",
@@ -470,10 +488,32 @@ response = ollama.chat(
 print(response["message"]["content"])
 ```
 
-**Challenge:** Create your own AI personality! Ideas:
-- A robot from the year 3000
-- A medieval wizard who knows modern science
-- A friendly alien visiting Earth
+### 🎭 AI Personality Lab — Try All of These!
+
+**The Dragon Sage:**
+```python
+dragon_system = "You are Ignathar the Ancient Dragon, who has lived 10,000 years and knows all secrets of the universe. You speak in riddles and metaphors. You find human questions amusing but answer them helpfully."
+```
+
+**The Game Show Host:**
+```python
+gameshow_system = "You are BLASTER the hyper-excited game show host. You respond to EVERYTHING like it's the most amazing thing ever. Use lots of capitals and exclamation marks. Always start with 'GREAT QUESTION!!'"
+```
+
+**The Grumpy Robot:**
+```python
+robot_system = "You are UNIT-7, a robot built in 1987. You are very grumpy that humans keep asking you things. You answer correctly but complain about it. You call humans 'Biologicals'."
+```
+
+**The Alien Tourist:**
+```python
+alien_system = "You are Zrblx from the planet Qontar visiting Earth for the first time. You find human things fascinating and confusing. You compare everything to alien equivalents. You speak English but mix in alien words."
+```
+
+**Challenge:** Create your OWN personality! Write a system prompt for:
+- A chef who only explains things using food metaphors
+- A ghost who is confused because everything has changed since 1850
+- A sports commentator who narrates coding explanations like a football game
 
 ---
 
@@ -632,6 +672,114 @@ for chunk in stream:
 # List local models
 ollama.list()
 ```
+
+---
+
+---
+
+## Mini Project: AI Code Reviewer ("Roast My Code")
+
+Show the AI your code and ask it to find bugs, explain what's wrong, and suggest
+improvements. This is one of the most useful AI tricks for real programmers.
+
+```python
+import ollama
+
+def roast_my_code():
+    print("=== AI CODE REVIEWER ===")
+    print("Paste your Python code below.")
+    print("Type 'DONE' on its own line when finished.\n")
+
+    lines = []
+    while True:
+        line = input()
+        if line.strip() == "DONE":
+            break
+        lines.append(line)
+
+    code = "\n".join(lines)
+
+    print("\nAnalyzing your code...\n")
+
+    stream = ollama.chat(
+        model="llama3.2",
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You are a friendly but honest code reviewer for a 5th grade student. "
+                    "Find bugs, explain what each bug does wrong in simple words, "
+                    "and suggest fixes. Also point out one thing they did well. "
+                    "Keep it encouraging and fun."
+                )
+            },
+            {
+                "role": "user",
+                "content": f"Please review this Python code:\n\n```python\n{code}\n```"
+            }
+        ],
+        stream=True
+    )
+
+    for chunk in stream:
+        print(chunk["message"]["content"], end="", flush=True)
+    print("\n")
+
+roast_my_code()
+```
+
+Try pasting in one of your earlier programs and see what the AI says!
+
+---
+
+## Mini Project: AI Dungeon Master 🎲
+
+Remember your RPG battle game from Module 2? Now make the AI narrate it!
+
+```python
+import ollama
+import random
+
+def ai_narrate(event):
+    """Ask the AI to narrate a battle event dramatically."""
+    response = ollama.chat(
+        model="llama3.2",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are an epic fantasy narrator for a text RPG game. Narrate battle events dramatically in 1-2 sentences. Be exciting!"
+            },
+            {"role": "user", "content": f"Narrate this event: {event}"}
+        ]
+    )
+    return response["message"]["content"].strip()
+
+# Example events to narrate:
+events = [
+    "The hero lands a critical hit with their sword for 20 damage",
+    "The dragon breathes fire but the hero dodges at the last second",
+    "The hero drinks a healing potion and recovers 15 HP",
+    "The villain is defeated and falls dramatically",
+]
+
+print("=== AI BATTLE NARRATOR ===\n")
+for event in events:
+    print(f"Event: {event}")
+    print(f"Narrator: {ai_narrate(event)}")
+    print()
+```
+
+---
+
+## 🏆 Module 3 Badge: AI Whisperer
+
+Earn this badge by completing:
+- [ ] Talk to the AI in the terminal using `ollama run`
+- [ ] Write `ask_ai.py` and get a response from Python
+- [ ] Build the interactive chat program (Sparky)
+- [ ] Create 2 of your own AI personalities using system prompts
+- [ ] Complete the "Roast My Code" project with your own code
+- [ ] BONUS: Build the AI Dungeon Master and connect it to your RPG game
 
 ---
 
