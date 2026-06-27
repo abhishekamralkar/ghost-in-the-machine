@@ -54,6 +54,19 @@ Work through them after finishing each module — try the problems before peekin
 | [exercises/module_04](exercises/module_04/) | Ollama CLI, Python AI API, system prompts, streaming |
 | [exercises/module_05](exercises/module_05/) | Pi setup, OLED display, button, AI integration |
 
+## Certificate of Completion 🏆
+
+After finishing all the modules and exercises, run:
+
+```bash
+python3 certificate.py
+```
+
+It will ask your name and which badges you earned, then:
+- Print a beautiful ASCII certificate in the terminal
+- Generate a `certificate_yourname.html` file you can open in the browser
+- The HTML certificate can be printed or saved as a PDF (Ctrl+P)
+
 ---
 
 ## The Rules of the Game
