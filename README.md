@@ -38,6 +38,19 @@ By the end of 10 weeks you will have **built a real AI-powered device** with a s
 3. [03_ai_ollama.md](03_ai_ollama.md) — What is AI, run it locally, give it wild personalities
 4. [04_tombstone_project.md](04_tombstone_project.md) — Final project: Raspberry Pi AI tombstone display
 
+## Exercises
+
+The [exercises/](exercises/) folder has practice problems and full answers for every module.
+Work through them after finishing each module — try the problems before peeking at the answers!
+
+| Folder | Topics |
+|--------|--------|
+| [exercises/module_00](exercises/module_00/) | CPU, RAM, storage, binary, input/output |
+| [exercises/module_01](exercises/module_01/) | Terminal commands, shell scripts, pipes, Git |
+| [exercises/module_02](exercises/module_02/) | Variables, loops, functions, lists, files, RPG game |
+| [exercises/module_03](exercises/module_03/) | Ollama CLI, Python AI API, system prompts, streaming |
+| [exercises/module_04](exercises/module_04/) | Pi setup, OLED display, button, AI integration |
+
 ---
 
 ## The Rules of the Game
@@ -55,7 +68,7 @@ By the end of 10 weeks you will have **built a real AI-powered device** with a s
 - A computer running Linux (or a Raspberry Pi)
 - A terminal / command line
 - Python 3 (already on most Linux systems)
-- **VS Code** — the code editor pros use at Google and Netflix (`sudo apt install code`)
+- **VS Code** — the code editor pros use at Google and Netflix (full install instructions in Module 2)
 - [Ollama](https://ollama.com) — runs AI right on your computer, no internet needed
 - Raspberry Pi 4 (for the final project)
 - A small OLED display (SSD1306)
@@ -67,6 +80,7 @@ By the end of 10 weeks you will have **built a real AI-powered device** with a s
 Earn these by completing the secret challenges in each module:
 
 ```
+[ ] 🖥️  Know Your Machine — Complete Module 0
 [ ] 🐧 Terminal Ninja    — Complete Module 1
 [ ] 🐍 Code Wizard       — Complete Module 2
 [ ] 🤖 AI Whisperer      — Complete Module 3
