@@ -146,9 +146,26 @@ The real fun starts when you use Python to talk to Ollama programmatically.
 
 ### Lesson 7.1 — Install the Python Library
 
+First, set up a virtual environment for your AI project (keeps packages organized):
+
+```bash
+# Create a project folder and go into it
+mkdir ~/ai_projects
+cd ~/ai_projects
+
+# Create and activate a virtual environment
+python3 -m venv venv
+source venv/bin/activate
+```
+
+You should see `(venv)` appear in your prompt. Now install the library:
+
 ```bash
 pip3 install ollama
 ```
+
+> Remember: every time you open a new terminal to work on this project,
+> run `source ~/ai_projects/venv/bin/activate` first!
 
 ---
 
@@ -267,6 +284,13 @@ chat_with_ai()
 
 ### Lesson 7.5 — Streaming (See Words Appear as They're Generated)
 
+Normally `ollama.chat()` waits until the AI finishes the whole answer before showing anything.
+**Streaming** lets you see each word appear one at a time — just like ChatGPT does.
+
+Two special `print()` tricks make this work:
+- `end=""` — normally `print()` adds a new line at the end. `end=""` stops that, so words appear on the same line.
+- `flush=True` — normally Python waits and sends text in batches. `flush=True` forces it to show each word immediately as it arrives.
+
 ```python
 import ollama
 
@@ -277,13 +301,14 @@ def stream_answer(question):
     stream = ollama.chat(
         model="llama3.2",
         messages=[{"role": "user", "content": question}],
-        stream=True
+        stream=True          # Ask for streaming instead of waiting for the full answer
     )
 
     for chunk in stream:
+        # Each 'chunk' is a tiny piece of the answer — one or two words at a time
         print(chunk["message"]["content"], end="", flush=True)
 
-    print("\n")
+    print("\n")   # Move to a new line when done
 
 stream_answer("Tell me 3 fascinating facts about the ocean")
 stream_answer("What are the planets in our solar system?")
@@ -669,8 +694,10 @@ stream = ollama.chat(model="llama3.2",
 for chunk in stream:
     print(chunk["message"]["content"], end="", flush=True)
 
-# List local models
-ollama.list()
+# List local models (shows what you've downloaded)
+models = ollama.list()
+for m in models["models"]:
+    print(m["name"])
 ```
 
 ---

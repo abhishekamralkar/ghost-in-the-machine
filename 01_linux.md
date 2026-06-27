@@ -102,9 +102,33 @@ drwxr-xr-x  2  aaa  aaa  4096  Jun 10  documents
 -rw-r--r--  1  aaa  aaa   128  Jun 10  notes.txt
 ```
 
-- `d` at the start = it's a directory
-- `-` at the start = it's a file
-- The letters after = who is allowed to read/write/run it
+Breaking down each column:
+
+```
+drwxr-xr-x   2   aaa   aaa   4096   Jun 10   documents
+│└────────┘   │   │     │     │      │        └── name
+│ permissions │   │     │     │      └── last modified date
+│             │   │     │     └── size in bytes
+│             │   │     └── group owner
+│             │   └── owner (that's you!)
+│             └── number of links (ignore for now)
+└── d = directory, - = file
+```
+
+The **permissions** block (`rwxr-xr-x`) uses three letters repeated three times:
+- `r` = **r**ead (look inside)
+- `w` = **w**rite (change it)
+- `x` = e**x**ecute (run it as a program)
+- `-` = that permission is turned OFF
+
+The three groups are: **owner** | **group** | **everyone else**
+
+```
+rwx  r-x  r-x
+│    │    └── everyone else: can read and run, but NOT write
+│    └── group: can read and run, but NOT write
+└── owner (you): can read, write, AND run
+```
 
 ---
 
@@ -149,10 +173,14 @@ cat hello.txt
 # Remove a file (careful — no undo!)
 rm hello.txt
 
+# Go back up before removing the directory
+cd ..
+
 # Remove an empty directory
 rmdir my_cool_directory
 
 # Remove a directory and everything inside it (very careful!)
+# Only use this if the directory still has files in it
 rm -rf my_cool_directory
 ```
 
@@ -252,6 +280,16 @@ Permission letters:
 
 A shell script is a text file full of commands. The computer runs them all in order.
 
+**Quick nano guide** (nano is the text editor you'll use):
+
+| Key | What it does |
+|-----|-------------|
+| Just type | Writes text at the cursor |
+| Arrow keys | Move around |
+| `Ctrl+S` | Save the file |
+| `Ctrl+X` | Exit (it will ask to save if you haven't) |
+| `Y` then `Enter` | Confirm save when exiting |
+
 **Step 1:** Create the file
 
 ```bash
@@ -259,6 +297,9 @@ nano my_first_script.sh
 ```
 
 **Step 2:** Type this inside nano:
+
+> The first line `#!/bin/bash` is called a **shebang**. It tells Linux "run this file
+> using the bash shell." Always put it at the top of every shell script.
 
 ```bash
 #!/bin/bash
@@ -291,12 +332,16 @@ chmod +x my_first_script.sh
 
 ### Lesson 2.6 — Variables and User Input in Shell
 
+In shell scripts, variables store information just like in Python — but with two differences:
+- **No spaces** around the `=` sign: `name="Alex"` ✓ &nbsp;&nbsp; `name = "Alex"` ✗
+- To **use** a variable, put `$` in front of the name: `$name`
+
 ```bash
 #!/bin/bash
 
 # Ask the user for their name
 echo "What is your name?"
-read user_name
+read user_name          # 'read' waits for the user to type something
 
 # Use the variable with $
 echo "Hello, $user_name! Welcome to Linux!"

@@ -139,13 +139,33 @@ Raspberry Pi
 
 ### Lesson 8.2 — Connect via SSH
 
+**What is SSH?**
+SSH (Secure Shell) lets you control the Raspberry Pi from your main computer — over Wi-Fi.
+Instead of plugging in a keyboard and monitor to the Pi, you type commands on your
+laptop and they run on the Pi. It's like remote control for a computer!
+
+```
+Your laptop                            Raspberry Pi
+┌──────────────┐    Wi-Fi / network    ┌──────────────┐
+│  Your        │ ──────────────────►   │  Pi runs     │
+│  terminal    │ ◄──────────────────   │  your        │
+│  (you type)  │   results come back   │  commands    │
+└──────────────┘                       └──────────────┘
+```
+
 From your main computer's terminal:
 
 ```bash
 ssh pi@tombstone.local
 ```
 
-Enter your password. You're now controlling the Pi remotely!
+- `pi` — the username you set up on the Pi
+- `tombstone.local` — the hostname you chose (the Pi announces itself on your Wi-Fi)
+
+Enter your password when prompted. You're now controlling the Pi remotely!
+
+> **Tip:** If `tombstone.local` doesn't work, find the Pi's IP address from your
+> router's admin page and use `ssh pi@192.168.x.x` instead.
 
 ---
 
@@ -185,6 +205,20 @@ You should see `3c` appear in the grid — that's your OLED display!
 
 ### Lesson 8.5 — Install Required Software
 
+First, create a project folder with a virtual environment so all packages stay tidy:
+
+```bash
+# Create the project folder
+mkdir ~/tombstone
+cd ~/tombstone
+
+# Create and activate a virtual environment
+python3 -m venv venv
+source venv/bin/activate
+```
+
+You should see `(venv)` in your prompt. Now install everything:
+
 ```bash
 # Python libraries for the OLED display
 pip3 install adafruit-circuitpython-ssd1306 pillow
@@ -194,13 +228,20 @@ pip3 install RPi.GPIO
 
 # Python library for Ollama
 pip3 install ollama
+```
 
+Now install Ollama itself and download the AI model:
+
+```bash
 # Install Ollama on the Pi
 curl -fsSL https://ollama.com/install.sh | sh
 
 # Download the smallest model (Pi has limited RAM)
 ollama pull llama3.2:1b
 ```
+
+> **Every time you SSH into the Pi** to work on this project, remember to activate
+> the venv first: `source ~/tombstone/venv/bin/activate`
 
 ---
 
@@ -520,24 +561,42 @@ if __name__ == "__main__":
 ## Running the Program
 
 ```bash
-# Run manually
+# Run manually (stops when you close the terminal or SSH session)
 python3 tombstone.py
+```
 
-# Run in background (keeps running even if you close SSH)
+To keep it running **even after you close SSH**, use `nohup` and `&`:
+
+```bash
+# nohup = "no hang up" — keeps running after you disconnect
+# &     = runs in the background so you get your terminal prompt back
 nohup python3 tombstone.py &
+```
 
-# See if it's running
+You'll see a number printed (like `[1] 1234`) — that's the **process ID (PID)**.
+
+```bash
+# See if it's running (look for tombstone.py in the list)
 ps aux | grep tombstone.py
 
-# Stop it
+# Stop it by finding and killing the process
 kill $(pgrep -f tombstone.py)
 ```
+
+> `pgrep -f tombstone.py` finds the process ID automatically so you don't have
+> to remember the number. `kill` sends a signal to stop that process.
 
 ---
 
 ## Making It Start Automatically on Boot
 
-So the tombstone display starts as soon as you plug in the Pi:
+Right now you have to SSH in and run `python3 tombstone.py` by hand every time.
+To make the display start **automatically** the moment you plug the Pi in, you
+register it as a **systemd service**.
+
+**What is systemd?**
+systemd is Linux's startup manager — it controls which programs run when the Pi boots.
+You create a small file that says "run this program on startup, and restart it if it crashes."
 
 ```bash
 # Edit the system service file
@@ -585,12 +644,34 @@ Ask for a name before generating:
 ```python
 def generate_personal_epitaph(first_name, last_name):
     prompt = f'Write a Halloween tombstone epitaph for "{first_name} {last_name}". Use their actual name. Make it punny and spooky. Two lines max, under 55 characters.'
-    # ... rest of ollama.chat call
+
+    response = ollama.chat(
+        model=MODEL,
+        messages=[
+            {
+                "role": "system",
+                "content": (
+                    "You write short spooky Halloween tombstone epitaphs. "
+                    "Use the person's real name. Two lines max. Under 55 characters total. "
+                    "Output ONLY the epitaph."
+                )
+            },
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response["message"]["content"].strip()
+
+# To use it — ask the user for their name:
+first = input("First name for the tombstone: ").strip()
+last  = input("Last name for the tombstone: ").strip()
+print(generate_personal_epitaph(first, last))
 ```
 
 ### Bonus 2: Different Themes
 
 ```python
+import random
+
 THEMES = [
     "spooky Halloween",
     "silly and funny",
@@ -600,8 +681,9 @@ THEMES = [
     "vampire librarian"
 ]
 
+# Pick a random theme each time
 theme = random.choice(THEMES)
-prompt = f"Write a {theme} themed tombstone epitaph..."
+prompt = f"Write a {theme} themed tombstone epitaph with a punny name. Two lines, under 55 characters."
 ```
 
 ### Bonus 3: Sound Effects
