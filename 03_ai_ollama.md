@@ -47,6 +47,8 @@ in another country. Ollama keeps everything on YOUR machine.
 
 ### Lesson 6.1 — Installing Ollama
 
+Before you can talk to an AI, you need to install the Ollama program that runs it. Think of Ollama like a game launcher — you install it once, and then it can run all kinds of different AI "games" (models) for you. This only takes a few minutes and you never have to pay anything. Once it's installed, your computer becomes its own mini AI server!
+
 Open your terminal and run:
 
 ```bash
@@ -55,11 +57,21 @@ curl -fsSL https://ollama.com/install.sh | sh
 
 This downloads and installs Ollama. It should take a few minutes.
 
+The `curl` command is like a download manager — it grabs the install script from the internet and runs it automatically. You'll see a bunch of text scroll by as it sets things up.
+
 Verify the install worked:
 
 ```bash
 ollama --version
 ```
+
+**What you should see:**
+```
+ollama version 0.3.x
+```
+If you see a version number, Ollama is installed and ready to go! If you see an error, ask for help — it probably just needs one more step.
+
+> **Try this!** Run `which ollama` in the terminal. This shows you exactly where on your computer the Ollama program lives. Every program you install has a home — now you know where AI lives on your machine!
 
 ---
 
@@ -67,7 +79,7 @@ ollama --version
 
 An AI **model** is the "brain" — a large file containing everything the AI learned.
 
-For a 9-year-old's computer or Raspberry Pi, start with a small but smart model:
+Here's a fun way to think about it: if Ollama is the game launcher, then a model is the actual game. Different models are like different characters with different strengths. Some are super fast but know less. Some know a TON but are slower. You pick the right one for what you need!
 
 ```bash
 # A good small model (about 2GB)
@@ -82,9 +94,24 @@ ollama pull codellama
 
 Wait for the download to finish. The progress bar will fill up.
 
+**What you should see** (while downloading):
+```
+pulling manifest
+pulling 966de95ca8a6... 100% ▕████████████████▏ 2.0 GB
+pulling 8ab4849b038c... 100% ▕████████████████▏ 1.5 KB
+verifying sha256 digest
+writing manifest
+success
+```
+That last word — `success` — is what you're waiting for. The download is complete!
+
+> **Try this!** Run `ollama list` after the download finishes. It shows you all the AI brains you have on your computer, how big they are, and when you downloaded them. You're building a collection of AI models!
+
 ---
 
 ### Lesson 6.3 — Talking to AI in the Terminal
+
+This is the moment you've been waiting for — actually chatting with AI! Right now, no Python, no code — just you and the AI having a conversation in the terminal. It feels like texting a really smart robot. The AI will respond to almost anything: questions, jokes, stories, weird hypotheticals. Try to surprise it!
 
 Once downloaded, start a chat:
 
@@ -104,11 +131,25 @@ You'll see a prompt `>>>`. Type a question and press Enter:
 >>> What is the capital of France?
 ```
 
+**What you should see** after typing a question:
+```
+>>> Tell me a joke about computers
+
+Why do programmers prefer dark mode?
+
+Because light attracts bugs! 🐛
+```
+The AI will type out its answer right below your question. Sometimes it takes a second to "think" — that's normal!
+
 Press `Ctrl+D` or type `/bye` to exit.
+
+> **Try this!** Ask the AI something really weird — like "If dinosaurs had smartphones, what apps would they use?" or "Explain gravity as if you're a confused penguin." The AI will play along! The weirder the question, the more fun the answer.
 
 ---
 
 ### Lesson 6.4 — One-Line Questions
+
+Sometimes you don't want a full conversation — you just have one quick question and want a quick answer. That's what one-line mode is for. It's like sending a text message to the AI: you fire off your question, it replies, and you're done. This is super handy when you're in the middle of coding and need a fast answer without opening a whole chat session.
 
 You can ask one question without entering chat mode:
 
@@ -120,9 +161,22 @@ ollama run llama3.2 "Give me 5 fun facts about space"
 ollama run llama3.2 "Write a haiku about robots"
 ```
 
+**What you should see** after the space facts command:
+```
+Here are 5 fun facts about space:
+
+1. A day on Venus is longer than a year on Venus!
+2. Neutron stars are so dense a teaspoon would weigh 10 million tons...
+```
+The answer appears directly in the terminal and then the command ends. No chat mode needed!
+
+> **Try this!** Put the AI to work for homework help: `ollama run llama3.2 "Give me 3 interesting facts about the American Revolution for a school report"`. Then always double-check the facts in a book or trusted website — AI can be wrong sometimes!
+
 ---
 
 ### Lesson 6.5 — Ollama Commands to Know
+
+Every great tool has a set of commands to control it. These are your Ollama superpowers — the commands that let you manage your AI models like a pro. Think of it like knowing all the keyboard shortcuts in a game: you don't NEED them, but they make you way faster and more powerful. Knowing these commands means you're not just a user — you're in control.
 
 ```bash
 # List models you have downloaded
@@ -138,6 +192,22 @@ ollama rm model_name
 ollama help
 ```
 
+**What you should see** after `ollama list`:
+```
+NAME              ID              SIZE    MODIFIED
+llama3.2:latest   a80c4f17acd5    2.0 GB  2 minutes ago
+```
+Each row is one AI brain on your computer. The SIZE column shows how much space it takes up.
+
+**What you should see** after `ollama ps` (if Ollama is running):
+```
+NAME              ID        SIZE      PROCESSOR    UNTIL
+llama3.2:latest   abc123    4.1 GB    100% CPU     4 minutes from now
+```
+If nothing shows up, that just means no model is actively running right now — that's totally fine!
+
+> **Try this!** Pull a second model — try `ollama pull llama3.2:1b` (the tiny version). Then run `ollama list` to see both models. Then try the same question on both: `ollama run llama3.2 "What is DNA?"` and `ollama run llama3.2:1b "What is DNA?"`. Which one gives a better answer? Which one is faster? Bigger isn't always better!
+
 ---
 
 ## Week 7: Talking to AI with Python
@@ -145,6 +215,8 @@ ollama help
 The real fun starts when you use Python to talk to Ollama programmatically.
 
 ### Lesson 7.1 — Install the Python Library
+
+Up until now you've been talking to AI through the terminal. Now you're going to write Python code that talks to AI FOR you. This is huge — it means you can build programs that use AI as a tool inside them. You could make a quiz app, a story generator, a homework helper... anything! Before you can do that, you need to set up a special Python workspace called a virtual environment and install the Ollama library.
 
 First, set up a virtual environment for your AI project (keeps packages organized):
 
@@ -164,12 +236,31 @@ You should see `(venv)` appear in your prompt. Now install the library:
 pip3 install ollama
 ```
 
+**What you should see** after `pip3 install ollama`:
+```
+Collecting ollama
+  Downloading ollama-0.3.x-py3-none-any.whl (10 kB)
+Installing collected packages: ollama
+Successfully installed ollama-0.3.x
+```
+The word `Successfully` is your green light — the library is ready to use in your code!
+
+**What you should see** when `(venv)` is active — your terminal prompt changes:
+```
+(venv) you@computer:~/ai_projects$
+```
+That `(venv)` at the start means you're inside the virtual environment. Your installed libraries only live here — they won't mess up anything else on your computer.
+
 > Remember: every time you open a new terminal to work on this project,
 > run `source ~/ai_projects/venv/bin/activate` first!
+
+> **Try this!** Run `pip3 list` after installing. It shows every Python package available in your virtual environment. You should see `ollama` in the list. As you build more projects, this list will grow — it's like your Python toolbox!
 
 ---
 
 ### Lesson 7.2 — Your First Python AI Program
+
+This is a HUGE moment. You're about to write Python code that sends a message to an AI and receives a reply — all without touching the terminal chat! When this works, you've officially crossed into real AI programming territory. This is the same basic skill that powers apps like ChatGPT, Siri, and Alexa — except YOUR program is running locally on YOUR computer.
 
 Create a file called `ask_ai.py`:
 
@@ -188,15 +279,27 @@ response = ollama.chat(
 print(response["message"]["content"])
 ```
 
+The `messages` list is how you pass your question to the AI. Each message is a small dictionary with two things: `role` (who is talking) and `content` (what they said). The AI's answer comes back in `response["message"]["content"]` — that's where you dig it out to print it.
+
 Run it in your terminal:
 
 ```bash
 python3 ask_ai.py
 ```
 
+**What you should see:**
+```
+2 + 2 equals 4.
+```
+If you see an answer printed out, it worked! Your Python program just talked to an AI. That's genuinely cool.
+
+> **Try this!** Change the `content` to a different question — like `"Name 3 planets in our solar system"` or `"What rhymes with 'code'?"`. Run it again. The AI answers a new question every time with just one line changed. You're now controlling what the AI thinks about!
+
 ---
 
 ### Lesson 7.3 — Understanding the Structure
+
+Now that you've sent a basic message, let's look at how conversations are structured. The AI doesn't just see your latest question — it sees the WHOLE conversation as a list of messages. And there's a secret third type of message called a **system prompt** that lets you whisper instructions to the AI that the user never sees. This is where the real power is. It's like programming the AI's personality before the conversation even starts!
 
 ```python
 import ollama
@@ -222,9 +325,24 @@ response = ollama.chat(model="llama3.2", messages=messages)
 print(response["message"]["content"])
 ```
 
+The system message is invisible to anyone chatting — it's just your secret instructions. Notice how the AI's answer will be shorter and friendlier than usual because you told it to keep things "short and fun" for 5th graders.
+
+**What you should see:**
+```
+Photosynthesis is basically how plants make their own food using sunlight!
+They take in water from the soil, carbon dioxide from the air, and zap it
+all together with sunlight to make sugar. The bonus? They release oxygen,
+which is the air we breathe. Pretty cool, right?
+```
+The system prompt is working — shorter, friendlier, and more fun than a textbook answer!
+
+> **Try this!** Change the system prompt to `"You are a grumpy old professor. Answer questions correctly but always complain about how simple the question is."` Keep the same user message. Run it again. See how completely different the answer feels? SAME model, SAME question — totally different personality. That's the power of system prompts!
+
 ---
 
 ### Lesson 7.4 — Interactive Chat Program
+
+A single question and answer is great, but a real chatbot remembers everything you've said. If you tell it your name in message 1, it should still know your name in message 10. This program does exactly that by storing all messages in a list and sending the whole history every time. Think of it like passing the AI a transcript of your entire conversation every time you speak — it re-reads everything and then replies.
 
 This program remembers the whole conversation, just like a real chatbot:
 
@@ -280,12 +398,32 @@ def chat_with_ai():
 chat_with_ai()
 ```
 
+**What you should see** when you run it:
+```
+=================================
+  Chat with Sparky the AI Tutor
+=================================
+Type 'quit' to exit
+
+You: Hi! My name is Alex.
+Sparky: Hey Alex! Great to meet you! I'm Sparky, your AI tutor!
+        What would you like to learn about today?
+
+You: What's my name?
+Sparky: Your name is Alex! You told me just a moment ago. 😊
+```
+See how Sparky remembered your name? That's the conversation history working — the whole chat list is sent every time!
+
+> **Try this!** Tell Sparky your favourite subject at the start ("I love dinosaurs!"). Then ask several unrelated questions. Later, ask "What's my favourite subject?" — does Sparky remember? This shows you exactly how AI memory works: it's all in that `messages` list. The longer you chat, the more it remembers!
+
 ---
 
 ### Lesson 7.5 — Streaming (See Words Appear as They're Generated)
 
 Normally `ollama.chat()` waits until the AI finishes the whole answer before showing anything.
 **Streaming** lets you see each word appear one at a time — just like ChatGPT does.
+
+Have you ever watched ChatGPT type out its answer word by word? That's streaming! Without streaming, your program just sits frozen until the AI is completely done — which can feel like forever for long answers. With streaming, each tiny piece of the answer appears the instant the AI generates it. It feels alive. It feels like the AI is actually thinking in real time. And honestly? It's way cooler to watch.
 
 Two special `print()` tricks make this work:
 - `end=""` — normally `print()` adds a new line at the end. `end=""` stops that, so words appear on the same line.
@@ -314,9 +452,22 @@ stream_answer("Tell me 3 fascinating facts about the ocean")
 stream_answer("What are the planets in our solar system?")
 ```
 
+**What you should see** — words will appear one by one as the AI generates them:
+```
+Question: Tell me 3 fascinating facts about the ocean
+Answer: Here are three fascinating facts about the ocean:
+
+1. The ocean covers about 71% of Earth's surface, but we've only explored...
+```
+You'll literally watch the words appear as the AI "thinks." If it looks like it's typing in real time — that's exactly what's happening!
+
+> **Try this!** Add a third call to `stream_answer()` with your own question. Notice how different length answers take different amounts of time to stream. Try asking for something really long like `"Write a 10-step guide to becoming a scientist"` — watch it flow in! Then try a short question like `"What is 5 times 5?"` — almost instant. The AI generates words at a pretty steady speed either way.
+
 ---
 
 ### Mini Project: AI Question Quiz Generator
+
+This is where everything you've learned comes together into something genuinely useful. You're going to write a program that tells the AI what topic to make a question about, waits for the AI to invent a brand new question, parses the AI's response to pull out the question, choices, and answer, and then quizzes you! No two runs of this program will ever be exactly the same — the AI invents fresh questions every time. That's the magic of generative AI.
 
 This uses AI to create quiz questions, then quizzes you!
 
@@ -403,9 +554,31 @@ def run_quiz():
 run_quiz()
 ```
 
+**What you should see:**
+```
+=== AI QUIZ GENERATOR ===
+I'll ask you 3 questions generated by AI!
+
+Generating question 1 about space...
+
+Question 1: What is the largest planet in our solar system?
+  A) Earth
+  B) Saturn
+  C) Jupiter
+  D) Neptune
+
+Your answer (A/B/C/D): C
+CORRECT!
+```
+Every time you run this program, the questions will be different! The AI invents them fresh each time. That's what makes it special.
+
+> **Try this!** Add your own topics to the `topics` list! Change it to include `"Harry Potter"`, `"Minecraft"`, `"dinosaurs"`, or `"your favourite subject in school"`. You can make a quiz about literally anything. Try `"video games"` — the AI might surprise you with how much it knows!
+
 ---
 
 ### Mini Project: AI Story Generator
+
+Stories are one of the things AI is genuinely great at. You're going to build an interactive story generator where YOU choose the hero, the setting, the problem, and the magical item — and the AI weaves them all into an original story just for you. No two stories will ever be the same. This is generative AI at its most fun: you give it the ingredients, and it bakes the cake. If you run it 10 times with the same inputs, you'll get 10 different stories!
 
 ```python
 import ollama
@@ -445,9 +618,32 @@ Make it fun, age-appropriate, and end with the hero solving the problem using th
 generate_story()
 ```
 
+**What you should see** after filling in the prompts:
+```
+=== AI STORY GENERATOR ===
+
+Hero's name: Zara
+Where does the story take place? An underwater city
+What problem does the hero face? A sea monster is blocking the exit
+A magical item the hero has: A flute that controls water
+
+Generating your story... please wait...
+
+==================================================
+Deep beneath the glittering waves lay Aquara, a city of coral towers
+and glowing jellyfish lanterns. Zara, the city's youngest explorer,
+raced through the twisting streets as alarms blared...
+==================================================
+```
+Watch the story stream in word by word — it's like watching an author write in real time!
+
+> **Try this!** Run the story generator twice with the EXACT same inputs. You'll get two completely different stories! That's because the AI uses a little bit of randomness every time it generates text. Then try making the story weirder: set the location to "inside a giant cheese" and the magical item to "a rubber duck that talks." The AI will work with whatever you give it!
+
 ---
 
 ### Mini Project: Explain It Like I'm 9
+
+Have you ever read an explanation of something and it was SO confusing you gave up? This project fixes that. You type in ANY topic — black holes, the stock market, why we dream, how vaccines work — and the AI explains it in simple words with a fun analogy, specifically for someone your age. It's like having a really smart older sibling available 24/7 who never gets annoyed at your questions.
 
 ```python
 import ollama
@@ -485,6 +681,27 @@ def explain_it():
 
 explain_it()
 ```
+
+**What you should see** when you ask about black holes:
+```
+=== EXPLAIN IT LIKE I'M 9 ===
+Ask about ANYTHING and I'll explain it simply!
+Type 'quit' to exit.
+
+What do you want to understand? black holes
+
+--- Explanation ---
+A black hole is like a super powerful vacuum cleaner in space. Imagine
+if you had a vacuum cleaner so strong it could suck in light itself —
+that's basically a black hole! It's a place where gravity got so strong
+that nothing, not even light, can escape...
+
+Fun fact: If you fell into a black hole, someone watching from far away
+would see you freeze in time at the edge — you'd never seem to fall in!
+```
+That's a real explanation simple enough to actually understand — and a fact interesting enough to share at dinner!
+
+> **Try this!** Ask it to explain something from your actual schoolwork — something you're confused about. Try topics like `"how does electricity work"`, `"what is inflation"`, or `"why do we have seasons"`. Then check your textbook or ask a parent if the explanation is accurate. Use it as a STARTING POINT for understanding, not the final word!
 
 ---
 
@@ -706,6 +923,8 @@ for m in models["models"]:
 
 ## Mini Project: AI Code Reviewer ("Roast My Code")
 
+Real programmers use AI to review their code every single day. It's one of the most practical AI skills you can have. Here's how it works: you paste in your Python code, and the AI reads through it like a teacher, finds mistakes, explains what each bug actually does wrong, and suggests how to fix it — all in plain, friendly language. The best part? It also points out something you DID well, so it's not all criticism. Even professional developers use this trick!
+
 Show the AI your code and ask it to find bugs, explain what's wrong, and suggest
 improvements. This is one of the most useful AI tricks for real programmers.
 
@@ -755,13 +974,31 @@ def roast_my_code():
 roast_my_code()
 ```
 
+**What you should see** after pasting some code and typing DONE:
+```
+Analyzing your code...
+
+Great effort! Here's my review:
+
+🐛 Bug found on line 3: You're missing a colon at the end of your
+`if` statement. Python needs that colon to know where the condition ends.
+
+✅ What you did well: Your variable names are really clear and descriptive
+— `player_health` is much better than just `h`. Keep that up!
+```
+The AI goes through your code line by line, explains problems in plain English, and cheers you on too!
+
 Try pasting in one of your earlier programs and see what the AI says!
+
+> **Try this!** Deliberately write code with a bug in it — like forgetting a colon after an `if`, or using the wrong variable name — and paste it in. See if the AI catches it. Then fix the bug and paste it in again. Does the AI give you a clean bill of health? This is a great way to test if you understand the bug yourself before the AI tells you!
 
 ---
 
 ## Mini Project: AI Dungeon Master 🎲
 
 Remember your RPG battle game from Module 2? Now make the AI narrate it!
+
+You built the game mechanics — health points, attacks, dodge rolls. Now you're going to make the AI write the dramatic story around those mechanics. Every time the hero hits the dragon, instead of just printing "Hit for 20 damage", the AI writes a thrilling sentence about it. It's the difference between a spreadsheet and an epic novel. Same numbers, completely different feeling. This is called **procedural narrative generation** — a real term used in actual video game development!
 
 ```python
 import ollama
@@ -795,6 +1032,24 @@ for event in events:
     print(f"Narrator: {ai_narrate(event)}")
     print()
 ```
+
+**What you should see:**
+```
+=== AI BATTLE NARRATOR ===
+
+Event: The hero lands a critical hit with their sword for 20 damage
+Narrator: With a battle cry that echoed through the cavern, the hero's
+blade found its mark — a devastating blow that sent sparks flying and
+left the beast reeling!
+
+Event: The villain is defeated and falls dramatically
+Narrator: The dark lord let out one final, earth-shaking roar before
+crumpling to the ground, his armour clattering against the cold stone
+as silence — glorious, hard-won silence — fell over the battlefield.
+```
+Same boring game event, completely epic narration. That's the AI doing what it does best!
+
+> **Try this!** Add your OWN events to the `events` list. Make them specific and weird: `"The hero trips over a rock and accidentally defeats the goblin"` or `"The wizard runs out of spell ingredients and has to improvise with a sandwich"`. The AI will narrate ANYTHING dramatically. The funnier the event, the better the narration!
 
 ---
 

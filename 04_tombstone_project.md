@@ -125,6 +125,8 @@ Raspberry Pi
 
 ### Lesson 8.1 — Install Raspberry Pi OS
 
+The Raspberry Pi is just bare hardware when you get it — it needs an operating system before it can do anything, just like a new phone needs iOS or Android. We're going to use a tool called **Raspberry Pi Imager** to burn Linux onto the MicroSD card, which the Pi then boots from. Think of the MicroSD card as the Pi's brain — without it, the Pi doesn't even know what a computer is supposed to do. We'll also sneak in some settings (like your Wi-Fi password and SSH access) before we even plug the card in, so the Pi is ready to go the moment it turns on.
+
 1. Download **Raspberry Pi Imager** on a computer
 2. Insert the MicroSD card
 3. In the Imager, choose **Raspberry Pi OS Lite (64-bit)**
@@ -136,6 +138,14 @@ Raspberry Pi
    - Set your Wi-Fi name and password
 5. Write the image to the SD card
 6. Insert SD into Pi, connect display and button, power on
+
+After the Pi boots (give it about 60 seconds the first time), the green LED on the board will blink a few times and then settle into a slow, steady pattern — that means Linux is running and the Pi is waiting for you.
+
+**What you should see:** The Pi's green activity LED blinks quickly during boot, then calms down. No smoke, no sparks — just a quietly humming little computer. If the LED never lights up at all, double-check that the power supply is plugged in properly.
+
+> **Try this!** The Imager lets you pick different OS versions. After you finish the project, try looking at the other options — there's a full desktop version, a gaming version (RetroPie), and even a media center. The same tiny card holds a completely different computer!
+
+---
 
 ### Lesson 8.2 — Connect via SSH
 
@@ -153,7 +163,7 @@ Your laptop                            Raspberry Pi
 └──────────────┘                       └──────────────┘
 ```
 
-From your main computer's terminal:
+This is exactly how professional engineers at big tech companies control servers — the actual computer might be in a data center on the other side of the world, but they type commands on their laptops just like this. You're doing real sysadmin stuff right now. From your main computer's terminal:
 
 ```bash
 ssh pi@tombstone.local
@@ -164,12 +174,18 @@ ssh pi@tombstone.local
 
 Enter your password when prompted. You're now controlling the Pi remotely!
 
+**What you should see:** After typing your password you'll get a welcome message from the Pi — something like `Linux tombstone 6.x.x...` followed by a new command prompt that says `pi@tombstone:~$`. Every command you type from here runs ON the Pi, not your laptop.
+
 > **Tip:** If `tombstone.local` doesn't work, find the Pi's IP address from your
 > router's admin page and use `ssh pi@192.168.x.x` instead.
+
+> **Try this!** Open TWO terminal windows and SSH into the Pi in both of them at the same time. You can run different commands in each window simultaneously — like watching a log file in one window while editing code in the other. Professionals do this constantly!
 
 ---
 
 ### Lesson 8.3 — Update the Pi
+
+When an OS is freshly installed, it often has slightly older versions of all its software — kind of like buying a new phone that immediately needs 47 app updates. Running `apt update` checks what new versions exist, and `apt upgrade` actually installs them. This is important because newer versions fix security holes and bugs. The `-y` flag just means "yes, go ahead" so you don't have to type "y" a hundred times.
 
 ```bash
 sudo apt update && sudo apt upgrade -y
@@ -177,9 +193,15 @@ sudo apt update && sudo apt upgrade -y
 
 This makes sure all software is current. It may take a few minutes.
 
+**What you should see:** A long scrolling list of package names as they download and install. The last line will say something like `0 upgraded, 0 newly installed` when everything is already current, or show a count of packages that were upgraded. No red error messages means everything went fine.
+
+> **Try this!** After the upgrade finishes, run `uname -a` to see the exact version of the Linux kernel running on your Pi. The kernel is the very core of the operating system — the part that talks directly to the hardware. You'll see something like `aarch64` in there, which means it's running on an ARM chip — the same type of chip that's in your phone!
+
 ---
 
 ### Lesson 8.4 — Enable I2C (for the OLED display)
+
+The OLED display talks to the Pi using a communication system called **I2C** (say "eye-squared-see"). Think of I2C like a two-wire walkie-talkie — one wire carries a clock signal (the beat), and the other carries data (the message). The Pi can talk to multiple devices over those same two wires, which is why wiring is so simple. But this feature is turned off by default on the Pi — we need to flip it on using the Pi's configuration tool.
 
 ```bash
 sudo raspi-config
@@ -201,9 +223,15 @@ sudo i2cdetect -y 1
 
 You should see `3c` appear in the grid — that's your OLED display!
 
+**What you should see:** The `i2cdetect` command prints a grid of numbers. Most cells show `--` (nothing there), but one cell should show `3c`. That hex address `0x3c` is the OLED's "name" on the I2C bus — proof that the Pi can see and talk to your display. If you see `--` everywhere, double-check your wiring (power off first!).
+
+> **Try this!** Connect the OLED display but leave out one of the data wires (SDA or SCL), then run `i2cdetect` again. You'll see `--` where `3c` used to be. Now put the wire back and run it again — `3c` reappears! This is a great way to understand why every single wire in the diagram matters.
+
 ---
 
 ### Lesson 8.5 — Install Required Software
+
+A virtual environment (`venv`) is like a private backpack for your project's Python libraries. Instead of installing everything globally (where different projects might fight over versions), each project gets its own backpack. That way, if one project needs version 1 of a library and another needs version 2, they never interfere. After activating the venv, everything you `pip install` goes into that backpack — not the system Python.
 
 First, create a project folder with a virtual environment so all packages stay tidy:
 
@@ -240,14 +268,20 @@ curl -fsSL https://ollama.com/install.sh | sh
 ollama pull llama3.2:1b
 ```
 
+**What you should see:** The `pip3 install` commands scroll through download and install messages, ending with "Successfully installed..." for each package. The `ollama pull` command shows a download progress bar — the model is about 1–2 GB, so this might take several minutes on Wi-Fi. When it finishes you'll see "success" and the model name with its size. That AI model is now stored right on the Pi!
+
 > **Every time you SSH into the Pi** to work on this project, remember to activate
 > the venv first: `source ~/tombstone/venv/bin/activate`
+
+> **Try this!** Run `pip3 list` after installing everything to see all the packages in your virtual environment. You'll notice packages you didn't install directly — those are *dependencies*, libraries that the libraries you installed depend on. The whole chain got pulled in automatically!
 
 ---
 
 ## Week 9: Building the Tombstone Software
 
 ### Lesson 9.1 — Test the OLED Display
+
+Before building the full program, we always test each piece separately — this is called **unit testing**, and it's a habit that saves hours of debugging later. If something breaks in the full program, you'll already know each individual piece works, so you can focus on where the pieces connect. This test script draws text onto the tiny 128×64 pixel display — 128 pixels wide and 64 pixels tall, which is tiny by phone standards but perfect for a tombstone! The code creates an in-memory "canvas" (an image), draws on it, then pushes that image to the OLED hardware.
 
 Create `test_display.py`:
 
@@ -285,9 +319,15 @@ print("Check your display!")
 python3 test_display.py
 ```
 
+**What you should see:** Three lines of white glowing text appear on the tiny OLED — "HELLO!" near the top, "I am alive!" in the middle, and "...or am I?" near the bottom. The display stays lit after the script finishes. The terminal prints "Check your display!" to confirm the code ran without errors. If the display stays blank, run `sudo i2cdetect -y 1` to check wiring.
+
+> **Try this!** Edit the script and change what the text says. Try adding a fourth line: `draw.text((0, 52), "BOO!", fill=255)`. Then try changing `fill=255` to `fill=0` on one line — what happens? (Hint: 255 means "white pixel on", 0 means "black pixel off".) You can also try drawing a rectangle: `draw.rectangle([0, 0, 127, 63], outline=255)` to put a spooky border around everything!
+
 ---
 
 ### Lesson 9.2 — Test the Button
+
+Physical buttons are surprisingly tricky! When you press a button, the metal contacts don't make one clean connection — they "bounce" and make dozens of tiny connections and disconnections in a few milliseconds. Without **debouncing**, your code would see one press as 20 presses. That's why the code uses `pull_up_down=GPIO.PUD_UP` (a pull-up resistor that keeps the signal at HIGH until the button pulls it LOW) and a short `time.sleep(0.2)` after detecting a press. GPIO stands for **General Purpose Input/Output** — these are the physical pins on the Pi you connected your button wire to.
 
 Create `test_button.py`:
 
@@ -313,9 +353,15 @@ except KeyboardInterrupt:
     print("Done")
 ```
 
+**What you should see:** The terminal prints "Press the button! (Ctrl+C to quit)" and then waits. Each time you physically press the button on the breadboard, a new line appears: "Button pressed!" When you press and hold, you might see it printed once or twice — the debounce `sleep` is preventing it from printing hundreds of times. Press Ctrl+C to stop the script and you'll see "Done" printed cleanly.
+
+> **Try this!** Remove the `time.sleep(0.2)` debounce line and press the button once. See how many times "Button pressed!" appears from a single click? That's button bounce in action! Put the sleep back — now try pressing and holding for 2 seconds versus a quick tap. Can you make it print "Button pressed!" exactly 3 times in a row by pressing exactly 3 times? You're debugging hardware!
+
 ---
 
 ### Lesson 9.3 — Test Ollama AI Message Generation
+
+Now for the coolest part — asking the AI to be creative for us! This test calls Ollama using Python, exactly like you did in Module 3, but now you're running the AI model right on the Pi itself. No internet needed! The AI model is a file stored on the Pi's SD card, and the Pi's processor runs it locally. We're using `llama3.2:1b` — the "1b" means it has 1 billion parameters (basically 1 billion little knobs that were tuned during training). It's the smallest Llama model, which fits in the Pi's limited 2GB of RAM.
 
 Create `test_ai.py`:
 
@@ -348,9 +394,23 @@ for i in range(3):
     print(f"Epitaph {i+1}: {generate_epitaph()}")
 ```
 
+**What you should see:** The script pauses for a few seconds while the Pi thinks (you might hear the Pi's processor working harder — it gets warm!), then prints three unique tombstone epitaphs like:
+
+```
+Epitaph 1: Here lies Phil McCracken — He drilled too deep
+Epitaph 2: R.I.P. Sandy Shore — Washed away too soon
+Epitaph 3: Ann Tique — Old before her time
+```
+
+Every run produces different results because the AI is creative! If you see an error about the model not being found, run `ollama pull llama3.2:1b` again.
+
+> **Try this!** Call `generate_epitaph("your own name")` and see what the AI comes up with for you specifically! Then try passing in silly made-up names like `"I.M. Dead"` or `"Barry Alive"` and see if the AI plays along with the pun. Also try changing `range(3)` to `range(10)` to get 10 epitaphs at once — how long does it take? That gives you a sense of how fast (or slow) the little Pi can run AI!
+
 ---
 
 ## Week 10: The Full Tombstone Program
+
+Now all three pieces — display, button, and AI — come together into one program that runs forever. This is what software engineers call **integrating** separate components. The main program uses **threading** (running two things at the same time) so that when the AI is thinking and generating a new epitaph, the display can still respond to button presses without freezing. Think of threading like cooking two dishes at once — you start the pasta boiling, then chop vegetables while you wait, instead of just staring at the pot. The program has a clean structure too: setup functions, display functions, and a main loop — organized just like a real production program.
 
 ### The Complete `tombstone.py`
 
@@ -556,9 +616,25 @@ if __name__ == "__main__":
     main()
 ```
 
+Each function in this program has one job — `setup_display()` sets up the screen, `generate_epitaph()` asks the AI, `show_message()` draws text, `wrap_text()` handles splitting long messages across lines. When a program is organized this way, fixing bugs is much easier because you know exactly where to look.
+
+**What you should see when you run this:**
+
+1. The terminal prints "Starting AI Tombstone Display..."
+2. The OLED shows the splash screen: "AI TOMBSTONE GENERATOR" with a border and "Press button or wait for magic!"
+3. After 3 seconds, the display switches to "Consulting the spirits..." (the loading screen)
+4. A few seconds later, a real AI-generated tombstone epitaph appears on the OLED — with a border, "R.I.P." header, a dividing line, and the message below it
+5. Every 10 seconds, it automatically cycles to a new epitaph
+6. Press the button any time to immediately skip to a new one
+7. The terminal prints each epitaph as it's generated so you can read a log of everything
+
+> **Try this!** Change `CYCLE_SECONDS = 10` to `CYCLE_SECONDS = 5` for faster cycling, or `CYCLE_SECONDS = 30` for slower. Then try changing the title in `show_message(oled, epitaph)` from the default `"R.I.P."` to something else — like `"BOO!"` or your own name. Every setting at the top of the file is a knob you can turn!
+
 ---
 
 ## Running the Program
+
+Now let's actually launch this thing! The Pi is a real computer running Linux, so starting a Python program works the same way you've been doing it all summer — but with a few extra tricks to keep it running even when you close your laptop.
 
 ```bash
 # Run manually (stops when you close the terminal or SSH session)
@@ -575,6 +651,8 @@ nohup python3 tombstone.py &
 
 You'll see a number printed (like `[1] 1234`) — that's the **process ID (PID)**.
 
+**What you should see:** After the `&` sends the program to the background, you get your command prompt back immediately while the tombstone display keeps running on the OLED. The number in brackets (like `[1] 12345`) is the process ID — every running program on Linux gets a unique number, like a name tag.
+
 ```bash
 # See if it's running (look for tombstone.py in the list)
 ps aux | grep tombstone.py
@@ -585,6 +663,10 @@ kill $(pgrep -f tombstone.py)
 
 > `pgrep -f tombstone.py` finds the process ID automatically so you don't have
 > to remember the number. `kill` sends a signal to stop that process.
+
+**What you should see after `ps aux | grep tombstone.py`:** A line of output showing the process with the path to `tombstone.py`. If nothing shows up, the program has already stopped (check for errors in the `nohup.out` log file that was automatically created).
+
+> **Try this!** Run `ps aux | grep python3` (without the filename) to see ALL Python programs running on the Pi. You'll probably also see the Ollama server process listed separately. These are all independent programs running simultaneously — that's what a real operating system does: runs many programs at once!
 
 ---
 
@@ -597,6 +679,8 @@ register it as a **systemd service**.
 **What is systemd?**
 systemd is Linux's startup manager — it controls which programs run when the Pi boots.
 You create a small file that says "run this program on startup, and restart it if it crashes."
+
+Think of systemd like a restaurant manager — when the restaurant opens (Pi boots), the manager makes sure all the right staff show up (services start). If a chef walks out (a service crashes), the manager immediately calls in a replacement (`Restart=always`). This means even if your tombstone program crashes because of a weird AI response, it automatically restarts within seconds — no SSH needed.
 
 ```bash
 # Edit the system service file
@@ -631,7 +715,11 @@ sudo systemctl start tombstone
 sudo systemctl status tombstone
 ```
 
+**What you should see:** The `systemctl status tombstone` command shows a green dot and the word "active (running)" if everything worked. You'll also see the last few lines of output from the program. Now unplug the Pi, wait 5 seconds, plug it back in — about 30-60 seconds later the tombstone display should spring to life all on its own!
+
 Now every time you plug in the Pi, the tombstone display starts automatically!
+
+> **Try this!** Run `sudo systemctl stop tombstone` to stop the service. Watch the OLED display go dark. Then run `sudo systemctl start tombstone` and watch it come back to life. Now try `sudo systemctl restart tombstone` — it stops AND starts in one command. These three commands (`stop`, `start`, `restart`) are how DevOps engineers manage services on real production servers that millions of people use!
 
 ---
 

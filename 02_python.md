@@ -225,6 +225,8 @@ You'll use `pip3 install` every time a program needs a library that isn't built 
 
 ### Lesson 3.1 — Hello, World!
 
+This is your very first Python program — and it's the same first program almost every coder ever writes. Think of it like pressing the "Start Game" button for the first time. Every single app, game, and website was built by someone who started exactly here. It feels small, but you're about to make the computer do something YOU told it to do. That's huge.
+
 Create a file called `hello.py`:
 
 ```python
@@ -232,18 +234,30 @@ print("Hello, World!")
 print("My name is Python!")
 ```
 
+Each `print()` line is one instruction — Python reads your file from top to bottom and runs them in order, just like reading a recipe.
+
 Run it in your terminal:
 ```bash
 python3 hello.py
 ```
 
+**What you should see:**
+```
+Hello, World!
+My name is Python!
+```
+
+If you see those two lines, your Python is working perfectly. You just wrote and ran your first real program!
+
 `print()` is a **function** — it displays text on the screen.
+
+> **Try this!** Add a third `print()` line that says your own name. What happens if you put a number inside `print()` instead of text? Try `print(42)` and see!
 
 ---
 
 ### Lesson 3.2 — Variables
 
-A **variable** is like a labeled box that stores information.
+Variables are like labeled boxes in your bedroom — you put something inside, give it a name, and come back for it later. In Minecraft, imagine a chest labeled "diamonds" — that's a variable. You can check what's inside, swap the contents, or use it to build something. Variables are how your program remembers things while it runs.
 
 ```python
 # Storing text (called a "string")
@@ -259,6 +273,8 @@ print("My name is", my_name)
 print("I am", my_age, "years old")
 print("I live in", my_city)
 ```
+
+Notice how Python prints the value stored inside each variable — not the word "my_name" but the actual text "Alex". The variable name is just the label on the box.
 
 **Types of data:**
 
@@ -277,9 +293,15 @@ print(type(3.14))       # <class 'float'>
 print(type(True))       # <class 'bool'>
 ```
 
+Python tells you exactly what kind of data you're working with — this helps you avoid mistakes like trying to add a number to a word.
+
+> **Try this!** Create a variable called `favourite_game` and store your favourite game's name in it. Then `print()` it. Now try changing the value and printing again — variables can be updated any time!
+
 ---
 
 ### Lesson 3.3 — Math and Operators
+
+Python is an incredibly powerful calculator that never makes arithmetic mistakes. Every game uses math behind the scenes — your character's health bar, score, damage, distance, speed. When you upgrade a weapon in a game, the code is doing math exactly like this. Let's learn the operations Python can do.
 
 ```python
 # Basic math
@@ -298,12 +320,18 @@ left = apples - eaten
 print("Apples left:", left)
 ```
 
+The `%` modulo operator is one programmers use all the time — it's great for figuring out if a number is odd or even, or when something should repeat every N turns.
+
 **Challenge:** Calculate how many seconds are in a day.
 (Hint: 60 seconds × 60 minutes × 24 hours)
+
+> **Try this!** After solving the challenge, calculate how many seconds old you are (your age in years × 365 × 24 × 60 × 60). The number will be huge — computers handle big numbers no problem!
 
 ---
 
 ### Lesson 3.4 — Getting Input From the User
+
+So far your programs always do the same thing every time. But real apps react to YOU — they ask for your name, your choice, your answer. `input()` is how Python pauses and waits for the user to type something. Think of every video game menu where you pick "New Game" or enter your player name — that's input in action.
 
 ```python
 name = input("What is your name? ")
@@ -315,11 +343,25 @@ next_year = age + 1
 print("Next year you will be", next_year)
 ```
 
+Notice that `input()` always hands you back text, even if the user typed a number. That's why we use `int(age)` to convert it — without that step, Python would refuse to add 1 to it.
+
 > `input()` always gives you text. If you want a number, use `int()` or `float()` to convert it.
+
+**What you should see:**
+```
+What is your name? Alex
+Hello, Alex !
+How old are you? 9
+Next year you will be 10
+```
+
+> **Try this!** Ask for two numbers as input, convert both with `int()`, and print their sum. What happens if someone types "banana" instead of a number? (You'll learn how to handle that crash in Lesson 5.4!)
 
 ---
 
 ### Lesson 3.5 — If / Elif / Else (Making Decisions)
+
+Every game needs decisions: did you win or lose? Is the enemy in range? Do you have enough gold to buy that sword? `if` statements are how programs make choices — they check a condition, and if it's true, they run a block of code. This is what makes programs feel intelligent and reactive, not just boring scripts.
 
 ```python
 score = int(input("Enter your test score: "))
@@ -334,6 +376,14 @@ elif score >= 60:
     print("D — You can do better")
 else:
     print("F — Let's study more!")
+```
+
+Python checks each condition from top to bottom and runs the first one that matches — then skips the rest. The `else` at the bottom is the catch-all "none of the above" option.
+
+**What you should see** (if you enter 85):
+```
+Enter your test score: 85
+B — Great job!
 ```
 
 **Comparison operators:**
@@ -363,9 +413,15 @@ if not has_permission:
     print("You need permission first")
 ```
 
+`and` means BOTH conditions must be true. `or` means AT LEAST ONE must be true. `not` flips true to false and false to true — like a toggle switch.
+
+> **Try this!** Write a program that asks "How many lives do you have?" and prints "Game Over!" if it's 0, "Danger zone!" if it's 1, and "You're good!" for anything else. Add an `and` check: only give the "Danger zone!" message if lives is 1 AND the player has been playing for more than 5 minutes (just use another `input()` for minutes).
+
 ---
 
 ### Lesson 3.6 — Loops: Doing Things Many Times
+
+Imagine if every enemy in a game had to be coded one by one — that would take forever! Loops let you repeat actions automatically, as many times as you want. They're one of the most powerful ideas in programming. Spawning 100 enemies, drawing a grid, checking every item in your inventory — all loops.
 
 **For loop** — repeat a set number of times:
 
@@ -388,6 +444,17 @@ for letter in word:
     print(letter)
 ```
 
+`range(5)` gives you the numbers 0, 1, 2, 3, 4 — notice it stops BEFORE 5. That's because programmers count from 0.
+
+**What you should see** (for `range(5)` loop):
+```
+Count: 0
+Count: 1
+Count: 2
+Count: 3
+Count: 4
+```
+
 **While loop** — repeat until something is false:
 
 ```python
@@ -398,6 +465,8 @@ while lives > 0:
 print("Game Over!")
 ```
 
+The while loop keeps going as long as `lives > 0` is true. The moment `lives` hits 0, it stops and prints "Game Over!" — just like a real game.
+
 **Breaking out of a loop:**
 
 ```python
@@ -407,9 +476,15 @@ for i in range(100):
     print(i)
 ```
 
+`break` is the emergency exit for a loop — it stops immediately, even if there were more repetitions planned.
+
+> **Try this!** Use a `for` loop to print a countdown from 10 to 1, then print "BLAST OFF!" after the loop ends. (Hint: `range(10, 0, -1)` counts backwards!)
+
 ---
 
 ### Mini Project: Multiplication Table Generator
+
+You've learned variables, loops, and f-strings — now combine them into something actually useful. This project generates a full times table for any number instantly. Your teacher would have to write it on the board, one line at a time. Your program does it in milliseconds. That's the power of loops.
 
 ```python
 number = int(input("Which multiplication table? "))
@@ -421,7 +496,21 @@ for i in range(1, 13):
     print(f"{number} x {i:2} = {result}")
 ```
 
+The `:2` inside the f-string is a formatting trick — it pads the number with a space so all the equals signs line up neatly in a column.
+
+**What you should see** (if you enter 7):
+```
+--- 7 Times Table ---
+7 x  1 = 7
+7 x  2 = 14
+7 x  3 = 21
+...
+7 x 12 = 84
+```
+
 **Super Challenge:** After printing the table, ask the user a random question from it and check if they get it right. You'll need `import random` and `random.randint(1, 12)` to pick a random number — you'll learn exactly how `import` works in Week 5, but give it a try now!
+
+> **Try this!** Change `range(1, 13)` to `range(1, 21)` to make a 20-times table. Then try generating tables for BOTH 6 and 7 by putting the whole loop inside another loop: `for number in [6, 7]:`.
 
 ---
 
@@ -429,7 +518,7 @@ for i in range(1, 13):
 
 ### Lesson 4.1 — Lists
 
-A **list** stores multiple items in one variable.
+A list is like your game inventory — one container that holds many items. In Minecraft, your hotbar is a list: item 0, item 1, item 2... up to item 8. Lists let you store lots of things together and loop through them one by one. Without lists, you'd need a separate variable for every single item — that gets messy fast.
 
 ```python
 # Creating a list
@@ -457,6 +546,8 @@ for fruit in fruits:
     print("I like", fruit)
 ```
 
+After all those changes, your list now contains `["apple", "blueberry", "mango", "orange"]` — cherry is gone and blueberry replaced banana. You can always check a list's current state with `print(fruits)`.
+
 **Useful list operations:**
 
 ```python
@@ -469,11 +560,15 @@ print(sum(numbers))        # 31
 print(numbers.count(1))    # 2 (how many times 1 appears)
 ```
 
+These built-in helpers save you from having to write your own sorting or searching code — Python already did the hard work for you.
+
+> **Try this!** Make a list of 5 of your favourite games. Print the first one, the last one (using `-1`), and then use a loop to print them all numbered (1, 2, 3...). Then use `sorted()` to print them in alphabetical order!
+
 ---
 
 ### Lesson 4.2 — Dictionaries
 
-A **dictionary** stores information as key-value pairs (like a real dictionary: word → definition).
+A dictionary is like a contact book — you look up a name and get their phone number. Or like a Pokédex: you look up "Pikachu" and get all its stats. Dictionaries are perfect when you want to store information about one thing with many different properties. Instead of having separate variables for name, age, and score, you bundle them all together with labels.
 
 ```python
 # Create a dictionary
@@ -503,11 +598,15 @@ if "name" in person:
     print("Found a name!")
 ```
 
+When you loop through `.items()`, Python gives you each key-value pair one at a time — perfect for printing out all the info about something like a character stats screen.
+
+> **Try this!** Create a dictionary for your favourite video game character with keys like `"name"`, `"health"`, `"weapon"`, and `"level"`. Print each stat on its own line. Then change the `"level"` to a higher number and print it again to show a "level up!"
+
 ---
 
 ### Lesson 4.3 — Functions: Reusable Code Blocks
 
-A **function** is a named block of code you can call any time.
+Imagine if every time you wanted to jump in a video game, the game had to re-describe jump physics from scratch. That would be insane — instead, "jump" is one action you can trigger whenever you want. Functions work the same way. You write the code once, give it a name, and call it as many times as you like. This is how real software is built — not one giant mess of code, but organised, named chunks that each do one job.
 
 ```python
 # Define a function
@@ -520,6 +619,8 @@ say_hello()
 say_hello()   # You can call it as many times as you want
 ```
 
+The `def` keyword means "define a function." Everything indented underneath it belongs to the function. Calling `say_hello()` runs all that code instantly — twice here!
+
 **Functions with parameters (inputs):**
 
 ```python
@@ -529,6 +630,8 @@ def greet(name):
 greet("Alex")
 greet("Jordan")
 ```
+
+Parameters are like function settings — `name` is a slot you fill in when you call the function. `greet("Alex")` and `greet("Jordan")` run the same code but with different values plugged in.
 
 **Functions that return values:**
 
@@ -544,6 +647,8 @@ print(answer)    # 8
 print(add(10, 20))   # 30
 ```
 
+`return` sends a value back out of the function so you can use it elsewhere — like a vending machine: you put in a choice, it gives you back a snack.
+
 **Functions with default values:**
 
 ```python
@@ -554,9 +659,15 @@ describe_pet("Max")           # Max is a dog
 describe_pet("Whiskers", "cat")  # Whiskers is a cat
 ```
 
+Default values are fallback options — if you don't specify `animal`, Python uses `"dog"` automatically. This lets functions be flexible without needing every detail every time.
+
+> **Try this!** Write a function called `calculate_damage(attack, defense)` that returns `attack - defense` (but never less than 0). Call it with different numbers and print the results. This is literally how damage calculation works in RPG games!
+
 ---
 
 ### Lesson 4.4 — f-Strings (Fancy Text Formatting)
+
+Plain `print()` with commas works, but f-strings are cleaner and much more powerful — they let you drop variables and even math directly into text, exactly where you want them. Professional Python developers use f-strings constantly. Once you try them, you'll never want to go back.
 
 ```python
 name = "Alex"
@@ -573,9 +684,22 @@ height = 5
 print(f"Area = {width * height}")
 ```
 
+The `f` before the quote is the magic letter — it tells Python "look inside the curly braces `{}` and replace them with real values." The `:.1f` is a formatting code that rounds to 1 decimal place, so `95.7` stays `95.7` but `95.7777` becomes `95.8`.
+
+**What you should see:**
+```
+My name is Alex and I am 9 years old.
+My score was 95.7%
+Area = 50
+```
+
+> **Try this!** Make a "character stats" display using f-strings. Create variables for `hero_name`, `hp`, `attack`, and `gold`, then print a nicely formatted card like `"Hero: Alex | HP: 100 | ATK: 15 | Gold: 250"`. Try formatting gold with commas: `{gold:,}` turns 1000 into `1,000`!
+
 ---
 
 ### Mini Project: Number Guessing Game
+
+Time to build your first real, playable game from scratch! This project uses almost everything from Week 3 and 4: variables, input, if/elif/else, loops, and functions. It's the same kind of logic that powers "Wordle" — make a guess, get a hint, narrow it down. You'll be surprised how fun something this small can be.
 
 > **Note:** This project uses `import random` — a sneak peek at Week 5's modules lesson.
 > Just put it at the top of your file and it works!
@@ -614,11 +738,29 @@ def play_guessing_game():
 play_guessing_game()
 ```
 
+**What you should see** (example run):
+```
+=== Number Guessing Game ===
+I'm thinking of a number between 1 and 100.
+You have 7 guesses. Good luck!
+
+Guess #1: 50
+Too low! Try higher.
+(6 guesses left)
+Guess #2: 75
+Too high! Try lower.
+(5 guesses left)
+```
+
+> **Try this!** After the game ends, wrap the whole thing in a `while True:` loop that asks "Play again? (y/n):" and only breaks if the user types `"n"`. Bonus: keep track of the player's best score (fewest guesses to win) and display it each round!
+
 ---
 
 ## Week 5: Files, Modules, and Building Real Programs
 
 ### Lesson 5.1 — Reading and Writing Files
+
+Everything you've built so far disappears when the program ends. Files are how programs save things permanently — your high score, your to-do list, your progress. Every app you've ever used stores data in files somewhere. Learning to read and write files is the difference between a toy program and a real tool that actually remembers things.
 
 ```python
 # Write to a file
@@ -642,11 +784,17 @@ with open("my_notes.txt", "a") as file:
     file.write("Fourth line added later\n")
 ```
 
+The `"w"` mode creates a new file (or erases an existing one). The `"r"` mode reads it. The `"a"` mode appends — it adds to the end without wiping what's already there. The `with` keyword handles opening and closing the file safely so you never leave it accidentally open.
+
+After running this code, open your terminal and type `cat my_notes.txt` — you'll see the actual file was created with your text inside!
+
+> **Try this!** Write a "high score saver" — ask the player for their name and score, then save both to a file called `scores.txt` using `"a"` mode. Run the program 3 times with different names. Then read and print the file to see all scores collected!
+
 ---
 
 ### Lesson 5.2 — Importing Modules
 
-Python has tons of built-in **modules** — collections of ready-made code.
+Python comes with an enormous toolbox of pre-built code called **modules**. Instead of writing your own random number generator or calendar system, you just `import` one and use it. This is one of the things that makes Python so powerful — millions of hours of work, ready to use in one line. It's like having cheat codes for programming.
 
 ```python
 # Random numbers
@@ -681,12 +829,18 @@ print(os.listdir("."))     # Files in current folder
 os.makedirs("new_folder", exist_ok=True)
 ```
 
+`time.sleep(2)` pauses your program for exactly 2 seconds — great for countdown timers, dramatic pauses, or animations in text games. `os.listdir(".")` shows you the contents of the current folder, just like `ls` in Linux but from inside Python.
+
+> **Try this!** Import `random` and `time`, then make a "countdown" program: count down from 5 to 1, sleeping 1 second between each number, then print "GO!" and pick a random item from a list of challenges like `["Do 10 pushups!", "Sing a song!", "Do a dance move!"]`.
+
 ---
 
 ### Lesson 5.3 — Debugging: Fixing Broken Code
 
 Every programmer — beginner or expert — writes code that breaks. The skill isn't
 avoiding errors, it's reading them and fixing them quickly.
+
+Debugging is actually a detective skill. You're looking for clues about what went wrong. The good news is Python leaves very clear clues — it tells you exactly which line caused the problem and what type of error it was. Once you learn to read those messages, bugs become puzzles instead of disasters.
 
 #### Reading a Traceback
 
@@ -742,6 +896,8 @@ result = calculate_total([10, 20, 30])
 print("Result:", result)
 ```
 
+The `DEBUG:` labels help you spot these temporary prints so you remember to remove them. Once your bug is fixed, delete all the debug lines and test one more time.
+
 Once you fix the bug, remove the `DEBUG:` print lines.
 
 ---
@@ -784,11 +940,13 @@ When your code breaks, follow these steps:
 **Most bugs are one of:** a typo, a wrong indent, using the wrong variable name,
 or expecting the wrong type (number vs text).
 
+> **Try this!** Intentionally break a working program three different ways: delete a colon after an `if`, misspell a variable name, and try to `print(5 + "five")`. Read each error message carefully. After a few times, you'll start recognising these errors instantly — like a pro!
+
 ---
 
 ### Lesson 5.4 — Error Handling
 
-Programs crash when something goes wrong. **Try/except** catches errors gracefully.
+What happens when your program crashes while a real user is using it? It looks bad and confuses people. `try/except` is like a safety net — it catches errors before they crash the program and lets you respond gracefully instead. Every professional app uses error handling. Think of it as the "Game Over" screen instead of the whole game freezing up.
 
 ```python
 # Without error handling — this crashes:
@@ -807,9 +965,29 @@ finally:
     print("This runs no matter what.")
 ```
 
+Python tries the code inside `try:`. If something goes wrong, it jumps to the matching `except:` block instead of crashing. `finally:` always runs at the end — whether it worked or not. This is useful for cleanup tasks like closing files.
+
+**What you should see** (if you type "banana"):
+```
+Enter a number: banana
+That's not a number! Please enter digits only.
+This runs no matter what.
+```
+
+**What you should see** (if you type 7):
+```
+Enter a number: 7
+Your number doubled is 14
+This runs no matter what.
+```
+
+> **Try this!** Go back to Lesson 3.4 where you converted input to `int()`. Wrap that conversion in a `try/except ValueError:` block. Now if someone types "hello" instead of a number, print a friendly message and ask them to try again — use a `while True:` loop that only `break`s when valid input is received!
+
 ---
 
 ### Mini Project: Mad Libs Story Generator
+
+Mad Libs is a classic game where you fill in random words and end up with a hilarious story. This project is all about functions, f-strings, and user input working together. It's also great practice for `input()` — you'll call it 8 times and store all the answers in variables before building the story at the end. The result is different every single time someone plays it.
 
 ```python
 def mad_libs():
@@ -845,9 +1023,26 @@ THE END.
 mad_libs()
 ```
 
+**What you should see** (example with your inputs filled in):
+```
+==================================================
+
+One SILLY day, ALEX decided to SPRINT to THE MOON.
+On the way, they saw a PURPLE ELEPHANT eating 47
+pieces of PIZZA. "ALEX!" cried the ELEPHANT...
+
+THE END.
+
+==================================================
+```
+
+> **Try this!** Write your own second story template with completely different blanks — maybe a space adventure, a cooking disaster, or a sports commentary. Put both stories in a list and use `random.choice()` to pick which one to use each time!
+
 ---
 
 ### Mini Project: Simple To-Do List
+
+This is the most "real-world" project in Module 2 — it's basically a mini app. It combines everything: functions, lists, files, loops, input, and error handling. The to-do list saves to a file so your tasks are still there even after you close the program. This is exactly how simple apps like reminder tools work under the hood.
 
 ```python
 import os
@@ -913,6 +1108,27 @@ def main():
 
 main()
 ```
+
+**What you should see** when you run it:
+```
+=== TO-DO LIST ===
+  (no tasks yet)
+
+1) Add a task
+2) Remove a task
+3) Quit
+
+Choice: 1
+New task: Learn Python loops
+Task added!
+
+=== TO-DO LIST ===
+  1. Learn Python loops
+```
+
+After you quit and run the program again, your tasks are still there — because `load_todos()` reads them back from the file at startup!
+
+> **Try this!** Add a fourth menu option: `"4) Mark a task as done"`. When selected, ask for the task number, then add `" ✓"` to the end of that task and save. Tasks with a checkmark will look different in the list — a simple but satisfying feature!
 
 ---
 

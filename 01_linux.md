@@ -31,6 +31,8 @@ like what hackers use in movies — because it IS what hackers (and engineers) u
 
 ### Lesson 1.1 — Opening the Terminal
 
+The terminal is your direct line to the computer. Think of it like a chat window — except instead of texting a friend, you're texting the computer itself. It does exactly what you say, instantly. No clicking through menus. No waiting. Just you and the machine talking. This is how professional engineers and hackers in movies get things done — and now you will too.
+
 On most Linux systems, press `Ctrl + Alt + T` to open a terminal.
 You'll see something like:
 
@@ -46,9 +48,15 @@ aaa@mycomputer:~$
 > Think of the `$` prompt like a video game waiting for your input.
 > You type a command, the game responds. You're in control.
 
+**What you should see:** A blinking cursor after the `$`. That means the terminal is alive and ready. If you see it, you're in!
+
+**Try this!** Look at your username in the prompt. That's your Linux identity. Try pressing **Enter** without typing anything — the computer just shows you a new prompt line. It's patiently waiting. It never gets bored.
+
 ---
 
 ### Lesson 1.2 — Your First Commands
+
+Every journey starts with a first step. These four commands are the handshake between you and Linux. They don't DO anything dangerous — they just ask the computer questions. `echo` makes the computer speak. `whoami` tells you your identity. `pwd` tells you where you are. `date` tells you when it is. Simple, powerful, fun.
 
 Type each command and press **Enter**. Read what happens.
 
@@ -66,6 +74,17 @@ pwd
 date
 ```
 
+**What you should see:** Something like this (your details will be different):
+
+```
+Hello, I am a Linux user!
+aaa
+/home/aaa
+Thu Jun 26 10:32:15 UTC 2026
+```
+
+Each command answered your question instantly. That's the power of the terminal — direct answers, no loading screens.
+
 **Challenge 1:** Make the computer say your name using `echo`.
 
 **Challenge 2 (Hacker Edition):** Can you make the terminal say this?
@@ -77,12 +96,16 @@ date
 ```
 Hint: you need four `echo` commands, one for each line.
 
+**Try this!** Run `echo $USER` — that's a special variable Linux already knows. It automatically contains your username. Variables in Linux always start with `$`. Keep that in mind for later!
+
 ---
 
 ### Lesson 1.3 — Files and Directories
 
 Everything in Linux lives in **directories**.
 Think of it like a filing cabinet.
+
+In Minecraft, you have chests organized by what's inside — one for wood, one for tools, one for food. Linux directories are exactly like that. Every file lives in a folder (called a directory), and folders can be inside other folders. The `ls` command is how you peek inside a chest and see what's there.
 
 ```bash
 # List files and directories in the current directory
@@ -94,6 +117,8 @@ ls -l
 # List including hidden files (files starting with a dot)
 ls -a
 ```
+
+**What you should see:** Running plain `ls` shows you the names of files and folders. Running `ls -l` shows you a detailed table. Running `ls -a` reveals hidden files that start with a dot (`.`) — those are usually settings files that stay out of the way.
 
 **What you'll see in `ls -l`:**
 
@@ -130,9 +155,13 @@ rwx  r-x  r-x
 └── owner (you): can read, write, AND run
 ```
 
+**Try this!** Run `ls -lh` — the `-h` flag makes file sizes human-readable (like `4.0K` instead of `4096`). Flags are like cheat codes you add to commands!
+
 ---
 
 ### Lesson 1.4 — Moving Around
+
+If directories are like rooms in a building, then `cd` is how you walk between them. Right now you start in your home directory (the `~` room). The whole Linux system is one giant building of rooms inside rooms. You can walk forward into a room, back out to the hallway (`..`), or teleport straight home (`~`) no matter where you are. Navigating the terminal is like reading a map — once you know where you are, you know where to go.
 
 ```bash
 # Change directory (go into a directory)
@@ -148,11 +177,17 @@ cd ~
 cd /
 ```
 
+**What you should see:** After each `cd` command, run `pwd` to confirm where you ended up. After `cd ~` you'll see `/home/yourname`. After `cd /` you'll see just `/` — that's the very top of the entire filesystem, like the lobby of the building.
+
 **Challenge:** Start at home (`~`), go into `/tmp`, list the files, then go back home.
+
+**Try this!** After `cd /`, run `ls` to see the top-level directories of Linux. You'll see folders like `bin`, `home`, `etc`, `var`. Every file on the entire computer lives somewhere under `/`. It's like seeing the whole map of the building from above!
 
 ---
 
 ### Lesson 1.5 — Making and Removing Things
+
+Now you can do something real — create and destroy. This is where Linux starts to feel like actual power. You're not just looking at things — you're building your own corner of the filesystem. Creating directories is like placing rooms. Creating files is like placing signs. And `rm` is like the TNT of Linux — it blows things up with no warning and no undo. Use it carefully!
 
 ```bash
 # Make a new directory
@@ -184,11 +219,23 @@ rmdir my_cool_directory
 rm -rf my_cool_directory
 ```
 
+**What you should see:** After `cat hello.txt`, you'll see:
+
+```
+This is my first file!
+```
+
+That's text you wrote into a file using `echo` and the `>` symbol. The `>` means "send output INTO this file." It's like pouring water into a cup instead of onto the floor.
+
 > **Safety Rule:** `rm -rf` deletes forever. Always double-check before using it.
+
+**Try this!** Use `echo "more stuff" >> hello.txt` (two `>` symbols instead of one) before you delete the file. Then `cat hello.txt` again. See what happened? Two `>` means APPEND (add to the end). One `>` means OVERWRITE (replace everything). That's a big difference!
 
 ---
 
 ### Lesson 1.6 — Copying and Moving Files
+
+Making things is great — but sometimes you want a backup copy, or you want to rename something. `cp` and `mv` are your tools for that. Think of `cp` like duplicating a Minecraft item using creative mode — you get two of it. Think of `mv` like picking something up and placing it somewhere else — or just giving it a new name. These two commands do a LOT of the everyday work in real engineering.
 
 ```bash
 # Copy a file
@@ -201,11 +248,17 @@ mv old_name.txt new_name.txt
 cp -r my_directory my_directory_backup
 ```
 
+**What you should see:** After `cp original.txt backup.txt`, run `ls` — you'll see both files exist. After `mv old_name.txt new_name.txt`, run `ls` again — the old name is gone, replaced by the new one. The `-r` flag on `cp` means "recursive" — copy the directory AND everything inside it.
+
+**Try this!** Create a file called `test.txt`, write something in it, then copy it to `test_backup.txt`. Now edit `test.txt` using `echo "new content" > test.txt`. Check both files with `cat`. Notice that `test_backup.txt` still has the old content — that's why backups matter!
+
 ---
 
 ## Week 2: Becoming a Power User
 
 ### Lesson 2.1 — Finding Things
+
+What happens when you have hundreds of files and you can't remember where something is? You search! `find` is like using a search bar in Windows — except it works on the terminal and it's incredibly powerful. `grep` is even cooler — it searches INSIDE files for specific words. Imagine being able to search every file on your computer for a single word in under a second. That's what `grep` does. Real engineers use these commands constantly.
 
 ```bash
 # Search for a file by name
@@ -218,11 +271,17 @@ grep "python" my_notes.txt
 grep -r "hello" ~/documents/
 ```
 
+**What you should see:** `find` prints the path to every matching file, like `./documents/hello.txt`. `grep` prints every line in the file that contains your search word, with the filename in front. If nothing matches, it shows nothing — silence means "not found."
+
+**Try this!** Run `grep -r "the" ~/` — this searches for the word "the" in EVERY file in your home directory. It'll probably find a lot of matches! Now try `grep -r -l "the" ~/` — the `-l` flag shows just the filenames instead of every matching line. Much cleaner!
+
 ---
 
 ### Lesson 2.2 — The Manual (Your Superpower)
 
 Every command has a manual. Type `man` before any command:
+
+Here's the secret that separates real engineers from beginners: they don't memorize everything. They know HOW to find answers. The `man` command is a built-in help system for every single Linux command. It's like having the instruction booklet for every tool right there in the terminal. Whenever you see a flag you don't recognize — like `-r` or `-h` — look it up in `man` and you'll understand it in seconds.
 
 ```bash
 man ls
@@ -230,13 +289,19 @@ man echo
 man grep
 ```
 
+**What you should see:** A full-screen document with the command's description, options, and examples. It looks like a book page. Scroll through it to see all the flags available.
+
 Press `q` to quit the manual. Press spacebar to scroll down.
+
+**Try this!** Run `man man` — yes, the manual has a manual for itself! Read the first paragraph. Then press `q` to exit. Now try `ls --help` — many commands also have a quick `--help` flag that gives a shorter summary right in the terminal.
 
 ---
 
 ### Lesson 2.3 — Piping (Chaining Commands Together)
 
 The `|` symbol (called a **pipe**) sends the output of one command into another.
+
+This is one of the coolest ideas in all of computing. Instead of one giant command that does everything, Linux gives you small focused commands and lets you chain them together. It's like a factory assembly line — one machine does step one, hands the result to the next machine, which does step two, and so on. You can build incredibly powerful combinations from simple pieces.
 
 ```bash
 # List files, then filter to only show .txt files
@@ -252,11 +317,17 @@ cat long_file.txt | head -5
 cat long_file.txt | tail -5
 ```
 
+**What you should see:** With `ls -l | grep ".txt"`, only lines containing `.txt` appear — everything else is filtered out. With `cat notes.txt | wc -l`, you get a single number — the total line count of the file. `head -5` shows lines 1 through 5. `tail -5` shows the last 5.
+
+**Try this!** Run `ls -l ~ | wc -l` to count how many items are in your home directory. Then try `ls -l ~ | grep "^d"` — that `^d` means "lines starting with d" which means directories only. You just filtered a list using a pattern!
+
 ---
 
 ### Lesson 2.4 — Permissions
 
 Every file has rules about who can read, write, or run it.
+
+Think of file permissions like the lock system in a video game dungeon. Some doors (files) only you can open. Some doors everyone can walk through. Some are locked to everyone except the admin. Linux uses a simple three-letter system (`rwx`) to control all of this. Understanding permissions means you know who can touch your files — and you can change those rules anytime.
 
 ```bash
 # See permissions
@@ -269,16 +340,22 @@ chmod +x my_script.sh
 chmod 444 important.txt
 ```
 
+**What you should see:** After `chmod +x my_script.sh`, run `ls -l my_script.sh` — you'll see the permissions changed to include `x`. It now shows something like `-rwxr-xr-x` instead of `-rw-r--r--`. That `x` is what lets you run it with `./my_script.sh`.
+
 Permission letters:
 - `r` = read
 - `w` = write
 - `x` = execute (run)
+
+**Try this!** Create a file called `secret.txt` and write something in it. Then run `chmod 000 secret.txt` — that removes ALL permissions from everyone. Try `cat secret.txt` now. You'll get "Permission denied" — even from yourself! Fix it with `chmod 644 secret.txt` to get normal permissions back.
 
 ---
 
 ### Lesson 2.5 — Writing Your First Shell Script
 
 A shell script is a text file full of commands. The computer runs them all in order.
+
+This is huge. Up until now, you've typed one command at a time. A shell script lets you write MANY commands into a file — and run them all at once just by typing the filename. It's like programming a robot with a list of instructions. This is how real system administrators automate boring jobs: instead of typing the same 10 commands every morning, they write a script and run it in one shot.
 
 **Quick nano guide** (nano is the text editor you'll use):
 
@@ -328,6 +405,27 @@ chmod +x my_first_script.sh
 ./my_first_script.sh
 ```
 
+**What you should see:**
+
+```
+===========================
+  Hello from my script!
+===========================
+
+Today is:
+Thu Jun 26 10:45:00 UTC 2026
+
+You are logged in as:
+aaa
+
+You are in this directory:
+/home/aaa
+```
+
+Every line of output came from your script running each command in order — like a playlist playing songs one after another.
+
+**Try this!** Add more lines to your script! Open it with `nano my_first_script.sh` again and add `echo "My hostname is: $(hostname)"` near the bottom. Save, run it again. You can add as many commands as you want — scripts can be thousands of lines long.
+
 ---
 
 ### Lesson 2.6 — Variables and User Input in Shell
@@ -335,6 +433,8 @@ chmod +x my_first_script.sh
 In shell scripts, variables store information just like in Python — but with two differences:
 - **No spaces** around the `=` sign: `name="Alex"` ✓ &nbsp;&nbsp; `name = "Alex"` ✗
 - To **use** a variable, put `$` in front of the name: `$name`
+
+Variables are like labeled boxes. You put something in the box, give it a name, and later you can open that box and use what's inside. The `read` command is magic — it PAUSES your script and waits for the person running it to type something. That's how you make interactive programs that feel like a real app. Think of it like an RPG asking "What is your character's name?"
 
 ```bash
 #!/bin/bash
@@ -351,9 +451,22 @@ my_number=42
 echo "My favorite number is $my_number"
 ```
 
+**What you should see:** The script pauses after "What is your name?" and waits. When you type your name and hit Enter, it greets you with it. Your input becomes the value of `$user_name` — the box now holds your name.
+
+```
+What is your name?
+Alex
+Hello, Alex! Welcome to Linux!
+My favorite number is 42
+```
+
+**Try this!** Add a second question: ask for the user's favorite color and store it in `$favorite_color`. Then print `"Your favorite color is $favorite_color — great choice!"`. You just made a real interactive program!
+
 ---
 
 ### Lesson 2.7 — If/Else in Shell Scripts
+
+Now your scripts can make decisions. This is where programs get smart. An `if` statement is like a fork in the road — the computer checks a condition, and if it's true, it goes left; if it's false, it goes right. You've seen this in Scratch or Python. Shell scripts work the same way, just with slightly different symbols. Once you know `if/else`, your scripts can react differently depending on what the user types.
 
 ```bash
 #!/bin/bash
@@ -368,13 +481,31 @@ else
 fi
 ```
 
+**What you should see:** If you type `9`, the script says "You are younger than 10!" If you type `10` or more, it says "You are 10 or older!" The script reacts to YOUR input. That's a real program.
+
 - `-ge` means "greater than or equal to"
 - `-eq` means "equal to"
 - `-lt` means "less than"
 
+**Try this!** Add an `elif` branch to handle exactly age 10:
+
+```bash
+if [ $age -gt 10 ]; then
+    echo "You are older than 10!"
+elif [ $age -eq 10 ]; then
+    echo "You are exactly 10 — double digits!"
+else
+    echo "You are younger than 10!"
+fi
+```
+
+`elif` means "else if" — a middle option between the first condition and the final `else`. Now your script has THREE possible paths!
+
 ---
 
 ### Lesson 2.8 — Loops in Shell Scripts
+
+What if you need to do the same thing 100 times? You don't type it 100 times — you write a loop. A `for` loop is like a conveyor belt in a factory: you set it up once, and it runs the same action over and over, changing only what's different each time. Loops are one of the most powerful ideas in ALL of programming — master this and you can automate almost anything.
 
 ```bash
 #!/bin/bash
@@ -390,6 +521,20 @@ for file in *.txt; do
 done
 ```
 
+**What you should see:** The first loop prints:
+
+```
+Number: 1
+Number: 2
+Number: 3
+Number: 4
+Number: 5
+```
+
+The second loop finds every `.txt` file in the current directory and prints its name. If you have three `.txt` files, you get three lines. The loop runs once for EACH file automatically.
+
+**Try this!** Change `1 2 3 4 5` to `Monday Tuesday Wednesday Thursday Friday` and change the echo message to `"Day: $i"`. Loops work with words too, not just numbers! Now try counting to 10 by adding more numbers. Or to really level up, use `{1..10}` instead of listing them all — that's a shortcut for "1 through 10."
+
 ---
 
 ## Mini Project: System Info Script
@@ -399,6 +544,8 @@ Build a script that shows:
 2. The date and time
 3. How much disk space is left
 4. The 5 newest files in your home directory
+
+You've learned all the pieces — `whoami`, `date`, `df`, and `ls`. Now you're combining them into a single polished script that gives a complete status report. Real engineers write scripts exactly like this to check server health. Yours will run on your own computer. This is your first real sysadmin tool!
 
 ```bash
 #!/bin/bash
@@ -420,6 +567,43 @@ echo "=============================="
 echo "End of report"
 echo "=============================="
 ```
+
+**What you should see:** A formatted status report that looks like this (your details will vary):
+
+```
+==============================
+   MY COMPUTER STATUS REPORT
+==============================
+
+User:    aaa
+Date:    Thu Jun 26 10:55:00 UTC 2026
+
+-- Disk Space --
+Filesystem      Size  Used Avail Use% Mounted on
+/dev/sda1        50G   12G   36G  25% /home/aaa
+
+-- 5 Newest Files in Home --
+total 48
+drwxr-xr-x  5 aaa aaa 4096 Jun 26 10:30 documents
+-rw-r--r--  1 aaa aaa  128 Jun 26 10:28 notes.txt
+...
+
+==============================
+End of report
+==============================
+```
+
+The `$(command)` syntax is called **command substitution** — it runs a command and drops the output right into your string. Very powerful!
+
+**Try this!** Add a new section to the script that shows your computer's memory usage. Add these lines after the disk space section:
+
+```bash
+echo ""
+echo "-- Memory Usage --"
+free -h
+```
+
+`free -h` shows how much RAM is being used. Now your script is a proper system health dashboard!
 
 ---
 
