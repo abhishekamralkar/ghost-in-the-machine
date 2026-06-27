@@ -46,7 +46,7 @@
 
 4. **Hotbar = RAM** (fast, only 9 slots, gone when you quit). **Chest = Storage** (slower, holds lots, stays saved).
 
-5. **1024 ÷ 5 = 204 songs** (approximately). Actually about 204 songs.
+5. **1024 ÷ 5 ≈ 204 songs** (approximately — some songs are bigger, some smaller).
 
 ---
 

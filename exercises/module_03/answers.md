@@ -312,7 +312,137 @@ print(story)
 
 ---
 
-## Bonus: AI Dungeon Master (key snippets)
+## Bonus 1 — Random Personality
+
+```python
+import ollama
+import random
+
+personalities = [
+    ("Captain CodeBeard",  "You are a pirate who teaches programming. Always talk like a pirate. Say 'Arrr!' a lot. Use nautical metaphors."),
+    ("BLASTER",            "You are an over-the-top excited game show host. EVERYTHING IS AMAZING. Use lots of capitals and exclamation marks!!!"),
+    ("Grognar the Wizard", "You are a 900-year-old grumpy wizard. You find questions tiresome but answer anyway. You complain about modern times."),
+    ("ARIA-7",             "You are a cheerful robot from the year 2350. You find human questions fascinating. Suggest futuristic solutions."),
+    ("Ignathar the Dragon","You are an ancient dragon who has lived 10,000 years. You speak in riddles and metaphors. You find humans amusing."),
+]
+
+chosen_name, chosen_prompt = random.choice(personalities)
+
+print("You are talking to a mystery personality. Can you guess who it is?")
+print("Type 'quit' to give up and see the reveal.\n")
+
+while True:
+    user_input = input("You: ").strip()
+
+    if user_input.lower() == "quit":
+        print(f"\nThe mystery personality was: {chosen_name}!")
+        break
+
+    response = ollama.chat(
+        model="llama3.2",
+        messages=[
+            {"role": "system", "content": chosen_prompt},
+            {"role": "user",   "content": user_input}
+        ]
+    )
+    print(f"Mystery AI: {response['message']['content']}\n")
+```
+
+---
+
+## Bonus 2 — Quiz Generator (Extended)
+
+```python
+import ollama
+import random
+
+def generate_question(topic):
+    prompt = f"""Create one multiple-choice quiz question about "{topic}" for a 5th grade student.
+
+Format EXACTLY like this:
+QUESTION: (the question)
+A) (first choice)
+B) (second choice)
+C) (third choice)
+D) (fourth choice)
+ANSWER: (just the letter)"""
+
+    response = ollama.chat(
+        model="llama3.2",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response["message"]["content"]
+
+def parse_question(raw):
+    lines = raw.strip().split("\n")
+    question, choices, answer = "", [], ""
+    for line in lines:
+        line = line.strip()
+        if line.startswith("QUESTION:"):
+            question = line.replace("QUESTION:", "").strip()
+        elif line.startswith(("A)", "B)", "C)", "D)")):
+            choices.append(line)
+        elif line.startswith("ANSWER:"):
+            answer = line.replace("ANSWER:", "").strip()
+    return question, choices, answer
+
+def get_study_tips(wrong_topics):
+    if not wrong_topics:
+        return "You got everything right — amazing!"
+    topics_str = ", ".join(wrong_topics)
+    response = ollama.chat(
+        model="llama3.2",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a friendly tutor for 9-year-old students. Give short, encouraging study tips."
+            },
+            {
+                "role": "user",
+                "content": f"The student got questions wrong about: {topics_str}. Give 2-3 short study tips to help them improve."
+            }
+        ]
+    )
+    return response["message"]["content"]
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+topic = input("What topic should the quiz be about? ").strip()
+rounds = int(input("How many rounds? (1-5): ").strip())
+
+score = 0
+wrong_topics = []
+
+for i in range(rounds):
+    print(f"\nGenerating question {i+1}...")
+    raw = generate_question(topic)
+    question, choices, correct = parse_question(raw)
+
+    if not question or not choices:
+        print("(Couldn't generate that one, skipping)")
+        continue
+
+    print(f"\nQ{i+1}: {question}")
+    for choice in choices:
+        print(f"  {choice}")
+
+    answer = input("Your answer (A/B/C/D): ").strip().upper()
+
+    if answer == correct:
+        print("Correct!")
+        score += 1
+    else:
+        print(f"Not quite — the answer was {correct}.")
+        wrong_topics.append(topic)
+
+print(f"\n=== FINAL SCORE: {score}/{rounds} ===")
+print("\nStudy tips from your AI tutor:")
+print(get_study_tips(wrong_topics))
+```
+
+---
+
+## Bonus 3 — AI Dungeon Master (key snippets)
 
 ```python
 import ollama

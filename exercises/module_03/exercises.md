@@ -1,7 +1,15 @@
 # Module 3 Exercises — AI with Ollama
 
-Make sure Ollama is running before starting: `ollama serve` in one terminal,
-then open a second terminal for your Python programs.
+Make sure Ollama is running before starting.
+
+Open **two** terminal windows:
+- **Terminal 1:** Start the Ollama server:
+  ```bash
+  ollama serve
+  ```
+  You'll see log messages — leave this running. `ollama serve` is the background process
+  that your Python programs talk to. Without it, Python can't reach the AI.
+- **Terminal 2:** Write and run your Python programs here.
 
 ---
 

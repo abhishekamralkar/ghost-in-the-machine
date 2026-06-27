@@ -31,7 +31,8 @@ Complete each step and tick it off. If something doesn't work, write what error 
 - [ ] Ran `sudo apt update && sudo apt upgrade -y`
 - [ ] Enabled I2C via `raspi-config`
 - [ ] Ran `i2cdetect -y 1` and saw `3c` in the grid
-- [ ] Installed Python libraries: `pip3 install adafruit-circuitpython-ssd1306 pillow RPi.GPIO ollama`
+- [ ] Created project folder and activated venv: `mkdir ~/tombstone && cd ~/tombstone && python3 -m venv venv && source venv/bin/activate`
+- [ ] Installed Python libraries (with venv active): `pip3 install adafruit-circuitpython-ssd1306 pillow RPi.GPIO ollama`
 - [ ] Installed Ollama on the Pi
 - [ ] Downloaded `llama3.2:1b` model
 

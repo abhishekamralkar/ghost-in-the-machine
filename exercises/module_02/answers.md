@@ -340,6 +340,76 @@ hero_atk += 2
 print(f"  ⬆️  LEVEL UP! Max HP is now {hero_max_hp}, Attack is now {hero_atk}")
 ```
 
+**3. Shop between battles**
+```python
+def visit_shop(hero_hp, hero_max_hp, hero_atk, potions, gold):
+    print("\n=== SHOP ===")
+    print(f"  Gold: {gold}")
+    print("  1) Buy potion (heal 20 HP)  — 10 gold")
+    print("  2) Upgrade attack (+2)       — 15 gold")
+    print("  3) Leave shop")
+
+    while True:
+        choice = input("Buy what? ").strip()
+
+        if choice == "1":
+            if gold >= 10:
+                heal = min(20, hero_max_hp - hero_hp)
+                hero_hp += heal
+                potions += 1
+                gold -= 10
+                print(f"  Bought a potion! HP: {hero_hp}, Gold left: {gold}")
+            else:
+                print("  Not enough gold!")
+
+        elif choice == "2":
+            if gold >= 15:
+                hero_atk += 2
+                gold -= 15
+                print(f"  Attack upgraded to {hero_atk}! Gold left: {gold}")
+            else:
+                print("  Not enough gold!")
+
+        elif choice == "3":
+            break
+
+    return hero_hp, hero_atk, potions, gold
+
+# Call visit_shop() between battles, passing hero stats and gold earned
+```
+
+**4. Second harder monster**
+```python
+def play_campaign(hero_name):
+    monsters = [
+        {"name": "Cave Goblin",  "hp": 40, "atk": 8},
+        {"name": "Stone Golem",  "hp": 70, "atk": 13},   # harder second monster
+    ]
+
+    hero_hp     = 50
+    hero_max_hp = 50
+    hero_atk    = 10
+    potions     = 2
+    gold        = 0
+
+    for i, monster in enumerate(monsters):
+        print(f"\n--- Fight {i + 1} ---")
+        hero_hp, hero_atk, potions, gold = battle(
+            hero_name, hero_hp, hero_max_hp, hero_atk, potions, gold,
+            monster["name"], monster["hp"], monster["atk"]
+        )
+        if hero_hp <= 0:
+            print("Campaign over — the hero fell!")
+            return
+        if i < len(monsters) - 1:
+            print(f"\nYou have {gold} gold. Visiting the shop...")
+            hero_hp, hero_atk, potions, gold = visit_shop(
+                hero_hp, hero_max_hp, hero_atk, potions, gold
+            )
+
+    print(f"\n🏆 CAMPAIGN COMPLETE! {hero_name} is a legend!")
+```
+
 **5. Save high score to file**
 ```python
 import os

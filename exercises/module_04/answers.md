@@ -238,6 +238,29 @@ for theme in themes:
 
 ## Section F: Full Program Exercises
 
+**Exercise 9 — Startup Screen Customisation**
+```python
+def show_startup(oled):
+    image = Image.new("1", (DISPLAY_WIDTH, DISPLAY_HEIGHT))
+    draw  = ImageDraw.Draw(image)
+
+    # Outer border
+    draw.rectangle([0, 0, DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1], outline=255)
+
+    # Your custom lines — change these to whatever you like!
+    draw.text((10, 6),  "AI TOMBSTONE",   fill=255)
+    draw.text((12, 18), "by Alex",         fill=255)   # ← put your name here
+    draw.line([1, 30, DISPLAY_WIDTH - 2, 30], fill=255)
+    draw.text((8,  34), "Enter if you",    fill=255)
+    draw.text((8,  46), "dare... 👻",      fill=255)
+
+    oled.image(image)
+    oled.show()
+    time.sleep(3)
+```
+
+Replace the text strings with your own name and a spooky message of your choice!
+
 **Exercise 8 — Message Log**
 ```python
 import os
@@ -258,25 +281,29 @@ Add `log_epitaph(epitaph)` inside `fetch_and_display()` in `tombstone.py` after 
 
 **Exercise 10 — Button Hold to Quit**
 ```python
-# Add to the main loop alongside the existing button detection:
+import sys   # ← add this at the very top of tombstone.py with the other imports
+
+# Replace the existing on_button_press function with this version:
 
 HOLD_QUIT_SECONDS = 3.0
 
 def on_button_press(channel):
     nonlocal button_pressed
     press_start = time.time()
-    # Wait while still held
+
+    # Wait while the button is still held down
     while GPIO.input(channel) == GPIO.LOW:
         if time.time() - press_start >= HOLD_QUIT_SECONDS:
+            # Held for 3+ seconds — quit cleanly
             show_message(oled, "GOODBYE...", title="BYE")
             time.sleep(2)
             oled.fill(0)
             oled.show()
             GPIO.cleanup()
-            import sys
             sys.exit(0)
         time.sleep(0.05)
-    # Short press — generate new message
+
+    # Released quickly — short press means generate a new message
     button_pressed = True
 ```
 
