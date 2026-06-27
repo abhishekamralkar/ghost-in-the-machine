@@ -188,7 +188,7 @@ response = ollama.chat(
 print(response["message"]["content"])
 ```
 
-Run it:
+Run it in your terminal:
 
 ```bash
 python3 ask_ai.py

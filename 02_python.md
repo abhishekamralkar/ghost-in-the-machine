@@ -232,7 +232,7 @@ print("Hello, World!")
 print("My name is Python!")
 ```
 
-Run it:
+Run it in your terminal:
 ```bash
 python3 hello.py
 ```
@@ -1096,7 +1096,7 @@ while again == "y":
     again = input("Play again? (y/n): ").strip().lower()
 ```
 
-Run it:
+Run it in your terminal:
 ```bash
 python3 rpg_battle.py
 ```
