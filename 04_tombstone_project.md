@@ -823,10 +823,12 @@ def scroll_text(oled, text, speed=0.05):
 
 ```
 /home/pi/tombstone/
-├── tombstone.py          ← Main program
+├── tombstone.py          ← Main program (AI epitaph display)
+├── space_indicator.py    ← Bonus project (People in Space)
 ├── test_display.py       ← Display test
 ├── test_button.py        ← Button test
 ├── test_ai.py            ← AI test
+├── test_space_api.py     ← Space API test
 └── logs/
     └── epitaphs.log      ← Save generated messages
 ```
@@ -843,6 +845,8 @@ def scroll_text(oled, text, speed=0.05):
 | Program crashes | Python library missing | Run `pip3 install <library-name>` |
 | Starts but freezes | Pi running out of RAM | Use `llama3.2:1b` (smallest model) |
 | Nothing on boot | Service not enabled | Run `sudo systemctl enable tombstone` |
+| Space indicator shows "No signal" | No Wi-Fi or API unreachable | Check `ping google.com`; wait for network on boot |
+| `ModuleNotFoundError: requests` | requests not installed | Run `pip3 install requests` in venv |
 
 ---
 
@@ -883,6 +887,397 @@ Earn the final badge by completing:
 
 ---
 
+## Bonus Project: People in Space Indicator 🚀
+
+**Inspired by:** [People in Space Indicator](https://projects.raspberrypi.org/en/projects/people-in-space-indicator/0) — Raspberry Pi Foundation
+
+Same hardware as the tombstone. Brand new idea: instead of AI-generated spooky messages, your OLED display shows **live data from space** — who is up there right now, on which spacecraft, and how many people in total. Every time you press the button, it cycles to the next astronaut name. The internet tells you the truth; the OLED displays it.
+
+This project teaches you something new: how to talk to the real internet from Python and pull live data from a web API.
+
+---
+
+### What is an API?
+
+An **API (Application Programming Interface)** is a way for programs to ask websites for data.
+Instead of a human opening a browser and reading a webpage, your Python code sends a request and gets back a neat, structured answer.
+
+```
+Your Python program
+        ↓ "Who is in space right now?"
+  Open Notify API  (api.open-notify.org)
+        ↓ returns data in JSON format
+Your Python program reads it and shows it on the OLED
+```
+
+The **Open Notify API** is a free, public API that tracks the International Space Station and the humans aboard it. No account needed. No key. Just ask and it answers.
+
+The data comes back as **JSON** — a format that looks like Python dictionaries:
+
+```json
+{
+  "number": 7,
+  "people": [
+    {"name": "Oleg Kononenko", "craft": "ISS"},
+    {"name": "Nikolai Chub",   "craft": "ISS"},
+    {"name": "Tracy Caldwell Dyson", "craft": "ISS"}
+  ],
+  "message": "success"
+}
+```
+
+Python's `requests` library fetches this in two lines of code.
+
+---
+
+### Install the Required Library
+
+Make sure your venv is active, then install `requests`:
+
+```bash
+source ~/tombstone/venv/bin/activate
+pip3 install requests
+```
+
+---
+
+### Step 1 — Test the API
+
+Create `test_space_api.py` and run it to see raw data from space:
+
+```python
+import requests
+
+url = "http://api.open-notify.org/astros.json"
+response = requests.get(url)
+data = response.json()
+
+print(f"People in space right now: {data['number']}")
+print()
+
+for person in data["people"]:
+    print(f"  {person['name']} — aboard {person['craft']}")
+```
+
+Run it in your terminal:
+
+```bash
+python3 test_space_api.py
+```
+
+**What you should see:**
+```
+People in space right now: 7
+
+  Oleg Kononenko — aboard ISS
+  Nikolai Chub — aboard ISS
+  Tracy Caldwell Dyson — aboard ISS
+  ...
+```
+
+The exact names will be different depending on who is up there when you run it — this is LIVE data!
+
+> **Try this!** Run it twice, a few minutes apart. The number won't change (crews stay months), but now you know how to pull real-time data from the internet with just a few lines of Python. This is how weather apps, sports score apps, and news apps all work.
+
+---
+
+### Step 2 — Show the Count on the OLED
+
+Create `test_space_display.py` to show the astronaut count on your screen:
+
+```python
+import requests
+import board
+import busio
+import adafruit_ssd1306
+from PIL import Image, ImageDraw
+
+i2c  = busio.I2C(board.SCL, board.SDA)
+oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
+oled.fill(0)
+oled.show()
+
+def show_count(oled, count):
+    image = Image.new("1", (oled.width, oled.height))
+    draw  = ImageDraw.Draw(image)
+    draw.rectangle([0, 0, 127, 63], outline=255)
+    draw.text((4,  4), "IN SPACE NOW:", fill=255)
+    draw.line([1, 14, 126, 14], fill=255)
+    draw.text((50, 24), str(count), fill=255)
+    draw.text((4,  44), "people in space", fill=255)
+    oled.image(image)
+    oled.show()
+
+data  = requests.get("http://api.open-notify.org/astros.json").json()
+count = data["number"]
+show_count(oled, count)
+print(f"Showing: {count} people in space")
+```
+
+Run it in your terminal:
+
+```bash
+python3 test_space_display.py
+```
+
+**What you should see:** The OLED shows a number in the middle of the screen and the words "people in space" below it.
+
+---
+
+### The Full `space_indicator.py`
+
+This is the complete program. Press the button to cycle through astronaut names. The data refreshes from the internet every 5 minutes automatically.
+
+```python
+"""
+Raspberry Pi People in Space Indicator
+Shows who is currently in space on an OLED display.
+Button cycles through astronaut names.
+Data source: Open Notify API — api.open-notify.org
+"""
+
+import time
+import threading
+import requests
+import board
+import busio
+import adafruit_ssd1306
+import RPi.GPIO as GPIO
+from PIL import Image, ImageDraw
+
+# ── Configuration ──────────────────────────────────────────────────────────────
+
+BUTTON_PIN     = 17
+DISPLAY_WIDTH  = 128
+DISPLAY_HEIGHT = 64
+REFRESH_EVERY  = 300      # Fetch new data from API every 5 minutes
+API_URL        = "http://api.open-notify.org/astros.json"
+
+# ── Setup ──────────────────────────────────────────────────────────────────────
+
+def setup_display():
+    i2c  = busio.I2C(board.SCL, board.SDA)
+    oled = adafruit_ssd1306.SSD1306_I2C(DISPLAY_WIDTH, DISPLAY_HEIGHT, i2c)
+    oled.fill(0)
+    oled.show()
+    return oled
+
+def setup_button():
+    GPIO.setmode(GPIO.BCM)
+    GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+# ── API ────────────────────────────────────────────────────────────────────────
+
+def fetch_space_data():
+    """Fetch the current people in space from the Open Notify API."""
+    try:
+        response = requests.get(API_URL, timeout=10)
+        data     = response.json()
+        people   = data["people"]
+        count    = data["number"]
+        return count, people
+    except Exception as e:
+        print(f"API error: {e}")
+        return 0, []
+
+# ── Display ────────────────────────────────────────────────────────────────────
+
+def show_summary(oled, count):
+    """Show total count screen."""
+    image = Image.new("1", (DISPLAY_WIDTH, DISPLAY_HEIGHT))
+    draw  = ImageDraw.Draw(image)
+    draw.rectangle([0, 0, DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1], outline=255)
+    draw.text((4,  4),  "PEOPLE IN SPACE", fill=255)
+    draw.line([1, 14, DISPLAY_WIDTH - 2, 14], fill=255)
+    draw.text((52, 22), str(count),            fill=255)
+    draw.line([1, 36, DISPLAY_WIDTH - 2, 36], fill=255)
+    draw.text((8,  40), "Press button for",   fill=255)
+    draw.text((12, 52), "astronaut names",    fill=255)
+    oled.image(image)
+    oled.show()
+
+def show_astronaut(oled, name, craft, index, total):
+    """Show a single astronaut's name and spacecraft."""
+    image = Image.new("1", (DISPLAY_WIDTH, DISPLAY_HEIGHT))
+    draw  = ImageDraw.Draw(image)
+    draw.rectangle([0, 0, DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1], outline=255)
+    draw.text((4, 4),  f"Astronaut {index}/{total}", fill=255)
+    draw.line([1, 14, DISPLAY_WIDTH - 2, 14], fill=255)
+
+    # Wrap long names across two lines
+    if len(name) <= 16:
+        draw.text((4, 18), name, fill=255)
+    else:
+        parts = name.split()
+        mid   = len(parts) // 2
+        draw.text((4, 16), " ".join(parts[:mid]),  fill=255)
+        draw.text((4, 28), " ".join(parts[mid:]),  fill=255)
+
+    draw.line([1, 42, DISPLAY_WIDTH - 2, 42], fill=255)
+    draw.text((4, 46), f"Craft: {craft}", fill=255)
+    oled.image(image)
+    oled.show()
+
+def show_loading(oled):
+    """Show a 'fetching data' screen."""
+    image = Image.new("1", (DISPLAY_WIDTH, DISPLAY_HEIGHT))
+    draw  = ImageDraw.Draw(image)
+    draw.rectangle([0, 0, DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1], outline=255)
+    draw.text((8,  16), "Contacting",    fill=255)
+    draw.text((4,  28), "mission control", fill=255)
+    draw.text((16, 44), "please wait...", fill=255)
+    oled.image(image)
+    oled.show()
+
+def show_error(oled):
+    """Show an error if the API can't be reached."""
+    image = Image.new("1", (DISPLAY_WIDTH, DISPLAY_HEIGHT))
+    draw  = ImageDraw.Draw(image)
+    draw.rectangle([0, 0, DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1], outline=255)
+    draw.text((4,  8),  "No signal from", fill=255)
+    draw.text((4, 20),  "mission control", fill=255)
+    draw.line([1, 34, DISPLAY_WIDTH - 2, 34], fill=255)
+    draw.text((4, 38),  "Check Wi-Fi and", fill=255)
+    draw.text((4, 50),  "try again.", fill=255)
+    oled.image(image)
+    oled.show()
+
+# ── Main ───────────────────────────────────────────────────────────────────────
+
+def main():
+    print("Starting People in Space Indicator...")
+
+    oled = setup_display()
+    setup_button()
+
+    count        = 0
+    people       = []
+    view_index   = -1     # -1 = show summary screen; 0+ = show that astronaut
+    button_flag  = False
+    last_fetch   = 0
+
+    def on_button(channel):
+        nonlocal button_flag
+        button_flag = True
+
+    GPIO.add_event_detect(BUTTON_PIN, GPIO.FALLING,
+                          callback=on_button, bouncetime=300)
+
+    def refresh_data():
+        nonlocal count, people, last_fetch
+        show_loading(oled)
+        c, p = fetch_space_data()
+        if p:
+            count, people = c, p
+            last_fetch = time.time()
+            print(f"Fetched: {count} people in space")
+        else:
+            show_error(oled)
+            time.sleep(3)
+
+    # First fetch
+    refresh_data()
+    show_summary(oled, count)
+
+    try:
+        while True:
+            # Auto-refresh every REFRESH_EVERY seconds
+            if time.time() - last_fetch > REFRESH_EVERY:
+                t = threading.Thread(target=refresh_data)
+                t.daemon = True
+                t.start()
+
+            # Button pressed — cycle to next astronaut (or back to summary)
+            if button_flag:
+                button_flag = False
+                if not people:
+                    pass
+                elif view_index < len(people) - 1:
+                    view_index += 1
+                    p = people[view_index]
+                    show_astronaut(oled, p["name"], p["craft"],
+                                   view_index + 1, len(people))
+                else:
+                    view_index = -1
+                    show_summary(oled, count)
+
+            time.sleep(0.1)
+
+    except KeyboardInterrupt:
+        print("\nShutting down.")
+        oled.fill(0)
+        oled.show()
+        GPIO.cleanup()
+
+if __name__ == "__main__":
+    main()
+```
+
+Run it in your terminal:
+
+```bash
+python3 space_indicator.py
+```
+
+**What you should see:**
+- The OLED shows the total number of people currently in space
+- Press the button once → first astronaut's name and spacecraft
+- Press again → second astronaut
+- Keep pressing → cycles through all of them
+- Press after the last one → back to the summary count screen
+- Every 5 minutes the Pi quietly re-fetches the data in the background
+
+> **Try this!** Change `REFRESH_EVERY = 300` to `REFRESH_EVERY = 30` and watch it refresh more often. Add a small `*` that appears on the summary screen after a refresh so you know new data arrived.
+
+---
+
+### What's New in This Project
+
+Compared to the tombstone, this project taught you two brand new skills:
+
+| New Skill | Where You Used It |
+|-----------|------------------|
+| **HTTP requests** | `requests.get(url)` fetches data from the internet |
+| **JSON parsing** | `response.json()` turns the API reply into a Python dictionary |
+| **Live data** | The display shows real information that changes in the real world |
+| **Error handling** | `try/except` catches network problems gracefully |
+
+---
+
+### Set It Up to Start on Boot
+
+Use the same systemd approach as the tombstone:
+
+```bash
+sudo nano /etc/systemd/system/space.service
+```
+
+```ini
+[Unit]
+Description=People in Space Indicator
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+ExecStart=/home/pi/tombstone/venv/bin/python3 /home/pi/tombstone/space_indicator.py
+WorkingDirectory=/home/pi/tombstone
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target
+```
+
+> Note: `After=network-online.target` is important here — unlike the tombstone, this program needs internet access, so it must wait until Wi-Fi is connected before starting.
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable space
+sudo systemctl start space
+```
+
+---
+
 ## ⭐ Grand Champion: Bonus Master Badge
 
 Earn ALL of these across the whole summer:
@@ -891,6 +1286,7 @@ Earn ALL of these across the whole summer:
 - [ ] Module 2: Complete all 5 RPG bonus challenges
 - [ ] Module 3: Complete the AI Dungeon Master bonus
 - [ ] Module 4: Add at least 2 of the 5 bonus features to the tombstone
+- [ ] Module 4 Bonus Project: Get the People in Space Indicator running on the OLED
 
 ---
 
