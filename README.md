@@ -27,6 +27,7 @@ By the end of 10 weeks you will have **built a real AI-powered device** with a s
 | 3–5  | Level 2 — Code Wizard | Build games and programs in Python |
 | 6–7  | Level 3 — AI Master | Run your own AI and give it a personality |
 | 8–10 | Level 4 — Robot Builder | Wire up a Raspberry Pi tombstone display with AI |
+| 11–12 | Level 5 — Open Source Hero | Git branches, GitHub, pull requests, and a live portfolio website |
 
 ---
 
@@ -36,7 +37,8 @@ By the end of 10 weeks you will have **built a real AI-powered device** with a s
 1. [01_linux.md](01_linux.md) — Linux basics, the terminal, files, scripts, and Git
 2. [02_python.md](02_python.md) — Python from zero, VS Code, games, debugger, functions
 3. [03_ai_ollama.md](03_ai_ollama.md) — What is AI, run it locally, give it wild personalities
-4. [04_tombstone_project.md](04_tombstone_project.md) — Final project: Raspberry Pi AI tombstone display
+4. [04_tombstone_project.md](04_tombstone_project.md) — Raspberry Pi AI tombstone display + People in Space indicator
+5. [05_git_github.md](05_git_github.md) — Git branches, GitHub, pull requests, SSH keys, GitHub Pages
 
 ## Exercises
 
@@ -50,6 +52,7 @@ Work through them after finishing each module — try the problems before peekin
 | [exercises/module_02](exercises/module_02/) | Variables, loops, functions, lists, files, RPG game |
 | [exercises/module_03](exercises/module_03/) | Ollama CLI, Python AI API, system prompts, streaming |
 | [exercises/module_04](exercises/module_04/) | Pi setup, OLED display, button, AI integration |
+| [exercises/module_05](exercises/module_05/) | Git branches, GitHub push/pull, forks, pull requests, GitHub Pages |
 
 ---
 
@@ -85,6 +88,7 @@ Earn these by completing the secret challenges in each module:
 [ ] 🐍 Code Wizard       — Complete Module 2
 [ ] 🤖 AI Whisperer      — Complete Module 3
 [ ] 💀 Robot Builder     — Ship the tombstone project
+[ ] 🌍 Open Source Hero  — Push your portfolio to GitHub Pages
 [ ] ⭐ Bonus Master      — Complete ALL bonus challenges
 ```
 
