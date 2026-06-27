@@ -1,308 +1,368 @@
-# Module 2 Exercises — Python
+# Module 5 Exercises — Git & GitHub
 
-Open VS Code, create a new `.py` file for each section, and run it with `python3`.
-
-> **You've got this!** These exercises build on each other, so try them in order. If you get stuck, read the hints below each exercise. Getting stuck is totally normal — even professional programmers get stuck all the time!
+> **Welcome to version control!** This module's exercises are mostly done in the terminal, not in a code editor. You'll be running `git` commands, creating repositories, and eventually publishing your work on the internet. Take it one step at a time — Git feels confusing at first but clicks fast once you do it a few times.
 
 ---
 
-## Section A: Variables and Types
+## Section A: Local Git Warm-Up
 
-Think of variables like labeled boxes. You put a value inside the box and give it a name so you can use it later. Python has different *types* of values — text (strings), whole numbers (integers), decimal numbers (floats), and true/false values (booleans). This section helps you get comfortable creating and using them.
+These exercises use only Git on your own computer — no GitHub yet. If you did the Git section in Module 1, some of this will feel familiar. That's good! Repetition builds muscle memory.
 
-**Exercise 1**
-Create variables for:
-- Your name (string)
-- Your age (integer)
-- Your height in feet (float)
-- Whether you like coding (boolean)
+> **The golden rule:** `git status` is your friend. Run it constantly — before and after every command — to see exactly what Git knows about your files.
 
-Then print a sentence using all four variables with an f-string.
+**Exercise 1 — Create and Track a Project**
 
-> **Hint:** An f-string looks like this: `print(f"My name is {name} and I am {age} years old.")` — put an `f` before the opening quote and wrap variable names in `{}`.
+1. Create a new folder called `git-practice` in your home directory
+2. Inside it, create a file called `hello.txt` with some text in it
+3. Initialise a Git repository in this folder
+4. Check the status — what colour is `hello.txt`?
+5. Stage `hello.txt` and commit it with the message: `"first commit: add hello.txt"`
+6. Run `git log --oneline` — you should see your commit
+
+> **Hint:** The four steps you'll repeat forever: `git init` → `git add` → `git commit -m "message"` → `git log`. If `git status` shows red, your file isn't staged yet. If it shows green, you're ready to commit.
 >
-> **Stuck?** Try creating each variable one at a time and printing just that one first, before putting them all in one sentence.
+> **What success looks like:** `git log --oneline` shows one line: your commit ID and message.
 
-**Exercise 2**
-What will Python print for each line below? Write your answer BEFORE running it.
+---
 
-```python
-x = 10
-y = 3
-print(x + y)
-print(x - y)
-print(x * y)
-print(x / y)
-print(x // y)
-print(x % y)
-print(x ** y)
+**Exercise 2 — Make Changes and See the History**
+
+Still in `git-practice`:
+
+1. Add a second line to `hello.txt`
+2. Run `git diff` — what does it show?
+3. Stage and commit with the message: `"add second line to hello.txt"`
+4. Create a brand new file called `notes.txt` with any content
+5. Stage and commit: `"add notes.txt"`
+6. Run `git log --oneline` — you should see 3 commits now
+
+Now try:
+- `git show HEAD` — what does HEAD mean?
+- `git show HEAD~1` — what does the `~1` mean?
+
+> **Hint:** `git diff` shows lines that were ADDED (green with `+`) and REMOVED (red with `-`). `HEAD` always means "the most recent commit". `HEAD~1` means "one commit before the most recent". `HEAD~2` would be two commits back.
+>
+> **What to notice:** Git saves the ENTIRE state of every file at every commit. You can always go back.
+
+---
+
+**Exercise 3 — Undo a Mistake**
+
+1. Open `hello.txt` and delete ALL the text. Save it (pretend you did this by accident)
+2. Run `git status` — what does Git say?
+3. Run `git diff` — you can see exactly what was deleted
+4. Use `git restore hello.txt` to get your text back
+5. Open `hello.txt` — it's restored!
+
+> **Hint:** `git restore <filename>` throws away all unsaved changes to that file and puts it back to how it was in the last commit. This only works if you haven't committed the mistake yet.
+>
+> **Stuck?** Run `git status` first. If the file shows in red under "Changes not staged for commit", `git restore` will fix it.
+
+---
+
+**Exercise 4 — Branches**
+
+1. Create a new branch called `experiment`
+2. Switch to it
+3. Create a new file called `experiment.txt` with the text: `"This is my experiment"`
+4. Commit it with the message: `"add experiment file"`
+5. Switch back to `main` — run `ls`. Is `experiment.txt` there?
+6. Switch back to `experiment` — run `ls`. Is it there now?
+
+> **Hint:** Use `git switch -c experiment` to create AND switch in one command. The file appears and disappears because it only exists on the `experiment` branch — that's the whole point of branches! Each branch is its own parallel world.
+>
+> **What success looks like:** `ls` on `main` shows `hello.txt` and `notes.txt`. `ls` on `experiment` shows all three files including `experiment.txt`.
+
+---
+
+**Exercise 5 — Merge and Clean Up**
+
+Continuing from Exercise 4:
+
+1. Switch back to `main`
+2. Merge the `experiment` branch into `main`
+3. Run `ls` — `experiment.txt` should now be on `main` too!
+4. Delete the `experiment` branch (it's done its job)
+5. Run `git log --oneline --graph --all` — can you see where the branch split and merged?
+
+> **Hint:** You must be on `main` before you merge. The command is `git merge experiment`. After a successful merge, delete the branch with `git branch -d experiment`.
+>
+> **What the graph looks like:**
+> ```
+> *   (HEAD -> main) Merge branch 'experiment'
+> |\
+> | * add experiment file
+> |/
+> * add notes.txt
+> ```
+
+---
+
+## Section B: Setting Up GitHub
+
+**Exercise 6 — Create Your GitHub Account**
+
+If you don't already have one:
+1. Go to [https://github.com](https://github.com) and sign up
+2. Verify your email
+3. Add a profile picture and a one-line bio
+4. Write down your GitHub username — you'll need it in every exercise after this
+
+> **Hint:** Choose a username that you'd be happy showing to a future employer or teacher. GitHub usernames are public. Good format: `firstname-lastname` or a creative but appropriate nickname.
+
+---
+
+**Exercise 7 — Set Up SSH Keys**
+
+This is a one-time setup that connects your computer to GitHub securely.
+
+1. Generate an SSH key pair:
+   ```bash
+   ssh-keygen -t ed25519 -C "your@email.com"
+   ```
+   Press Enter three times to accept defaults
+
+2. View your public key:
+   ```bash
+   cat ~/.ssh/id_ed25519.pub
+   ```
+
+3. Add it to GitHub: **Settings → SSH and GPG keys → New SSH key**
+
+4. Test the connection:
+   ```bash
+   ssh -T git@github.com
+   ```
+
+> **Hint:** You should see: `Hi your-username! You've successfully authenticated`. If you see `Permission denied`, double-check that you pasted the full key (it starts with `ssh-ed25519` and ends with your email).
+>
+> **What success looks like:** The test command prints your GitHub username. That's it — you're connected. You only have to do this setup once per computer.
+
+---
+
+## Section C: Pushing to GitHub
+
+**Exercise 8 — Push Your First Repository**
+
+1. On GitHub, create a new repository called `git-practice`
+   - Leave "Add README" unticked (you already have local files)
+   - Copy the SSH URL (looks like `git@github.com:USERNAME/git-practice.git`)
+
+2. In your local `git-practice` folder, connect it to GitHub:
+   ```bash
+   git remote add origin git@github.com:YOUR-USERNAME/git-practice.git
+   git push -u origin main
+   ```
+
+3. Go to your GitHub repository page and refresh — your files are there!
+
+> **Hint:** `git remote add origin <url>` tells your local Git "this is where GitHub lives". You only run this once. After that, `git push` is enough. The `-u origin main` flag on the first push sets up the tracking so future pushes just need `git push`.
+>
+> **What success looks like:** You can see `hello.txt`, `notes.txt`, and `experiment.txt` on your GitHub repository page in the browser.
+
+---
+
+**Exercise 9 — The Push/Pull Cycle**
+
+This simulates working across two computers (or with a teammate).
+
+**Part 1 — Edit on GitHub:**
+1. On GitHub, click `hello.txt`, then click the pencil icon to edit it
+2. Add a new line: `"Edited directly on GitHub"`
+3. Click **Commit changes**
+
+**Part 2 — Pull to your computer:**
+1. In your terminal (still in `git-practice`):
+   ```bash
+   git pull
+   ```
+2. Open `hello.txt` — the new line should be there!
+
+**Part 3 — Edit locally and push back:**
+1. Add another new line to `hello.txt`: `"Edited on my computer"`
+2. Stage, commit, and push:
+   ```bash
+   git add hello.txt
+   git commit -m "add line from local computer"
+   git push
+   ```
+3. Refresh GitHub — your new line is there
+
+> **Hint:** `git pull` fetches any new commits from GitHub and applies them to your local files. This is how you keep in sync when working from multiple places.
+>
+> **What success looks like:** After `git pull`, `git log --oneline` shows the GitHub commit AND your local commits in the right order.
+
+---
+
+## Section D: Collaboration Features
+
+**Exercise 10 — Fork and Explore**
+
+1. Go to `github.com/octocat/Hello-World` (GitHub's official test repository)
+2. Click **Fork** → **Create fork**
+3. Clone YOUR fork to your computer:
+   ```bash
+   git clone git@github.com:YOUR-USERNAME/Hello-World.git
+   cd Hello-World
+   ```
+4. Run `git log --oneline` — you can see the history of the original project
+5. Run `ls` — what files are in it?
+
+> **Hint:** A fork creates a full copy of someone else's repository in YOUR GitHub account. You can make any changes to your fork without affecting the original. This is how open source contribution works.
+
+---
+
+**Exercise 11 — Open a Pull Request**
+
+Continuing from Exercise 10 (in your `Hello-World` fork):
+
+1. Create a new branch:
+   ```bash
+   git switch -c my-first-pr
+   ```
+
+2. Edit `README` — add a line at the bottom: `"Improved by YOUR-NAME"`
+
+3. Commit and push the branch:
+   ```bash
+   git add README
+   git commit -m "add my name to README"
+   git push origin my-first-pr
+   ```
+
+4. Go to your fork on GitHub — you'll see a yellow banner saying **"Compare & pull request"** — click it
+
+5. Write a description: "I added my name to show I completed the PR exercise"
+
+6. Click **Create pull request**
+
+> **Hint:** You can't merge this PR into `octocat/Hello-World` — you don't have permission. But you CAN click **Merge pull request** in YOUR OWN fork's pull requests to merge your branch into your fork's main. That's what matters for practice!
+>
+> **What success looks like:** A pull request exists on GitHub showing the diff of your change. The green "Open" badge is showing.
+
+---
+
+**Exercise 12 — Write a Great README**
+
+Create a new GitHub repository called `summer-2026` and write a README.md that includes:
+
+- A title and 1-sentence description of the project
+- A section called "What I Built" listing your 5 modules as bullet points
+- A section called "What I Learned" with 3 things
+- At least one code snippet using backtick fences
+- One link to something you found interesting
+
+Push it to GitHub. The README will display automatically on the repository page.
+
+> **Hint:** Markdown preview: In VS Code, open `README.md` and press `Ctrl+Shift+V` to see a preview of how it will look. Or just push and view it on GitHub — it renders automatically there.
+>
+> **What success looks like:** Your GitHub repo page shows a nicely formatted README with headings, bullet points, and a code block — not just raw markdown symbols.
+
+---
+
+## Section E: GitHub Pages
+
+**Exercise 13 — Publish a Live Website**
+
+Turn your `summer-2026` repository into a free website:
+
+1. In your `summer-2026` folder locally, create `index.html`:
+
+```html
+<!DOCTYPE html>
+<html>
+<head>
+  <title>My Summer 2026 Projects</title>
+</head>
+<body>
+  <h1>My Summer 2026 Projects</h1>
+  <p>I spent this summer learning Linux, Python, AI, and Raspberry Pi.</p>
+  <ul>
+    <li>Linux & Terminal</li>
+    <li>Python Games</li>
+    <li>AI with Ollama</li>
+    <li>Raspberry Pi Tombstone Display</li>
+    <li>Git & GitHub</li>
+  </ul>
+</body>
+</html>
 ```
 
-> **Hint:** `//` is *floor division* — it divides and then throws away any decimal, keeping only the whole number. `%` is the *remainder* (called modulo) — it tells you what's left over after dividing. `**` means "to the power of". Try to work them out in your head before you run the code!
+2. Commit and push it
 
-**Exercise 3**
-Fix the bug in this code:
-```python
-age = input("How old are you? ")
-next_year = age + 1
-print("Next year you will be", next_year)
-```
+3. On GitHub: **Settings → Pages → Source: Deploy from branch → main → / (root) → Save**
 
-> **Bug hint:** The bug is on the line that uses `age`. Think about what type of value `input()` gives back — is it a number or text? Look up how to convert it into the right type before doing math with it.
+4. Wait 2 minutes then visit: `https://YOUR-USERNAME.github.io/summer-2026`
+
+> **Hint:** After enabling Pages, GitHub shows you the URL. It might take 1–2 minutes to go live. If you see a 404 error, wait a minute and try again — it's still building.
 >
-> **Stuck?** Remember: `input()` always gives you a **string** (text), even if the user types a number. You need to convert it with `int()` before you can add 1 to it.
+> **What success looks like:** You visit the URL and see your webpage in a browser. Share the link with someone!
 
 ---
 
-## Section B: If / Elif / Else
+## Section F: Understanding Git
 
-Programs need to make decisions — just like you do! `if`, `elif`, and `else` let your program choose different paths depending on what's true. This section is all about writing code that thinks for itself.
+Answer these questions in your own words. Think about each one before writing.
 
-**Exercise 4**
-Write a program that:
-- Asks the user for a temperature (in Fahrenheit)
-- Prints `"Freezing!"` if below 32
-- Prints `"Cold"` if 32–59
-- Prints `"Warm"` if 60–79
-- Prints `"Hot!"` if 80 or above
+> **This section matters!** Knowing *why* Git works the way it does makes you a much better developer. Professional developers make mistakes in Git all the time — understanding the concepts is what lets you fix them.
 
-> **Hint:** Don't forget to convert the input to a number using `int()` or `float()` — `input()` gives you a string, and you can't compare a string to a number like 32.
->
-> **Stuck?** Start by just handling the first case (`"Freezing!"`), run it, then add one `elif` at a time.
+1. What is the difference between `git add` and `git commit`? Why are there two separate steps?
 
-**Exercise 5**
-Write a program that asks for a password.
-- If the password is `"dragon123"`, print `"Access granted!"` and a secret message of your choice.
-- Otherwise, print `"Wrong password. Access denied."`
+2. What does `HEAD` mean in Git? And what does `HEAD~1` mean?
 
-> **Hint:** To check if two strings are the same, use `==` (two equals signs). A single `=` is for *storing* a value, not comparing! `if password == "dragon123":` is what you want.
+3. Explain in your own words what a branch is and why you would use one instead of just editing the main code directly.
 
-**Exercise 6 — What's the output?**
-Trace through this code and write what gets printed, WITHOUT running it first.
+4. What is the difference between `git pull` and `git clone`? When would you use each one?
 
-```python
-score = 75
+5. If a friend makes a change on GitHub and you make a different change on your computer at the same time, what happens when you try to push? How do you fix it?
 
-if score >= 90:
-    print("A")
-elif score >= 80:
-    print("B")
-elif score >= 70:
-    print("C")
-else:
-    print("F")
+6. Why do commit messages matter? What makes a GOOD commit message vs a BAD one?
 
-print("Done")
-```
-
-> **Hint:** Go through each condition one at a time, from top to bottom. As soon as one condition is `True`, Python runs that block and *skips the rest*. Also notice that `print("Done")` is outside the if/elif/else — what does that mean for when it runs?
+> **Hint for Q6:** Think about this: if a bug appeared in your project three months from now, you'd look through the commit history to find when it was introduced. Would "stuff" or "fixed thing" help you find it? What would a useful message look like?
 
 ---
 
-## Section C: Loops
+## Bonus Challenges
 
-Loops let you repeat actions without writing the same code over and over. A `for` loop is great when you know how many times to repeat. A `while` loop keeps going as long as something is true. These are some of the most powerful tools in Python!
+**Bonus 1 — Git Archaeology**
 
-**Exercise 7**
-Write a `for` loop that prints the numbers 1 through 10, one per line.
+Go to a popular open source project on GitHub (suggestions: `github.com/python/cpython`, `github.com/torvalds/linux`, `github.com/microsoft/vscode`).
 
-> **Hint:** `range(1, 11)` gives you the numbers 1, 2, 3, ... 10. Remember that `range` stops *before* the last number you give it. So `range(1, 11)` goes up to 10, not 11.
+Find the answers to these questions using the GitHub interface:
+- How many commits does the project have?
+- Who made the most recent commit and what did they change?
+- How many open pull requests are there right now?
+- Find a commit from more than 5 years ago — what was the project like then?
 
-**Exercise 8**
-Write a `for` loop that prints only the **odd** numbers from 1 to 19.
-Hint: `range(1, 20, 2)` counts by 2 starting at 1.
+> **Hint:** Click the commit count (shown near the top of the repo page) to see the full history. Click any commit to see the exact diff — green lines added, red lines removed.
 
-**Exercise 9**
-Write a `while` loop that:
-- Starts with `coins = 100`
-- Subtracts 7 coins each loop
-- Prints the coins remaining after each round
-- Stops when coins drop below 0
-- Prints `"Game over! You ran out of coins."` at the end
+**Bonus 2 — Resolve a Merge Conflict on Purpose**
 
-> **Hint:** Your `while` condition should keep the loop going as long as `coins >= 0`. Inside the loop, subtract 7 from `coins` each time. The `print("Game over!")` line should be *outside* and *after* the while loop (no indentation under `while`).
->
-> **Stuck?** Be careful about infinite loops! If the loop never ends, press **Ctrl + C** in the terminal to stop it.
+Set up a conflict yourself and resolve it:
 
-**Exercise 10 — Loop Tracing**
-What does this print? Write it out before running.
+1. In `git-practice`, create a branch called `conflict-test`
+2. On `main`, change the first line of `hello.txt` to: `"Hello from main!"`
+3. Commit it
+4. Switch to `conflict-test`, change the SAME first line to: `"Hello from my branch!"`
+5. Commit it
+6. Switch to `main` and try `git merge conflict-test`
+7. Open the file, resolve the conflict, save, then `git add` and `git commit`
 
-```python
-total = 0
-for i in range(1, 6):
-    total = total + i
-    print(f"i={i}, total={total}")
-print("Final:", total)
-```
+> **Hint:** Git marks the conflict like this:
+> ```
+> <<<<<<< HEAD
+> Hello from main!
+> =======
+> Hello from my branch!
+> >>>>>>> conflict-test
+> ```
+> Delete the `<<<<`, `====`, `>>>>` lines and keep whichever version (or both!) you want. Then save the file.
 
-> **Hint:** Go through the loop step by step. What is `i` on the first round? What does `total` become? Then the second round? Fill in a small table: `i | total`. The last `print` is outside the loop — it only runs once, after all the rounds are done.
+**Bonus 3 — Contribute to Open Source**
 
----
+Find a real open source project that accepts beginner contributions:
+- Look for repositories with a `good first issue` label (search GitHub for it)
+- Read the project's CONTRIBUTING.md file
+- Fork the repo, fix one small thing (even a typo in the README counts!), and open a real pull request
 
-## Section D: Lists and Dictionaries
-
-Lists let you store many items in one variable — like a shopping list. Dictionaries are like a real dictionary: each word (key) has a meaning (value). Together they are the backbone of almost every Python program you'll ever write!
-
-**Exercise 11**
-Create a list called `heroes` with 5 superhero names.
-- Print the first hero
-- Print the last hero using a negative index
-- Add a new hero to the end
-- Remove the second hero
-- Print the total number of heroes remaining
-
-> **Hint:** Lists start at index `0`, so the first item is `heroes[0]`. The last item is `heroes[-1]` — negative indexes count from the end! Use `.append()` to add to the end and `.remove()` to take something out. Use `len()` to count how many are left.
-
-**Exercise 12**
-Write a program that:
-- Creates a list of 5 numbers: `[4, 17, 2, 9, 31]`
-- Prints the largest number
-- Prints the smallest number
-- Prints the sum
-- Prints the list sorted from smallest to largest
-
-> **Hint:** Python has built-in functions that do the hard work for you! Try `max()`, `min()`, `sum()`, and `sorted()` — each one takes a list as input. For example: `print(max(numbers))`.
-
-**Exercise 13**
-Create a dictionary for a video game character with:
-- `name`, `class`, `level`, `hp`, `weapon`
-
-Then:
-- Print the character's name and weapon in a sentence
-- Change their weapon to something better
-- Add a new key `"gold"` with a value of `250`
-- Print all keys and values using a loop
-
-> **Hint:** Access a dictionary value with `character["name"]`. Change a value the same way: `character["weapon"] = "Flame Sword"`. To loop through all keys and values together, use `for key, value in character.items():`.
->
-> **Stuck?** Build the dictionary first and just print it with `print(character)` to check it looks right, before trying the other steps.
-
----
-
-## Section E: Functions
-
-Functions are like mini-programs inside your program. You write them once and can use them as many times as you want. They help keep your code tidy and avoid repeating yourself. Every professional programmer uses functions constantly!
-
-**Exercise 14**
-Write a function `celsius_to_fahrenheit(c)` that converts Celsius to Fahrenheit.
-Formula: `F = (C × 9/5) + 32`
-
-Test it with: 0°C, 100°C, 37°C (body temperature).
-
-> **Hint:** Your function should **return** the result, not just print it. Then call the function and print the returned value: `print(celsius_to_fahrenheit(100))`. Using `return` means you can use the result in other calculations later.
-
-**Exercise 15**
-Write a function `is_even(number)` that returns `True` if the number is even, `False` if odd.
-Then use it in a loop to print "even" or "odd" for every number 1–10.
-
-> **Hint:** A number is even if the remainder when divided by 2 is 0. In Python: `number % 2 == 0`. If that's `True`, the number is even! Your function can literally `return number % 2 == 0` in one line.
-
-**Exercise 16**
-Write a function `grade(score)` that takes a number and returns the letter grade:
-- 90–100 → "A"
-- 80–89 → "B"
-- 70–79 → "C"
-- 60–69 → "D"
-- Below 60 → "F"
-
-Test it on scores: 95, 83, 71, 64, 42.
-
-> **Hint:** Use `if / elif / elif / elif / else` inside the function, and `return` the letter each time. Remember to test each score and make sure the right grade comes out!
-
-**Exercise 17 — Fix the Bug**
-```python
-def multiply(a, b)
-    result = a * b
-    return result
-
-answer = multiply(6, 7
-print("6 x 7 =", answer)
-```
-
-> **Bug hint:** There are **two** bugs hidden in this code. Look carefully at the function definition line and at the line that calls the function. Python is very picky about punctuation — check every character on those lines.
->
-> **Stuck?** Hint 1: Every `def` line needs a specific punctuation mark at the end. Hint 2: Every opening `(` needs a matching `)`.
-
----
-
-## Section F: Files
-
-Programs can save information to files and read it back later — even after you close Python! This is how apps store your settings, high scores, and data. It's a really important skill.
-
-**Exercise 18**
-Write a program that:
-- Creates a file called `favourite_things.txt`
-- Writes at least 5 of your favourite things (one per line)
-- Closes the file
-- Opens it again and prints each line with a number in front
-
-Expected output:
-```
-1. Pizza
-2. Minecraft
-3. ...
-```
-
-> **Hint:** Use `open("favourite_things.txt", "w")` to open a file for *writing* (`"w"` mode). Use `open("favourite_things.txt", "r")` to open it for *reading* (`"r"` mode). Use a `with` statement so Python closes the file automatically: `with open("file.txt", "w") as f:` then `f.write("something\n")` inside. The `\n` at the end of each line is the newline character (like pressing Enter).
->
-> **Stuck?** Write the "create and write" part first, run it, then check that the file was created in the same folder as your script. Then write the "read and print" part separately.
-
-**Exercise 19**
-Write a program that reads `favourite_things.txt` and counts how many things are in the list.
-Print: `"You have X favourite things."`
-
-> **Hint:** When you read lines from a file with `f.readlines()`, you get a list — and `len()` of a list gives you the count! Watch out for blank lines at the end of the file that might be counted accidentally.
-
----
-
-## Section G: Mini Programs
-
-You've learned all the building blocks — now put them together! These exercises combine variables, if/else, loops, lists, functions, and input all at once. Take your time and plan before you start coding.
-
-> **Tip for all mini programs:** Before writing any code, grab a piece of paper and write down the steps in plain English. Then translate each step into Python, one at a time.
-
-**Exercise 20 — Simple Calculator**
-Write a calculator program that:
-- Asks for two numbers and an operation (`+`, `-`, `*`, `/`)
-- Prints the result
-- Handles division by zero with a friendly error message
-- Keeps running until the user types `quit`
-
-> **Concepts to use:** `while` loop, `input()`, `float()` for conversion, `if/elif/else` for operations, and a special check for division by zero (`if num2 == 0`).
->
-> **Stuck?** Build it step by step: first get it working for just `+`, then add `-`, then `*`, then `/`. Add the `while` loop last.
-
-**Exercise 21 — Word Counter**
-Write a program that:
-- Asks the user to type a sentence
-- Counts how many words are in it
-- Counts how many characters (including spaces)
-- Prints the most common letter
-
-Hint: `sentence.split()` splits by spaces. `sentence.count("a")` counts letter "a".
-
-> **Concepts to use:** `input()`, string methods (`.split()`, `.count()`, `len()`), a `for` loop through the alphabet to find the most common letter.
->
-> **Stuck on the most common letter?** Loop through each letter of the alphabet (`"abcdefghijklmnopqrstuvwxyz"`), count how many times it appears in the sentence (use `.lower()` first!), and keep track of which one has the highest count.
-
-**Exercise 22 — Number Stats**
-Write a program that:
-- Keeps asking the user for numbers until they type `done`
-- Then prints: the count, the sum, the average, the minimum, and the maximum
-- Handle the case where no numbers were entered
-
-> **Concepts to use:** `while True` loop with a `break`, an empty list `[]` to collect the numbers, `float()` to convert input, and `len()`, `sum()`, `min()`, `max()` on the list at the end.
->
-> **Stuck?** Start with just collecting the numbers and printing the list — check that works before adding the stats.
-
----
-
-## Bonus: RPG Extension Challenges
-
-Extend the RPG battle game from Module 2:
-
-1. Add a **"Run away"** option that has a 50% chance of escaping (use `random.random() < 0.5`)
-2. Add a **level-up system**: after winning, the hero's max HP increases by 10 and attack by 2
-3. Add a **shop** between battles: spend gold earned from battles on potions or attack upgrades
-4. Create a second, harder monster that appears after the hero wins the first fight
-5. Save the **high score** (fewest turns to win) to a file called `highscore.txt`
+> **Note:** Most big projects review PRs carefully. Your first PR might not be merged, and that's completely normal. The point is to go through the whole process. Write a polite description and be patient.

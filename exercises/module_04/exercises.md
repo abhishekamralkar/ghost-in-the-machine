@@ -1,332 +1,282 @@
-# Module 4 Exercises — Raspberry Pi Tombstone Project
+# Module 3 Exercises — AI with Ollama
 
-These exercises are meant to be done ON the Raspberry Pi via SSH.
-Connect first: `ssh pi@tombstone.local`
+Make sure Ollama is running before starting.
 
-Great work making it to Module 4! This is where things get really exciting — you are going to program a real computer (the Raspberry Pi) and make it show messages on a tiny screen. Take it one step at a time, and don't worry if something breaks. Breaking things and fixing them is how real engineers learn!
+Open **two** terminal windows:
+- **Terminal 1:** Start the Ollama server:
+  ```bash
+  ollama serve
+  ```
+  You'll see log messages — leave this running. `ollama serve` is the background process
+  that your Python programs talk to. Without it, Python can't reach the AI.
+- **Terminal 2:** Write and run your Python programs here.
 
----
-
-## Section A: Raspberry Pi Basics
-
-Before you touch any wires or code, it helps to understand how the Raspberry Pi works. These questions will make sure you know the basics. Read back through your notes or the curriculum if you need a reminder — there are no tricks here!
-
-Answer these questions before you start wiring anything.
-
-1. What command do you use to update all software on the Pi?
-
-2. What does SSH stand for, and why is it useful for this project?
-
-3. After running `sudo raspi-config` to enable I2C, what command tells you if the OLED display is connected correctly?
-
-4. What address should you see in the output when the OLED is properly connected?
-
-5. Why does the Pi use a MicroSD card instead of a hard drive?
+> **Welcome to AI programming!** In this module you're going to make a real AI respond to your questions — using Python code *you* write. That's something most grown-ups haven't even tried. Take it one exercise at a time and enjoy it!
 
 ---
 
-## Section B: Setup Checklist
+## Section A: Terminal AI Warm-Up
 
-Hardware setup has more steps than regular coding, and that is totally normal. Go through this checklist slowly — one item at a time. If you get an error, write it down in the notes box at the bottom. That habit will save you a lot of time later!
+Do these directly in the terminal (no Python yet). This section gets you comfortable talking to the AI before you use it from Python. Think of it as meeting the AI for the first time!
 
-> **Tip:** If SSH says "Connection refused", the Pi might still be booting. Wait 30 seconds and try again.
+1. Start a chat with the AI:
+   ```bash
+   ollama run llama3.2
+   ```
+   Ask it these questions and write down what it says (summarise in one sentence each):
+   - "What is the difference between RAM and storage?"
+   - "Tell me a joke about Python the programming language"
+   - "Explain what a for loop is like I'm 9 years old"
 
-> **Tip:** If `i2cdetect -y 1` gives an error about permissions, make sure you enabled I2C in `raspi-config` AND rebooted the Pi afterwards.
+   > **Hint:** When you're done chatting, type `/bye` or press **Ctrl + D** to exit the chat and go back to the normal terminal prompt.
 
-Complete each step and tick it off. If something doesn't work, write what error you saw and how you fixed it.
+2. Use the one-liner form. Run each and note the answer:
+   ```bash
+   ollama run llama3.2 "What is the largest planet in the solar system?"
+   ollama run llama3.2 "Give me 3 fun facts about octopuses"
+   ollama run llama3.2 "Write a haiku about debugging code"
+   ```
 
-- [ ] Flashed Raspberry Pi OS to MicroSD card
-- [ ] Pi boots up successfully
-- [ ] Connected via SSH from another computer
-- [ ] Ran `sudo apt update && sudo apt upgrade -y`
-- [ ] Enabled I2C via `raspi-config`
-- [ ] Ran `i2cdetect -y 1` and saw `3c` in the grid
-- [ ] Created project folder and activated venv: `mkdir ~/tombstone && cd ~/tombstone && python3 -m venv venv && source venv/bin/activate`
-- [ ] Installed Python libraries (with venv active): `pip3 install adafruit-circuitpython-ssd1306 pillow RPi.GPIO ollama`
-- [ ] Installed Ollama on the Pi
-- [ ] Downloaded `llama3.2:1b` model
+   > **Hint:** The one-liner form is great for quick questions. Notice how much faster it is than starting a full chat session. Later in Python we'll use a similar approach.
 
-> **What success looks like for the I2C check:** After running `i2cdetect -y 1`, you will see a grid of dashes and numbers. Look for `3c` somewhere in the grid — that is your OLED display saying hello! If the whole grid is dashes, the display is not connected correctly. Check your wires: SDA goes to GPIO 2 (Pin 3), SCL goes to GPIO 3 (Pin 5), VCC to 3.3V, and GND to any ground pin.
+3. List your downloaded models: `ollama list`
+   - What models do you have?
+   - How large is each one?
 
-My notes on any problems I hit:
-```
-Problem:
-Fix:
-```
-
----
-
-## Section C: Display Exercises
-
-Now the fun starts! These exercises teach you how to talk to the OLED screen using Python. The screen is tiny (128 x 64 pixels) so you have to think carefully about what you show on it. Each exercise builds on the last one, so do them in order.
-
-> **Before you start:** Make sure your virtual environment is active. You should see `(venv)` at the start of your terminal prompt. If not, run: `source ~/tombstone/venv/bin/activate`
+   > **Hint:** Model size is shown in gigabytes (GB). Bigger models are usually smarter but slower. `llama3.2` is a good size for learning — it's fast enough to respond quickly on most computers.
 
 ---
 
-**Exercise 1 — Hello Display**
+## Section B: First Python + AI Programs
 
-This exercise checks that your display works and that you can show custom text on it. Seeing YOUR name appear on the tiny screen for the first time is a great feeling!
+Now the real fun begins! You're going to write Python code that talks to the AI. The key function you'll use is `ollama.chat()`. It sends a message and gives back a response — just like chatting, but from inside your program.
 
-Modify `test_display.py` to show YOUR name instead of "HELLO!".
-Also add a second line that shows today's date.
+> **The pattern to remember:** Every `ollama.chat()` call needs a `model` name and a `messages` list. Each message has a `role` ("user" or "assistant" or "system") and `content` (the actual text). You'll use this pattern in almost every exercise!
 
-Hint: use Python's `datetime` module:
+**Exercise 4 — Hello AI**
+
+Create `ex04_hello_ai.py`. Ask the AI one question and print the response.
+The question should be: `"What is your favourite thing about being an AI?"`
+
 ```python
-import datetime
-today = datetime.date.today().strftime("%b %d, %Y")
+import ollama
+
+# Your code here
 ```
 
-> **Tip:** The OLED screen is small, so keep text short. If a line is too long it will get cut off at the right edge. Try to keep each line under 16 characters.
-
-> **What success looks like:** The OLED screen lights up and shows your name on the first line and today's date (like "Jun 26, 2026") on the second line. If nothing shows up at all, run `i2cdetect -y 1` to make sure the display is still detected, then check that your venv is active.
-
----
-
-**Exercise 2 — Count Down on Screen**
-
-Countdowns are everywhere — rockets, games, microwave ovens. Here you are building one yourself! This exercise teaches you how to update the screen in a loop and how to use `time.sleep()` to add pauses.
-
-Write a program `countdown_display.py` that counts down from 5 to 0 on the OLED screen.
-- Show each number large in the centre of the screen
-- Wait 1 second between each number
-- Show "GO!" on the final frame
-
-> **Tip:** To clear the screen before showing each new number, call `oled.fill(0)` and then `oled.show()` before drawing the new number. Otherwise the old number will still show underneath the new one.
-
-> **Tip:** To draw text in a larger size, look at how to use `ImageFont` with a bigger font file, or use the default font and just position the number in the middle by calculating where x and y should go.
-
-> **What success looks like:** The OLED counts down 5 → 4 → 3 → 2 → 1 → 0 with a one-second pause between each number, then shows "GO!" on the screen and stops.
-
----
-
-**Exercise 3 — Two-Line Message**
-
-Writing reusable functions is one of the most important skills in programming. Instead of copying the same display code every time, you write it once as a function and call it whenever you need it. This exercise practises exactly that.
-
-Write a function `show_two_lines(oled, line1, line2)` that displays two lines of text on the OLED.
-Test it with:
-- Line 1: "Hello Pi!"
-- Line 2: "I am alive"
-
-> **Tip:** In the Adafruit SSD1306 library, text is drawn with `draw.text((x, y), "your text", fill=255)`. For the first line, use `y=0`. For the second line, use `y=16` (or `y=32` if you want more space between lines).
-
-> **What success looks like:** Both lines appear on the OLED display at the same time. "Hello Pi!" is near the top and "I am alive" is below it. If only one line shows, double-check that you are calling `oled.show()` AFTER drawing both lines — not between them.
-
----
-
-## Section D: Button Exercises
-
-Buttons make your project interactive! Instead of just displaying things, the user can now control what happens. These exercises teach you how to read a physical button using GPIO (General Purpose Input/Output) pins. Be patient — GPIO can be tricky at first.
-
-> **Before you start:** Make sure your button is wired correctly. One leg goes to GPIO 17 (Pin 11) and the other goes to GND (Pin 9). If you are not sure, ask for help before running the code — wiring to the wrong pin will not break anything, but the button just won't work.
-
-> **What to do if you're stuck with the button:** Run this quick test in Python to check if the Pi can see the button press:
+> **Hint:** The basic structure looks like this:
 > ```python
-> import RPi.GPIO as GPIO, time
-> GPIO.setmode(GPIO.BCM)
-> GPIO.setup(17, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-> while True:
->     print(GPIO.input(17))
->     time.sleep(0.1)
+> response = ollama.chat(
+>     model="llama3.2",
+>     messages=[{"role": "user", "content": "your question here"}]
+> )
+> print(response["message"]["content"])
 > ```
-> When you press the button you should see `0` printed. When you release it, you should see `1`. If you only ever see `1`, the button is not wired correctly.
+> Copy this pattern and swap in the right question. The response comes back as a dictionary — you need `["message"]["content"]` to get the actual text out of it.
 
----
+**Exercise 5 — Three Questions**
 
-**Exercise 4 — Button Counter**
+Create `ex05_three_questions.py`. Ask the AI three different questions in a row and print each answer with a label.
 
-This is the first exercise where the screen and the button work together. Every button press changes what you see on the screen in real time — that is the magic of interactive hardware!
+Questions:
+- "What is photosynthesis?"
+- "What is the fastest animal on Earth?"
+- "What causes thunder?"
 
-Write `button_counter.py` that:
-- Shows a count (starting at 0) on the OLED
-- Every time the button is pressed, the count goes up by 1
-- The new count is displayed immediately
-- When the count reaches 10, show "YOU WIN!" and stop
+Expected output format:
+```
+Question 1: What is photosynthesis?
+Answer: [AI response here]
 
-> **Tip:** Use `GPIO.wait_for_edge(17, GPIO.FALLING)` to wait for a button press. A FALLING edge means the signal goes from HIGH (1) to LOW (0), which is when the button is pressed (because the pull-up resistor keeps it HIGH when not pressed).
-
-> **Tip:** Add a small sleep after detecting a press (like `time.sleep(0.2)`) to avoid counting the same press multiple times. This is called "debouncing".
-
-> **What success looks like:** The OLED shows "0" at the start. Each button press makes the number go up and the screen updates right away. After 10 presses the screen shows "YOU WIN!" and the program stops cleanly.
-
----
-
-**Exercise 5 — Button Morse Code**
-
-Morse code uses short and long signals to send messages. This exercise teaches you to measure TIME — how long something lasts. That is a really useful skill for any project that reacts to user input.
-
-Write `morse_detector.py` that:
-- Detects how long the button is held (short = dot, long = dash)
-- Prints "DOT" or "DASH" to the terminal based on press duration
-- Short press = held less than 0.5 seconds = "DOT"
-- Long press = held 0.5 seconds or more = "DASH"
-
-Hint: record `time.time()` when the button goes LOW, and when it goes HIGH again calculate the difference.
-
-> **Tip:** You need to detect TWO edges: one when the button is pressed (FALLING) and one when it is released (RISING). Record the time at both edges, then subtract to get the duration.
-
-> **Tip:** If your program prints double DOTs for a single press, it is probably bouncing. Add `GPIO.add_event_detect` with a `bouncetime=200` parameter to ignore quick repeated signals.
-
-> **What success looks like:** When you tap the button quickly the terminal prints "DOT". When you hold it down for more than half a second it prints "DASH". Try spelling your initials in Morse code!
-
----
-
-## Section E: AI Epitaph Exercises
-
-This is where the project comes together! You are going to use Ollama (a local AI) to generate creative text, then display it on your screen. The AI runs right on the Pi — no internet needed. These exercises teach you how to talk to an AI from Python and how to shape its responses with good prompts.
-
-> **Before you start:** Make sure Ollama is running and the model is downloaded. Test it first by typing `ollama run llama3.2:1b` in the terminal. If you see a `>` prompt, it is ready. Type `/bye` to exit. If Ollama is not running, start it with `ollama serve` in a separate terminal window.
-
----
-
-**Exercise 6 — Test Your Prompts**
-
-The words you give to an AI (called a "prompt") have a huge effect on what it writes back. This exercise teaches you that skill — called "prompt engineering" — by letting you compare different prompts side by side. Professional AI engineers do this every day!
-
-Modify `test_ai.py` to try THREE different prompts and compare the results:
-
-Prompt A (original): `"Write a short funny Halloween tombstone epitaph. Made-up name. One or two lines."`
-
-Prompt B: `"Write a Halloween tombstone message for a programmer who wrote too many bugs. Be punny."`
-
-Prompt C: `"Write a very dramatic and tragic tombstone epitaph in old-fashioned Shakespearean English. Keep it short."`
-
-Run each prompt 3 times and see how different the results are. Write down your favourite from each.
-
-> **Tip:** The AI gives a slightly different answer every time — that is normal and intentional. It is called "temperature" and makes the AI more creative. If you want more consistent results, you can add `"options": {"temperature": 0.1}` to the `ollama.generate()` call.
-
-> **What success looks like:** Each prompt produces a different style of epitaph. Prompt A is goofy, Prompt B has programming jokes, Prompt C sounds ancient and dramatic. You can see how the wording of your prompt shapes the AI's whole personality!
-
----
-
-**Exercise 7 — Themed Generator**
-
-Adding a parameter to a function makes it much more flexible — one function can do many different things depending on what you pass in. This exercise teaches that idea using AI themes. You write the function once, then call it with different themes to get totally different results.
-
-Modify `generate_epitaph()` to accept a `theme` parameter.
-Call it with different themes and display each result.
-
-Themes to try:
-- `"pirate"`
-- `"space explorer"`
-- `"video game character"`
-- `"chef"`
-
-Expected function signature:
-```python
-def generate_epitaph(theme="Halloween"):
-    prompt = f"Write a short funny {theme} themed tombstone epitaph..."
+Question 2: ...
 ```
 
-> **Tip:** The `theme="Halloween"` part is a default value. It means if someone calls `generate_epitaph()` without passing a theme, it will use "Halloween" automatically. This is good coding practice — it makes your function easier to use.
+> **Hint:** You can use the same `ollama.chat()` pattern from Exercise 4 three times in a row — once for each question. Or, for a tidier solution, put all three questions in a list and use a `for` loop with `enumerate()` to number them automatically.
+>
+> **Stuck?** Get one question working first, print it, then add the next two one at a time.
 
-> **What success looks like:** Calling `generate_epitaph("pirate")` gives you something with "arr" and treasure, while `generate_epitaph("space explorer")` gives you something about galaxies. Each theme produces a completely different flavour of epitaph!
+**Exercise 6 — System Prompt Practice**
 
----
+Create `ex06_system_prompt.py`. Use a system prompt to make the AI respond like a **pirate**.
+Ask it: "What is a variable in Python?"
 
-## Section F: Full Program Exercises
+Then change the system prompt to make it respond like a **5-year-old child** who just learned about the topic.
+Ask the same question.
 
-You now know all the pieces: the display, the button, and the AI. These exercises combine everything into a polished, complete program. Think of this as your "final boss" level — harder, but very satisfying when it works!
+Print both responses and compare how different they are!
 
----
-
-**Exercise 8 — Add a Message Log**
-
-Saving data to a file is one of the most useful things a program can do. Log files let you look back at what happened — coders and engineers use them for everything. This exercise teaches you how to write to a file in Python.
-
-Modify `tombstone.py` to save every generated epitaph to a log file `logs/epitaphs.log`.
-Each entry should include:
-- The epitaph text
-- The date and time it was generated
-- A separator line `"---"`
-
-Hint: open the file in append mode `"a"` and write to it after each generation.
-
-> **Tip:** First make sure the `logs/` folder exists. You can create it in your code with:
+> **Hint:** A system prompt is a message with `"role": "system"` that goes *before* your question in the messages list. It tells the AI how to behave for the whole conversation:
 > ```python
-> import os
-> os.makedirs("logs", exist_ok=True)
+> messages=[
+>     {"role": "system", "content": "You are a pirate. Speak like one!"},
+>     {"role": "user", "content": "What is a variable in Python?"}
+> ]
 > ```
-> The `exist_ok=True` part means it won't crash if the folder already exists.
-
-> **What success looks like:** After pressing the button a few times, run `cat ~/tombstone/logs/epitaphs.log` in the terminal and you will see all your generated epitaphs listed with timestamps. Each one is separated by `---`.
-
----
-
-**Exercise 9 — Startup Screen Customisation**
-
-First impressions matter! A great startup screen makes your project feel like a real product. This exercise is also a chance to add your own creative touch — make it yours!
-
-Modify `show_startup()` to display YOUR name and a custom message.
-For example:
-```
-AI TOMBSTONE
-by [your name]
-[a spooky emoji or message]
-Press button!
-```
-
-> **Tip:** The OLED only shows basic ASCII characters by default — emoji might not display unless you load a special font that supports them. Try a spooky word instead, like "BOO!" or "BEWARE".
-
-> **Tip:** Add a `time.sleep(2)` at the end of `show_startup()` so the user has time to read the screen before the main program takes over.
-
-> **What success looks like:** Every time the tombstone program starts, the OLED shows your custom splash screen for about 2 seconds, then transitions into the main "Press button!" waiting state.
+>
+> **What to notice:** The system prompt is very powerful — the same question gets wildly different answers depending on the personality you set. This is one of the key techniques in real AI programming!
 
 ---
 
-**Exercise 10 — Button Hold to Quit**
+## Section C: Interactive Programs
 
-Clean shutdown is important for the Raspberry Pi — just pulling the power can sometimes corrupt the MicroSD card. This exercise teaches you how to detect a LONG button press and use it to shut down gracefully. Real hardware products do exactly this!
+These exercises build programs that have real back-and-forth conversations with the user. You'll use loops so the program keeps running, and you'll learn how to give the AI *memory* of what was said earlier.
 
-Add a "hold to quit" feature:
-- If the user holds the button for more than 3 seconds, the program shuts down cleanly
-- Show "GOODBYE..." on the display for 2 seconds before quitting
-- Make sure `GPIO.cleanup()` is called
+**Exercise 7 — Ask Anything Loop**
 
-> **Tip:** You can check for a hold while also watching for short presses by tracking the time at press and checking the duration at release — similar to what you did in Exercise 5. If the duration is more than 3 seconds, trigger the shutdown. If less, treat it as a normal epitaph request.
+Create `ex07_ask_loop.py`. A program that:
+- Keeps asking the user to type a question
+- Sends it to the AI and prints the answer
+- Stops when the user types `quit`
+- Counts how many questions were asked and prints the total at the end
 
-> **What success looks like:** A quick button tap generates a new epitaph as normal. But holding the button down for 3+ seconds shows "GOODBYE..." on the OLED, waits 2 seconds, then exits the program cleanly without any Python error messages.
+> **Concepts to use:** `while True` loop, `input()`, `break` to exit when the user types `quit`, a counter variable that increases by 1 each round.
+>
+> **Hint:** Start with `while True:` and get the user's input inside the loop. Check if it equals `"quit"` right away and `break` if so. Otherwise send it to the AI and print the response. Increment your counter after each successful question.
+>
+> **Stuck?** Get the basic loop working first (without the AI) — just print "You asked: [question]" in a loop, then add the AI call once the loop logic works.
+
+**Exercise 8 — Subject Tutor**
+
+Create `ex08_tutor.py`. Build a tutor chatbot for a school subject of your choice.
+The tutor should:
+- Have a system prompt that makes it an expert in ONE subject (e.g. space, dinosaurs, history)
+- Keep the full conversation history so it remembers what was said
+- Give answers that are short and fun for a 9-year-old
+- Say goodbye nicely when the user types `exit`
+
+> **Hint:** The secret to giving the AI memory is to keep a list of all messages and add to it each round. Each time you call `ollama.chat()`, pass the whole list — not just the latest message:
+> ```python
+> messages = [{"role": "system", "content": "You are a fun dinosaur expert..."}]
+>
+> # Each round:
+> messages.append({"role": "user", "content": user_input})
+> response = ollama.chat(model="llama3.2", messages=messages)
+> reply = response["message"]["content"]
+> messages.append({"role": "assistant", "content": reply})
+> ```
+>
+> **Stuck?** Start with Exercise 7's code (the loop) and add the conversation history list on top of it.
+
+**Exercise 9 — Streaming Practice**
+
+Create `ex09_streaming.py`. Use `stream=True` to get the AI to write:
+- A short poem about your favourite animal
+- A step-by-step recipe for making a sandwich
+- A short story about a robot who wants to be a chef
+
+Print each with a title header and watch the words appear live!
+
+> **Hint:** When you use `stream=True`, the response comes back piece by piece instead of all at once. You loop through the chunks and print each one as it arrives:
+> ```python
+> stream = ollama.chat(model="llama3.2", messages=[...], stream=True)
+> for chunk in stream:
+>     print(chunk["message"]["content"], end="", flush=True)
+> print()  # newline at the end
+> ```
+> The `end=""` stops Python from adding a newline after each tiny chunk, and `flush=True` makes it appear immediately.
 
 ---
 
-## Section G: Troubleshooting Practice
+## Section D: Creative Challenges
 
-Every engineer hits problems — the skill is knowing how to debug them. This section trains that skill. Try to fill in the table yourself first before looking anything up. There are no wrong answers here — just your best guess based on what you have learned.
+Time to get creative! These exercises push you to combine everything you've learned. There's no single "right" answer — experiment and see what interesting things you can make the AI do.
 
-Here are common problems you might hit. For each one, write what you would check first.
+**Exercise 10 — Personality Showdown**
 
-| Problem | What I would check first |
-|---------|--------------------------|
-| OLED shows nothing after running test_display.py | |
-| `i2cdetect -y 1` shows no `3c` | |
-| Button press does nothing | |
-| Ollama gives an error | |
-| Program crashes with `ModuleNotFoundError` | |
-| Tombstone works but starts very slowly | |
-| Pi won't boot | |
+Create `ex10_personality.py`. Ask the same question to THREE different AI personalities and print all three answers.
 
-> **Hint for the first row:** If the OLED shows nothing, check in this order: (1) Is I2C enabled? (2) Does `i2cdetect -y 1` show `3c`? (3) Is the venv active? (4) Did you call `oled.show()` after drawing?
+Question: "What should I do if I'm bored?"
 
-> **Hint for ModuleNotFoundError:** This almost always means the venv is not active, or you installed the library outside the venv. Run `source ~/tombstone/venv/bin/activate` and try again.
+Personalities to try:
+- An excited game show host
+- A grumpy old wizard
+- A friendly robot from the future
+
+> **Hint:** Use a system prompt (the `"role": "system"` message) to set each personality. Call `ollama.chat()` three separate times, each with a different system prompt. It's the same question every time — only the system prompt changes!
+>
+> **Stuck?** Copy your working code from Exercise 6 and adjust the personalities and question.
+
+**Exercise 11 — AI Fact Checker**
+
+Create `ex11_factcheck.py`. The program should:
+- Show the user a "fact" (you write 3 fake facts and 2 real ones in a list)
+- Ask the AI if the fact is true or false
+- Print the AI's verdict
+
+Example facts to use:
+- "The Eiffel Tower is in London." (FALSE)
+- "Sharks are mammals." (FALSE)
+- "Octopuses have three hearts." (TRUE)
+- "The Sun is a star." (TRUE)
+- "Cats can fly." (FALSE)
+
+Note: The AI might not always be right. That's the point — always verify important facts yourself!
+
+> **Hint:** Store your facts in a Python list. Use a `for` loop to go through each one. For each fact, ask the AI something like: `f"Is this true or false, and why? '{fact}'"`. Print the fact and the AI's answer together so you can compare.
+>
+> **Try this:** Tell the AI in a system prompt to answer with just "TRUE" or "FALSE" followed by one sentence explanation. Does that make the output easier to read?
+
+**Exercise 12 — Story Continuer**
+
+Create `ex12_story.py`. A collaborative story where:
+- You write the first sentence
+- The AI writes the next two sentences
+- You write another sentence
+- The AI writes two more
+- This repeats for 5 rounds total
+- At the end, print the whole story
+
+Hint: keep a `story` string and add to it each round. Pass the whole story as context each time.
+
+> **Hint:** Each round, pass the current story to the AI and ask it to continue with exactly two sentences. Then `input()` the user's next sentence and add it on. Add each addition to your `story` string so it grows across all 5 rounds.
+>
+> **Stuck?** Start with just 2 rounds to make sure the logic works, then increase to 5.
+>
+> **Concepts to use:** `for` loop for the 5 rounds, string concatenation with `+=`, `input()` for user sentences, `ollama.chat()` with the story-so-far as context.
+
+---
+
+## Section E: Understanding AI
+
+Answer these questions in your own words (no need to ask the AI — think it through yourself):
+
+> **This section is important!** Knowing how to use AI is one skill. Knowing *when* to trust it (and when not to) is an even more important skill. Take time to think through these properly.
+
+1. What is a "system prompt" and why is it powerful?
+
+2. If the AI says "The Eiffel Tower is 500 metres tall" but the real answer is 330 metres, what happened? What should you do?
+
+3. Why is it good that Ollama runs locally (on your computer) instead of sending questions to the internet?
+
+4. If you start a new chat with the AI, does it remember your conversation from yesterday? Why or why not?
+
+5. Give one example of a GOOD use of AI for a school project and one example of a BAD use. Explain why each is good or bad.
+
+> **Stuck on question 4?** Think about what you learned in Exercise 8 about conversation history. Where does that history live — in the AI itself, or in your Python program?
 
 ---
 
 ## Bonus Challenges
 
-You finished the main exercises — that is awesome! These bonus challenges are for when you want to go further. Each one teaches a new skill that goes beyond what the main exercises covered.
+**Bonus 1 — Random Personality**
+Create `bonus_random_persona.py`. Build a list of 5 different AI personalities.
+Each time the program starts, randomly pick one (using `random.choice`).
+The user doesn't know which personality they're talking to — can they guess?
 
-1. **Dual language mode:** Randomly pick between English and Spanish for the epitaph. Ask Ollama to write it in the chosen language.
-   > **New skill:** Using Python's `random` module to make decisions, and how to write multi-language prompts for AI.
+> **Hint:** Store each personality as a string in a list. Use `import random` and `random.choice(personalities)` to pick one at the start, then use it as your system prompt. Don't tell the user which one was chosen until they guess!
 
-2. **LED flash:** Wire an LED to GPIO 23. Make it flash 3 times every time a new epitaph is generated.
-   > **New skill:** Controlling an output device (LED) with GPIO. This is the opposite of reading a button — instead of listening for a signal, you are SENDING one.
+**Bonus 2 — Quiz Generator**
+Extend the quiz project from Module 3 to:
+- Let the user choose the topic before the quiz starts
+- Keep score across multiple rounds
+- At the end, ask the AI to give personalised study tips based on the topics the user got wrong
 
-3. **Epitaph voting:** Add TWO buttons — one to generate a new epitaph, one to "save" the current one to a `favourites.txt` file. At the end, print the saved favourites.
-   > **New skill:** Managing multiple GPIO inputs at the same time, and combining file-writing with user interaction to build a simple "save favourite" feature.
+> **Hint:** Keep a list of the questions the user got wrong. At the end, send that list to the AI and ask for study advice. The AI will give much better advice if you tell it exactly which questions were missed.
 
-4. **Web display:** Use Python's `http.server` module to serve the current epitaph as a web page, so any device on the same Wi-Fi can see it by visiting the Pi's IP address.
-   > **New skill:** Running a basic web server in Python. This is how real web services work — your Pi becomes a tiny server and any browser on the same network can connect to it!
+**Bonus 3 — AI Dungeon Master**
+Connect the AI to your RPG battle game:
+- Before each battle, ask the AI to write a dramatic scene-setting intro (2 sentences)
+- After each attack, ask the AI to narrate what happened (1 sentence)
+- When the battle ends, ask the AI to write an epic win or loss speech
 
-5. **Custom boot screen:** Make the startup screen display differently each time using the AI — ask Ollama to generate a spooky one-liner intro message.
-   > **New skill:** Using AI output to control the UI, so the program feels alive and different every single time it starts up.
+> **Hint:** Keep the AI narration calls simple and short — ask the AI to respond in *exactly* 1 or 2 sentences in your prompt. This keeps the game moving fast and the story exciting!

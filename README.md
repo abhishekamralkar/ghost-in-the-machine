@@ -24,10 +24,10 @@ By the end of 10 weeks you will have **built a real AI-powered device** with a s
 |------|-------|------------------|
 | 0    | Level 0 — Know Your Machine | Understand how computers actually work |
 | 1–2  | Level 1 — Hacker Mode | Control your computer like a pro with the terminal |
-| 3–5  | Level 2 — Code Wizard | Build games and programs in Python |
-| 6–7  | Level 3 — AI Master | Run your own AI and give it a personality |
-| 8–10 | Level 4 — Robot Builder | Wire up a Raspberry Pi tombstone display with AI |
-| 11–12 | Level 5 — Open Source Hero | Git branches, GitHub, pull requests, and a live portfolio website |
+| 3–4  | Level 2 — Open Source Hero | Git branches, GitHub, pull requests, and a live portfolio website |
+| 5–7  | Level 3 — Code Wizard | Build games and programs in Python |
+| 8–9  | Level 4 — AI Master | Run your own AI and give it a personality |
+| 10–12 | Level 5 — Robot Builder | Wire up a Raspberry Pi tombstone display with AI |
 
 ---
 
@@ -35,10 +35,10 @@ By the end of 10 weeks you will have **built a real AI-powered device** with a s
 
 0. [00_how_computers_work.md](00_how_computers_work.md) — CPU, RAM, storage, OS, bits & bytes
 1. [01_linux.md](01_linux.md) — Linux basics, the terminal, files, scripts, and Git
-2. [02_python.md](02_python.md) — Python from zero, VS Code, games, debugger, functions
-3. [03_ai_ollama.md](03_ai_ollama.md) — What is AI, run it locally, give it wild personalities
-4. [04_tombstone_project.md](04_tombstone_project.md) — Raspberry Pi AI tombstone display + People in Space indicator
-5. [05_git_github.md](05_git_github.md) — Git branches, GitHub, pull requests, SSH keys, GitHub Pages
+2. [02_git_github.md](02_git_github.md) — Git branches, GitHub, pull requests, SSH keys, GitHub Pages
+3. [03_python.md](03_python.md) — Python from zero, VS Code, games, debugger, functions
+4. [04_ai_ollama.md](04_ai_ollama.md) — What is AI, run it locally, give it wild personalities
+5. [05_tombstone_project.md](05_tombstone_project.md) — Raspberry Pi AI tombstone display + People in Space indicator
 
 ## Exercises
 
@@ -49,10 +49,10 @@ Work through them after finishing each module — try the problems before peekin
 |--------|--------|
 | [exercises/module_00](exercises/module_00/) | CPU, RAM, storage, binary, input/output |
 | [exercises/module_01](exercises/module_01/) | Terminal commands, shell scripts, pipes, Git |
-| [exercises/module_02](exercises/module_02/) | Variables, loops, functions, lists, files, RPG game |
-| [exercises/module_03](exercises/module_03/) | Ollama CLI, Python AI API, system prompts, streaming |
-| [exercises/module_04](exercises/module_04/) | Pi setup, OLED display, button, AI integration |
-| [exercises/module_05](exercises/module_05/) | Git branches, GitHub push/pull, forks, pull requests, GitHub Pages |
+| [exercises/module_02](exercises/module_02/) | Git branches, GitHub push/pull, forks, pull requests, GitHub Pages |
+| [exercises/module_03](exercises/module_03/) | Variables, loops, functions, lists, files, RPG game |
+| [exercises/module_04](exercises/module_04/) | Ollama CLI, Python AI API, system prompts, streaming |
+| [exercises/module_05](exercises/module_05/) | Pi setup, OLED display, button, AI integration |
 
 ---
 

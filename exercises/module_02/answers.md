@@ -1,433 +1,538 @@
-# Module 2 Answers — Python
+# Module 5 Answers — Git & GitHub
+
+> **Reminder:** Try each exercise yourself before reading the answer. Git is a tool you learn by doing — reading answers without trying first won't build the muscle memory you need.
 
 ---
 
-## Section A: Variables and Types
+## Section A: Local Git Warm-Up
 
-**Exercise 1**
-```python
-name = "Alex"
-age = 9
-height = 4.5
-likes_coding = True
+### Exercise 1 — Answer
 
-print(f"My name is {name}, I am {age} years old, {height} feet tall, and I like coding: {likes_coding}")
+```bash
+mkdir ~/git-practice
+cd ~/git-practice
+echo "Hello, Git!" > hello.txt
+git init
+git status          # hello.txt shows in RED = untracked
+git add hello.txt
+git status          # hello.txt shows in GREEN = staged
+git commit -m "first commit: add hello.txt"
+git log --oneline
 ```
 
-**Exercise 2 — Expected Output**
+**Expected output of `git log --oneline`:**
 ```
-13    # 10 + 3
-7     # 10 - 3
-30    # 10 * 3
-3.3333333333333335  # 10 / 3 (always float)
-3     # 10 // 3 (floor division — rounds down)
-1     # 10 % 3 (remainder: 10 = 3×3 + 1)
-1000  # 10 ** 3 (10 to the power of 3)
+a1b2c3d (HEAD -> main) first commit: add hello.txt
 ```
 
-**Exercise 3 — Bug Fix**
-The bug: `input()` returns a string, and you can't add 1 to a string. Fix: convert to `int`.
-```python
-age = int(input("How old are you? "))
-next_year = age + 1
-print("Next year you will be", next_year)
-```
+The red/green colour in `git status` tells you whether a file is staged (green = ready to commit) or not yet staged (red = git sees it but isn't saving it).
 
 ---
 
-## Section B: If / Elif / Else
+### Exercise 2 — Answer
 
-**Exercise 4**
-```python
-temp = float(input("Enter the temperature in Fahrenheit: "))
-
-if temp < 32:
-    print("Freezing!")
-elif temp <= 59:
-    print("Cold")
-elif temp <= 79:
-    print("Warm")
-else:
-    print("Hot!")
+```bash
+echo "A second line of text" >> hello.txt
+git diff
 ```
 
-**Exercise 5**
-```python
-password = input("Enter the password: ")
-
-if password == "dragon123":
-    print("Access granted!")
-    print("SECRET: The treasure is hidden under the third stone.")
-else:
-    print("Wrong password. Access denied.")
+`git diff` shows:
+```diff
+-Hello, Git!
++Hello, Git!
++A second line of text
 ```
 
-**Exercise 6 — Output**
+Lines with `+` are new. Lines with `-` were removed (none here).
+
+```bash
+git add hello.txt
+git commit -m "add second line to hello.txt"
+
+echo "My notes go here" > notes.txt
+git add notes.txt
+git commit -m "add notes.txt"
+
+git log --oneline
 ```
-C
-Done
+
+**Expected:**
 ```
-Reason: score is 75. It fails the `>= 90` and `>= 80` checks, but passes `>= 70`, so it prints "C". Then the loop ends and prints "Done".
+9f4e2b1 (HEAD -> main) add notes.txt
+7c3a1d0 add second line to hello.txt
+a1b2c3d first commit: add hello.txt
+```
+
+- `git show HEAD` — shows the MOST RECENT commit (the `notes.txt` one)
+- `git show HEAD~1` — shows ONE commit BEFORE the most recent (the "second line" commit)
+- `HEAD~1` means "go back 1 step from the current position"
 
 ---
 
-## Section C: Loops
+### Exercise 3 — Answer
 
-**Exercise 7**
-```python
-for i in range(1, 11):
-    print(i)
+```bash
+# Delete the content (pretend this was an accident)
+echo "" > hello.txt    # overwrites file with nothing
+
+git status
+# Shows: modified: hello.txt (in red)
+
+git diff
+# Shows all your text deleted (in red with -)
+
+git restore hello.txt
+
+# Open the file — everything is back
+cat hello.txt
 ```
 
-**Exercise 8**
-```python
-for i in range(1, 20, 2):
-    print(i)
-```
-Prints: 1, 3, 5, 7, 9, 11, 13, 15, 17, 19
+`git restore` works because Git still has the last committed version of the file. It just overwrites your broken local copy with the safe saved version.
 
-**Exercise 9**
-```python
-coins = 100
-
-while coins >= 0:
-    print("Coins remaining:", coins)
-    coins -= 7
-
-print("Game over! You ran out of coins.")
-```
-
-**Exercise 10 — Loop Tracing**
-```
-i=1, total=1
-i=2, total=3
-i=3, total=6
-i=4, total=10
-i=5, total=15
-Final: 15
-```
-(This is 1+2+3+4+5 = 15)
+> **Important:** `git restore` only works if you haven't committed the mistake. If you already committed the bad version, use `git revert` instead.
 
 ---
 
-## Section D: Lists and Dictionaries
+### Exercise 4 — Answer
 
-**Exercise 11**
-```python
-heroes = ["Spider-Man", "Thor", "Black Widow", "Iron Man", "Hulk"]
+```bash
+git switch -c experiment
+echo "This is my experiment" > experiment.txt
+git add experiment.txt
+git commit -m "add experiment file"
 
-print(heroes[0])       # Spider-Man
-print(heroes[-1])      # Hulk
+git switch main
+ls
+# Output: hello.txt  notes.txt   (experiment.txt is GONE from main)
 
-heroes.append("Captain America")
-heroes.remove("Thor")
-
-print(len(heroes))     # 5
+git switch experiment
+ls
+# Output: experiment.txt  hello.txt  notes.txt   (it's back!)
 ```
 
-**Exercise 12**
-```python
-numbers = [4, 17, 2, 9, 31]
-
-print(max(numbers))        # 31
-print(min(numbers))        # 2
-print(sum(numbers))        # 63
-print(sorted(numbers))     # [2, 4, 9, 17, 31]
-```
-
-**Exercise 13**
-```python
-character = {
-    "name": "Zara",
-    "class": "Ranger",
-    "level": 5,
-    "hp": 80,
-    "weapon": "Short Bow"
-}
-
-print(f"{character['name']} wields a {character['weapon']}.")
-
-character["weapon"] = "Elven Longbow"
-character["gold"] = 250
-
-for key, value in character.items():
-    print(f"{key}: {value}")
-```
+`experiment.txt` appears and disappears because each branch keeps its own set of files. Switching branches literally changes the files in your folder. Git is the one swapping them in and out.
 
 ---
 
-## Section E: Functions
+### Exercise 5 — Answer
 
-**Exercise 14**
-```python
-def celsius_to_fahrenheit(c):
-    return (c * 9/5) + 32
+```bash
+git switch main
+git merge experiment
+# Output: Fast-forward ... experiment.txt | 1 + ...
 
-print(celsius_to_fahrenheit(0))    # 32.0
-print(celsius_to_fahrenheit(100))  # 212.0
-print(celsius_to_fahrenheit(37))   # 98.6
+ls
+# Output: experiment.txt  hello.txt  notes.txt  (all three on main now!)
+
+git branch -d experiment
+# Output: Deleted branch experiment (was 9f4e2b1).
+
+git log --oneline --graph --all
 ```
 
-**Exercise 15**
-```python
-def is_even(number):
-    return number % 2 == 0
-
-for i in range(1, 11):
-    if is_even(i):
-        print(f"{i} is even")
-    else:
-        print(f"{i} is odd")
+**Expected graph:**
+```
+* 9f4e2b1 (HEAD -> main) add experiment file
+* 7c3a1d0 add notes.txt
+* a1b2c3d first commit: add hello.txt
 ```
 
-**Exercise 16**
-```python
-def grade(score):
-    if score >= 90:
-        return "A"
-    elif score >= 80:
-        return "B"
-    elif score >= 70:
-        return "C"
-    elif score >= 60:
-        return "D"
-    else:
-        return "F"
-
-for s in [95, 83, 71, 64, 42]:
-    print(f"{s} → {grade(s)}")
-```
-
-**Exercise 17 — Bug Fix**
-Two bugs: missing `:` after `def multiply(a, b)` and missing `)` in `multiply(6, 7`.
-```python
-def multiply(a, b):
-    result = a * b
-    return result
-
-answer = multiply(6, 7)
-print("6 x 7 =", answer)
-```
+Note: When Git can do a "fast-forward" merge (your branch was directly ahead of main with no conflicts), it doesn't create a merge commit — it just moves the main pointer forward. That's why the graph looks like a straight line, not a fork.
 
 ---
 
-## Section F: Files
+## Section B: Setting Up GitHub
 
-**Exercise 18**
-```python
-with open("favourite_things.txt", "w") as f:
-    f.write("Pizza\n")
-    f.write("Minecraft\n")
-    f.write("Coding\n")
-    f.write("Dogs\n")
-    f.write("Ice cream\n")
+### Exercise 6 — No code answer
 
-with open("favourite_things.txt", "r") as f:
-    for number, line in enumerate(f, 1):
-        print(f"{number}. {line.strip()}")
+Just follow the steps. Checklist:
+- [ ] Account created
+- [ ] Email verified
+- [ ] Profile picture added
+- [ ] Username noted down
+
+---
+
+### Exercise 7 — Answer
+
+```bash
+# Generate the key
+ssh-keygen -t ed25519 -C "your@email.com"
+# Press Enter three times
+
+# See the public key to copy
+cat ~/.ssh/id_ed25519.pub
+# Copy everything from "ssh-ed25519" to your email address
+
+# Test connection after adding key to GitHub
+ssh -T git@github.com
 ```
 
-**Exercise 19**
-```python
-with open("favourite_things.txt", "r") as f:
-    lines = [line.strip() for line in f if line.strip()]
+**Expected output:**
+```
+Hi your-username! You've successfully authenticated, but GitHub
+does not provide shell access.
+```
 
-print(f"You have {len(lines)} favourite things.")
+Your SSH directory now has two files:
+```bash
+ls ~/.ssh/
+# id_ed25519      ← PRIVATE key — never share this
+# id_ed25519.pub  ← PUBLIC key — safe to share, goes on GitHub
+```
+
+The private key stays on your computer. The public key goes on GitHub. Together they prove "yes, this computer belongs to this GitHub user" — like a lock and key.
+
+---
+
+## Section C: Pushing to GitHub
+
+### Exercise 8 — Answer
+
+```bash
+cd ~/git-practice
+
+# Connect to GitHub (replace YOUR-USERNAME with your actual username)
+git remote add origin git@github.com:YOUR-USERNAME/git-practice.git
+
+# First push (sets up the upstream tracking)
+git push -u origin main
+```
+
+**Expected output:**
+```
+Enumerating objects: 9, done.
+Counting objects: 100% (9/9), done.
+Writing objects: 100% (9/9), 1.23 KiB | 1.23 MiB/s, done.
+Branch 'main' set up to track remote branch 'main' from 'origin'.
+```
+
+From now on, in this repo, `git push` (no extra flags) is enough.
+
+Verify the connection:
+```bash
+git remote -v
+# origin  git@github.com:YOUR-USERNAME/git-practice.git (fetch)
+# origin  git@github.com:YOUR-USERNAME/git-practice.git (push)
 ```
 
 ---
 
-## Section G: Mini Programs
+### Exercise 9 — Answer
 
-**Exercise 20 — Simple Calculator**
-```python
-while True:
-    user_input = input("\nEnter calculation (e.g. 5 + 3) or 'quit': ").strip()
+**Part 1 — Edit on GitHub:** Done via the browser (no terminal commands needed).
 
-    if user_input.lower() == "quit":
-        print("Goodbye!")
-        break
+**Part 2 — Pull to your computer:**
+```bash
+git pull
+# Output: Updating a1b2c3d..9f4e2b1
+#         Fast-forward
+#          hello.txt | 1 +
+#          1 file changed, 1 insertion(+)
 
-    parts = user_input.split()
-    if len(parts) != 3:
-        print("Please enter: number operator number (e.g. 5 + 3)")
-        continue
-
-    try:
-        a = float(parts[0])
-        op = parts[1]
-        b = float(parts[2])
-
-        if op == "+":
-            print(a + b)
-        elif op == "-":
-            print(a - b)
-        elif op == "*":
-            print(a * b)
-        elif op == "/":
-            if b == 0:
-                print("Can't divide by zero!")
-            else:
-                print(a / b)
-        else:
-            print(f"Unknown operator: {op}")
-    except ValueError:
-        print("Please enter valid numbers.")
+cat hello.txt
+# Shows the new line you added on GitHub
 ```
 
-**Exercise 21 — Word Counter**
-```python
-sentence = input("Type a sentence: ")
-
-words = sentence.split()
-word_count = len(words)
-char_count = len(sentence)
-
-# Find the most common letter (ignoring spaces)
-letters_only = sentence.lower().replace(" ", "")
-if letters_only:
-    most_common = max(set(letters_only), key=letters_only.count)
-else:
-    most_common = "none"
-
-print(f"Words: {word_count}")
-print(f"Characters: {char_count}")
-print(f"Most common letter: '{most_common}'")
+**Part 3 — Edit locally and push:**
+```bash
+echo "Edited on my computer" >> hello.txt
+git add hello.txt
+git commit -m "add line from local computer"
+git push
 ```
 
-**Exercise 22 — Number Stats**
+**After both changes, `git log --oneline` shows:**
+```
+3a7f9c2 (HEAD -> main, origin/main) add line from local computer
+b2d4e81 Edit directly on GitHub
+9f4e2b1 add notes.txt
+...
+```
+
+This is the normal daily workflow for any developer working on a real project.
+
+---
+
+## Section D: Collaboration Features
+
+### Exercise 10 — Answer
+
+```bash
+git clone git@github.com:YOUR-USERNAME/Hello-World.git
+cd Hello-World
+git log --oneline
+ls
+```
+
+`ls` shows: `README`
+
+`git log --oneline` shows the full commit history from the original repo, going back years. This history was copied to your fork exactly.
+
+---
+
+### Exercise 11 — Answer
+
+```bash
+git switch -c my-first-pr
+echo "" >> README
+echo "Improved by YOUR-NAME" >> README
+git add README
+git commit -m "add my name to README"
+git push origin my-first-pr
+```
+
+Go to GitHub → your fork → you'll see: **"my-first-pr had recent pushes — Compare & pull request"**
+
+Click it. Fill in the description. Click **Create pull request**.
+
+To merge it into your own fork (not into `octocat`'s original):
+1. Click **Pull requests** tab in YOUR fork
+2. Click your PR
+3. Click **Merge pull request** → **Confirm merge**
+
+Your `main` branch now contains your change.
+
+---
+
+### Exercise 12 — Answer
+
+Example README.md:
+
+```markdown
+# Summer 2026 Projects
+
+Five coding projects I built during summer 2026 — from Linux basics to AI hardware.
+
+## What I Built
+
+- **Linux Terminal** — Learned to navigate the filesystem, write shell scripts, and use Git
+- **Python Games** — Built a text-based RPG with battles, inventory, and random loot
+- **AI Chatbot** — Ran a local AI using Ollama and gave it custom personalities
+- **Raspberry Pi Tombstone Display** — Wired up an OLED screen and button, powered by AI
+- **People in Space Indicator** — Fetched live astronaut data from a real API
+
+## What I Learned
+
+1. How computers actually work: CPU, RAM, storage, and the OS
+2. Python is one of the world's most useful programming languages — and it's readable
+3. AI models are just programs you can control with code, not magic
+
+## Example Code
+
 ```python
-numbers = []
+response = ollama.chat(
+    model="llama3.2",
+    messages=[{"role": "user", "content": "Write me a spooky epitaph"}]
+)
+print(response["message"]["content"])
+```
 
-while True:
-    entry = input("Enter a number (or 'done'): ").strip()
-    if entry.lower() == "done":
-        break
-    try:
-        numbers.append(float(entry))
-    except ValueError:
-        print("That's not a number, try again.")
+## Interesting Reading
 
-if not numbers:
-    print("No numbers entered.")
-else:
-    print(f"Count:   {len(numbers)}")
-    print(f"Sum:     {sum(numbers)}")
-    print(f"Average: {sum(numbers) / len(numbers):.2f}")
-    print(f"Min:     {min(numbers)}")
-    print(f"Max:     {max(numbers)}")
+- [Raspberry Pi Projects](https://projects.raspberrypi.org) — where the hardware ideas came from
 ```
 
 ---
 
-## Bonus: RPG Extension Challenges
+## Section E: GitHub Pages
 
-**1. Run Away option**
-```python
-elif choice == "3":   # Add inside the turn loop
-    if random.random() < 0.5:
-        print("  💨 You successfully ran away!")
-        return
-    else:
-        print("  ❌ Failed to escape! The monster blocks your path.")
+### Exercise 13 — Answer
+
+After creating `index.html` and pushing:
+
+```bash
+git add index.html
+git commit -m "add portfolio website"
+git push
 ```
 
-**2. Level-up after winning**
-```python
-# After the battle loop, if hero_hp > 0:
-hero_max_hp += 10
-hero_atk += 2
-print(f"  ⬆️  LEVEL UP! Max HP is now {hero_max_hp}, Attack is now {hero_atk}")
+GitHub Pages settings:
+- Settings → Pages → Source: **Deploy from a branch** → Branch: **main** → Folder: **/ (root)** → Save
+
+Your URL will be: `https://YOUR-USERNAME.github.io/summer-2026`
+
+If you want to make the page look nicer, add CSS inside the `<style>` tag in the `<head>`. For example:
+
+```html
+<head>
+  <title>My Summer 2026 Projects</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 700px;
+      margin: 60px auto;
+      padding: 0 20px;
+      background: #f9f9f9;
+      color: #333;
+    }
+    h1 { color: #2d8a4e; }
+    li  { margin: 6px 0; }
+  </style>
+</head>
 ```
 
-**3. Shop between battles**
-```python
-def visit_shop(hero_hp, hero_max_hp, hero_atk, potions, gold):
-    print("\n=== SHOP ===")
-    print(f"  Gold: {gold}")
-    print("  1) Buy potion (heal 20 HP)  — 10 gold")
-    print("  2) Upgrade attack (+2)       — 15 gold")
-    print("  3) Leave shop")
+---
 
-    while True:
-        choice = input("Buy what? ").strip()
+## Section F: Understanding Git
 
-        if choice == "1":
-            if gold >= 10:
-                heal = min(20, hero_max_hp - hero_hp)
-                hero_hp += heal
-                potions += 1
-                gold -= 10
-                print(f"  Bought a potion! HP: {hero_hp}, Gold left: {gold}")
-            else:
-                print("  Not enough gold!")
+**Q1 — `git add` vs `git commit`**
 
-        elif choice == "2":
-            if gold >= 15:
-                hero_atk += 2
-                gold -= 15
-                print(f"  Attack upgraded to {hero_atk}! Gold left: {gold}")
-            else:
-                print("  Not enough gold!")
+`git add` is the STAGING step — you're picking which changes you want to include in the next snapshot. `git commit` is the SAVING step — it creates the permanent snapshot.
 
-        elif choice == "3":
-            break
+Two steps exist so you can be selective. If you changed 10 files but only 3 are ready, you `git add` just those 3 and commit. The other 7 wait for the next commit. This lets you make small, focused commits instead of one giant "changed everything" commit.
 
-    return hero_hp, hero_atk, potions, gold
+---
 
-# Call visit_shop() between battles, passing hero stats and gold earned
+**Q2 — HEAD and HEAD~1**
+
+`HEAD` is a pointer to the commit you are currently on — usually the most recent commit on your branch. Think of it as "where you are right now in history."
+
+`HEAD~1` means "one commit before HEAD". `HEAD~2` means two commits back. It's a way of saying "go back N steps" without having to type the actual commit ID.
+
+---
+
+**Q3 — What is a branch?**
+
+A branch is a separate copy of your code history that you can make changes on without affecting the main copy.
+
+You'd use one when you want to try something risky, add a big new feature, or experiment — without breaking the code that already works. If the experiment works, you merge the branch back. If it breaks, you delete the branch and nothing is lost on `main`.
+
+---
+
+**Q4 — `git pull` vs `git clone`**
+
+`git clone` is for starting fresh — it downloads a repository from GitHub to your computer for the first time. You only do it once per project.
+
+`git pull` is for keeping in sync — it downloads any NEW commits that were added to GitHub since you last pulled. You run it every time you sit down to work.
+
+---
+
+**Q5 — Simultaneous changes / push rejected**
+
+Git will reject your push with a message like: `error: failed to push some refs`. This is Git saying "GitHub has commits you don't have yet — get those first."
+
+Fix it with:
+```bash
+git pull        # download GitHub's changes and merge them with yours
+git push        # now push your combined changes up
 ```
 
-**4. Second harder monster**
-```python
-def play_campaign(hero_name):
-    monsters = [
-        {"name": "Cave Goblin",  "hp": 40, "atk": 8},
-        {"name": "Stone Golem",  "hp": 70, "atk": 13},   # harder second monster
-    ]
+If the same line was changed in both versions, you'll get a merge conflict. Open the file, resolve it (choose which version to keep), `git add` and `git commit`, then `git push`.
 
-    hero_hp     = 50
-    hero_max_hp = 50
-    hero_atk    = 10
-    potions     = 2
-    gold        = 0
+---
 
-    for i, monster in enumerate(monsters):
-        print(f"\n--- Fight {i + 1} ---")
-        hero_hp, hero_atk, potions, gold = battle(
-            hero_name, hero_hp, hero_max_hp, hero_atk, potions, gold,
-            monster["name"], monster["hp"], monster["atk"]
-        )
-        if hero_hp <= 0:
-            print("Campaign over — the hero fell!")
-            return
-        if i < len(monsters) - 1:
-            print(f"\nYou have {gold} gold. Visiting the shop...")
-            hero_hp, hero_atk, potions, gold = visit_shop(
-                hero_hp, hero_max_hp, hero_atk, potions, gold
-            )
+**Q6 — Why commit messages matter**
 
-    print(f"\n🏆 CAMPAIGN COMPLETE! {hero_name} is a legend!")
+Commit messages are notes to your future self (and your teammates). Three months from now when something breaks, you'll search through the history trying to find when the bug was introduced. A message like `"stuff"` tells you nothing. A message like `"fix score counter resetting on player death"` lets you find the bug in seconds.
+
+**Bad commit messages:**
+- `"stuff"`
+- `"fix"`
+- `"wip"`
+- `"asdfg"`
+
+**Good commit messages:**
+- `"add inventory system to RPG game"`
+- `"fix button debounce causing double-presses"`
+- `"add README with project description and setup steps"`
+
+The rule: write the message as if you're explaining to your future self what you changed and why.
+
+---
+
+## Bonus Challenges
+
+### Bonus 1 — Git Archaeology: Sample Answers
+
+Going to `github.com/microsoft/vscode` (at the time of writing):
+- Over 100,000 commits
+- Multiple contributors active daily
+- Hundreds of open pull requests at any time
+- Commits from 2015 show a much simpler editor with far fewer features
+
+Finding old commits: click the commit count → scroll through history → click any commit to see the diff.
+
+---
+
+### Bonus 2 — Resolve a Merge Conflict: Answer
+
+```bash
+cd ~/git-practice
+
+# --- Set up the conflict ---
+
+# On main: change first line
+git switch main
+# Edit hello.txt, change line 1 to: "Hello from main!"
+git add hello.txt
+git commit -m "change greeting on main"
+
+# On conflict-test: change the SAME first line differently
+git switch -c conflict-test
+# Edit hello.txt, change line 1 to: "Hello from my branch!"
+git add hello.txt
+git commit -m "change greeting on conflict-test"
+
+# --- Trigger the conflict ---
+git switch main
+git merge conflict-test
+# OUTPUT: CONFLICT (content): Merge conflict in hello.txt
+#         Automatic merge failed; fix conflicts and then commit the result.
 ```
 
-**5. Save high score to file**
-```python
-import os
-
-SCORE_FILE = "highscore.txt"
-
-def save_score(turns):
-    best = float("inf")
-    if os.path.exists(SCORE_FILE):
-        with open(SCORE_FILE) as f:
-            try:
-                best = int(f.read().strip())
-            except ValueError:
-                pass
-    if turns < best:
-        with open(SCORE_FILE, "w") as f:
-            f.write(str(turns))
-        print(f"  🏆 NEW HIGH SCORE: {turns} turns!")
-    else:
-        print(f"  Your score: {turns} turns. Best: {best} turns.")
+**Open `hello.txt` — you'll see:**
 ```
+<<<<<<< HEAD
+Hello from main!
+=======
+Hello from my branch!
+>>>>>>> conflict-test
+```
+
+**Edit it to keep what you want (e.g. keep both lines):**
+```
+Hello from main!
+Hello from my branch!
+```
+
+**Finish the merge:**
+```bash
+git add hello.txt
+git commit -m "merge conflict-test: keep both greetings"
+git log --oneline --graph --all
+```
+
+**Expected graph:**
+```
+*   (HEAD -> main) merge conflict-test: keep both greetings
+|\
+| * (conflict-test) change greeting on conflict-test
+* | change greeting on main
+|/
+* add notes.txt
+```
+
+Merge conflicts look scary but they're just Git asking "I can't decide — you choose." Once you've resolved a few, they feel routine.
+
+---
+
+### Bonus 3 — Contribute to Open Source
+
+There's no single "answer" here — every project is different. Tips for finding good first issues:
+
+1. Search GitHub: `label:"good first issue" language:python`
+2. Check the project's `CONTRIBUTING.md` — it tells you exactly how they want PRs formatted
+3. Start with documentation fixes — fixing a typo or improving a README explanation is a completely valid first contribution
+4. Be patient — maintainers are volunteers and might take weeks to review
+
+A good PR description:
+```
+## What this PR does
+Fixed a typo in the README where "recieve" should be "receive".
+
+## Why
+Noticed this while reading the docs. Small fix but it improves the project.
+```
+
+You just completed the full open source contribution workflow. That's exactly how improvements to Python, Linux, and VS Code happen — thousands of people making small improvements just like this one.

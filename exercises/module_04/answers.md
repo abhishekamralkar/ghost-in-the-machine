@@ -1,345 +1,468 @@
-# Module 4 Answers — Raspberry Pi Tombstone Project
+# Module 3 Answers — AI with Ollama
+
+Note: AI responses vary every time — your output will be different from any example shown here.
+These answers show the CODE, not the AI's text.
 
 ---
 
-## Section A: Raspberry Pi Basics
+## Section A: Terminal AI Warm-Up
 
-1. `sudo apt update && sudo apt upgrade -y`
+These are open-ended — your answers will differ. The key thing is that you RAN the commands and read the responses.
 
-2. **SSH = Secure Shell.** It lets you control the Pi remotely from another computer over the network — so you don't need to plug in a monitor or keyboard directly to the Pi.
-
-3. `sudo i2cdetect -y 1`
-
-4. You should see **`3c`** — that is the I2C address of the SSD1306 OLED display.
-
-5. The Pi has no slot for a traditional hard drive. MicroSD cards are tiny, cheap, and have no moving parts — perfect for a small board computer.
-
----
-
-## Section B: Setup Checklist
-
-This is hands-on — there are no "right answers" here, but here are common errors:
-
-**Common problems and fixes:**
-
-- **SSH connection refused:** Make sure SSH was enabled in the Imager settings before flashing. Enable with `sudo raspi-config → Interface Options → SSH`.
-- **`3c` not showing in i2cdetect:** Double-check the SDA/SCL wiring. Swap VCC and GND and try again (a common beginner mistake).
-- **Ollama download hangs:** The Pi's internet connection may be slow. Let it run — `llama3.2:1b` is ~1.3 GB.
-
----
-
-## Section C: Display Exercises
-
-**Exercise 1 — Hello Display with Date**
-```python
-import board
-import busio
-import adafruit_ssd1306
-import datetime
-from PIL import Image, ImageDraw
-
-i2c = busio.I2C(board.SCL, board.SDA)
-oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
-oled.fill(0)
-oled.show()
-
-image = Image.new("1", (oled.width, oled.height))
-draw = ImageDraw.Draw(image)
-
-today = datetime.date.today().strftime("%b %d, %Y")
-
-draw.text((0, 0),  "YOUR NAME HERE", fill=255)
-draw.text((0, 20), today, fill=255)
-
-oled.image(image)
-oled.show()
-print("Done!")
+3. `ollama list` shows something like:
 ```
-
-**Exercise 2 — Countdown Display**
-```python
-import board
-import busio
-import adafruit_ssd1306
-import time
-from PIL import Image, ImageDraw, ImageFont
-
-i2c = busio.I2C(board.SCL, board.SDA)
-oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
-
-def show_centered(oled, text):
-    image = Image.new("1", (oled.width, oled.height))
-    draw = ImageDraw.Draw(image)
-    # Approximate centering for default font (6px wide, 8px tall)
-    x = (oled.width - len(text) * 6) // 2
-    draw.text((x, 24), text, fill=255)
-    oled.image(image)
-    oled.show()
-
-for i in range(5, 0, -1):
-    show_centered(oled, str(i))
-    time.sleep(1)
-
-show_centered(oled, "GO!")
-time.sleep(2)
-
-oled.fill(0)
-oled.show()
-```
-
-**Exercise 3 — Two-Line Message**
-```python
-import board
-import busio
-import adafruit_ssd1306
-from PIL import Image, ImageDraw
-
-def show_two_lines(oled, line1, line2):
-    image = Image.new("1", (oled.width, oled.height))
-    draw = ImageDraw.Draw(image)
-    draw.text((4, 10), line1, fill=255)
-    draw.text((4, 30), line2, fill=255)
-    oled.image(image)
-    oled.show()
-
-i2c = busio.I2C(board.SCL, board.SDA)
-oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
-oled.fill(0)
-oled.show()
-
-show_two_lines(oled, "Hello Pi!", "I am alive")
+NAME              ID            SIZE    MODIFIED
+llama3.2:latest   a80c4f17acd5  2.0 GB  2 weeks ago
+llama3.2:1b       baf6a787fdff  1.3 GB  2 weeks ago
 ```
 
 ---
 
-## Section D: Button Exercises
+## Section B: First Python + AI Programs
 
-**Exercise 4 — Button Counter**
-```python
-import board
-import busio
-import adafruit_ssd1306
-import RPi.GPIO as GPIO
-import time
-from PIL import Image, ImageDraw
-
-BUTTON_PIN = 17
-
-i2c = busio.I2C(board.SCL, board.SDA)
-oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
-
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-def show_count(oled, count):
-    image = Image.new("1", (oled.width, oled.height))
-    draw = ImageDraw.Draw(image)
-    draw.text((4, 4), "Button Count:", fill=255)
-    draw.text((50, 28), str(count), fill=255)
-    oled.image(image)
-    oled.show()
-
-def show_win(oled):
-    image = Image.new("1", (oled.width, oled.height))
-    draw = ImageDraw.Draw(image)
-    draw.text((20, 24), "YOU WIN!", fill=255)
-    oled.image(image)
-    oled.show()
-
-count = 0
-show_count(oled, count)
-
-try:
-    while count < 10:
-        if GPIO.input(BUTTON_PIN) == GPIO.LOW:
-            count += 1
-            if count == 10:
-                show_win(oled)
-            else:
-                show_count(oled, count)
-            time.sleep(0.3)   # Debounce
-        time.sleep(0.05)
-finally:
-    GPIO.cleanup()
-```
-
-**Exercise 5 — Button Morse Code**
-```python
-import RPi.GPIO as GPIO
-import time
-
-BUTTON_PIN = 17
-
-GPIO.setmode(GPIO.BCM)
-GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-print("Press the button. Short = DOT, Long = DASH. Ctrl+C to quit.")
-
-try:
-    while True:
-        # Wait for button press (goes LOW)
-        while GPIO.input(BUTTON_PIN) == GPIO.HIGH:
-            time.sleep(0.01)
-
-        press_start = time.time()
-
-        # Wait for button release (goes HIGH again)
-        while GPIO.input(BUTTON_PIN) == GPIO.LOW:
-            time.sleep(0.01)
-
-        duration = time.time() - press_start
-
-        if duration < 0.5:
-            print("DOT  (·)")
-        else:
-            print("DASH (—)")
-
-except KeyboardInterrupt:
-    GPIO.cleanup()
-    print("\nDone.")
-```
-
----
-
-## Section E: AI Epitaph Exercises
-
-**Exercise 7 — Themed Generator**
+**Exercise 4 — Hello AI**
 ```python
 import ollama
 
-def generate_epitaph(theme="Halloween"):
-    prompt = (
-        f"Write a short funny {theme} themed tombstone epitaph. "
-        "Include a made-up punny name on the first line. "
-        "Add a one-line message below it. "
-        "Keep total under 55 characters. "
-        "Only output the epitaph, no explanation."
-    )
+response = ollama.chat(
+    model="llama3.2",
+    messages=[
+        {"role": "user", "content": "What is your favourite thing about being an AI?"}
+    ]
+)
+
+print(response["message"]["content"])
+```
+
+**Exercise 5 — Three Questions**
+```python
+import ollama
+
+questions = [
+    "What is photosynthesis?",
+    "What is the fastest animal on Earth?",
+    "What causes thunder?",
+]
+
+for i, question in enumerate(questions, 1):
     response = ollama.chat(
-        model="llama3.2:1b",
+        model="llama3.2",
+        messages=[{"role": "user", "content": question}]
+    )
+    print(f"Question {i}: {question}")
+    print(f"Answer: {response['message']['content']}")
+    print()
+```
+
+**Exercise 6 — System Prompt Practice**
+```python
+import ollama
+
+question = "What is a variable in Python?"
+
+# Pirate version
+pirate_response = ollama.chat(
+    model="llama3.2",
+    messages=[
+        {"role": "system", "content": "You are a pirate who teaches programming. Always talk like a pirate. Say 'Arrr!' a lot."},
+        {"role": "user", "content": question}
+    ]
+)
+
+# Child version
+child_response = ollama.chat(
+    model="llama3.2",
+    messages=[
+        {"role": "system", "content": "You are a 5-year-old child who just learned about coding. Explain things in the simplest possible words. Use short sentences. Be excited."},
+        {"role": "user", "content": question}
+    ]
+)
+
+print("=== PIRATE VERSION ===")
+print(pirate_response["message"]["content"])
+print()
+print("=== CHILD VERSION ===")
+print(child_response["message"]["content"])
+```
+
+---
+
+## Section C: Interactive Programs
+
+**Exercise 7 — Ask Anything Loop**
+```python
+import ollama
+
+count = 0
+
+print("Ask the AI anything! Type 'quit' to stop.\n")
+
+while True:
+    question = input("You: ").strip()
+
+    if question.lower() == "quit":
+        break
+
+    if not question:
+        continue
+
+    response = ollama.chat(
+        model="llama3.2",
+        messages=[{"role": "user", "content": question}]
+    )
+
+    print(f"AI: {response['message']['content']}\n")
+    count += 1
+
+print(f"\nYou asked {count} question(s). Goodbye!")
+```
+
+**Exercise 8 — Subject Tutor**
+```python
+import ollama
+
+subject = input("What subject do you want to learn about? ").strip()
+
+messages = [
+    {
+        "role": "system",
+        "content": f"You are an expert tutor in {subject}. You teach 9-year-old students. Keep all answers fun, short (under 80 words), and use simple words. Use one analogy per answer."
+    }
+]
+
+print(f"\nWelcome! I'm your {subject} tutor. Ask me anything!")
+print("Type 'exit' to leave.\n")
+
+while True:
+    user_input = input("You: ").strip()
+
+    if user_input.lower() == "exit":
+        print(f"Tutor: Great session! Keep learning about {subject}. Goodbye!")
+        break
+
+    if not user_input:
+        continue
+
+    messages.append({"role": "user", "content": user_input})
+
+    response = ollama.chat(model="llama3.2", messages=messages)
+    reply = response["message"]["content"]
+
+    print(f"Tutor: {reply}\n")
+    messages.append({"role": "assistant", "content": reply})
+```
+
+**Exercise 9 — Streaming Practice**
+```python
+import ollama
+
+def stream_response(prompt, title):
+    print(f"\n{'='*40}")
+    print(f"  {title}")
+    print(f"{'='*40}")
+
+    stream = ollama.chat(
+        model="llama3.2",
+        messages=[{"role": "user", "content": prompt}],
+        stream=True
+    )
+
+    for chunk in stream:
+        print(chunk["message"]["content"], end="", flush=True)
+
+    print("\n")
+
+stream_response(
+    "Write a short poem about a golden retriever",
+    "POEM: The Golden Retriever"
+)
+
+stream_response(
+    "Write step-by-step instructions for making the perfect sandwich, numbered 1 to 6",
+    "RECIPE: The Perfect Sandwich"
+)
+
+stream_response(
+    "Write a short story (100 words) about a robot who wants to be a chef but keeps burning the food",
+    "STORY: The Cooking Robot"
+)
+```
+
+---
+
+## Section D: Creative Challenges
+
+**Exercise 10 — Personality Showdown**
+```python
+import ollama
+
+question = "What should I do if I'm bored?"
+
+personalities = [
+    ("Game Show Host", "You are BLASTER, an over-the-top excited game show host. EVERYTHING IS AMAZING. Use lots of capitals and exclamation marks."),
+    ("Grumpy Old Wizard", "You are Grognar, a 900-year-old grumpy wizard. You find the question tiresome but answer anyway. You complain a lot."),
+    ("Friendly Robot", "You are ARIA-7, a cheerful robot from the year 2350. You find human boredom fascinating. You give futuristic suggestions."),
+]
+
+for name, system_prompt in personalities:
+    response = ollama.chat(
+        model="llama3.2",
+        messages=[
+            {"role": "system", "content": system_prompt},
+            {"role": "user", "content": question}
+        ]
+    )
+    print(f"\n[{name}]")
+    print(response["message"]["content"])
+    print("-" * 40)
+```
+
+**Exercise 11 — AI Fact Checker**
+```python
+import ollama
+
+facts = [
+    ("The Eiffel Tower is in London.", False),
+    ("Sharks are mammals.", False),
+    ("Octopuses have three hearts.", True),
+    ("The Sun is a star.", True),
+    ("Cats can fly.", False),
+]
+
+print("=== AI FACT CHECKER ===\n")
+
+correct = 0
+for fact, actual_truth in facts:
+    response = ollama.chat(
+        model="llama3.2",
         messages=[
             {
                 "role": "system",
-                "content": f"You write short funny {theme} themed tombstone epitaphs. Two lines max. Under 55 characters. Only output the epitaph."
+                "content": "You are a fact checker. Answer with TRUE or FALSE only, followed by one short sentence explaining why."
             },
-            {"role": "user", "content": prompt}
+            {"role": "user", "content": f"Is this true or false? {fact}"}
+        ]
+    )
+
+    ai_answer = response["message"]["content"].strip()
+    ai_says_true = ai_answer.upper().startswith("TRUE")
+
+    status = "✓" if ai_says_true == actual_truth else "✗ (AI was wrong!)"
+
+    print(f"Fact: {fact}")
+    print(f"AI says: {ai_answer}")
+    print(f"Result: {status}\n")
+```
+
+**Exercise 12 — Story Continuer**
+```python
+import ollama
+
+print("=== COLLABORATIVE STORY ===\n")
+print("You write the first sentence to start our story.\n")
+
+first_sentence = input("Your opening sentence: ").strip()
+story = first_sentence + " "
+
+for round_num in range(1, 6):
+    print(f"\n[Round {round_num}] AI is writing...")
+
+    response = ollama.chat(
+        model="llama3.2",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are writing a collaborative story with a child. Continue the story with exactly 2 exciting sentences. Do not end the story yet (except on round 5). Output ONLY the 2 sentences, nothing else."
+            },
+            {
+                "role": "user",
+                "content": f"Here is the story so far:\n\n{story}\n\nContinue with 2 sentences."
+            }
+        ]
+    )
+
+    ai_part = response["message"]["content"].strip()
+    story += ai_part + " "
+
+    if round_num < 5:
+        print("\nYour turn — add one sentence to continue the story:")
+        your_part = input("> ").strip()
+        story += your_part + " "
+
+print("\n" + "="*50)
+print("THE COMPLETE STORY")
+print("="*50)
+print(story)
+```
+
+---
+
+## Section E: Understanding AI
+
+1. **System prompt:** A secret instruction you give the AI before the conversation starts. It tells the AI how to behave — its personality, what it knows, and how to respond. It's powerful because you can turn the same AI into completely different characters just by changing a few sentences.
+
+2. **What happened:** The AI "hallucinated" — it confidently stated a wrong fact. You should verify with a real source (Wikipedia, an encyclopedia, a trusted website). The AI isn't lying; it just predicted the wrong words based on its training.
+
+3. **Why local is good:** Your questions stay private on your own machine. No company sees them. No internet is needed. It also works even without Wi-Fi.
+
+4. **Memory between chats:** No — the AI has NO memory between separate conversations. Each new chat starts fresh. Within one chat it remembers because you pass the conversation history in the `messages` list. But close the program and start again, and it forgets everything.
+
+5. **Good use:** "Ask the AI to explain a hard concept from your textbook in simple words, then check the explanation in your book." This speeds up understanding while you still verify the content.
+   **Bad use:** "Copy the AI's answer directly into your homework and submit it as your own work." This is dishonest and means you don't actually learn anything. Also, the AI might be wrong.
+
+---
+
+## Bonus 1 — Random Personality
+
+```python
+import ollama
+import random
+
+personalities = [
+    ("Captain CodeBeard",  "You are a pirate who teaches programming. Always talk like a pirate. Say 'Arrr!' a lot. Use nautical metaphors."),
+    ("BLASTER",            "You are an over-the-top excited game show host. EVERYTHING IS AMAZING. Use lots of capitals and exclamation marks!!!"),
+    ("Grognar the Wizard", "You are a 900-year-old grumpy wizard. You find questions tiresome but answer anyway. You complain about modern times."),
+    ("ARIA-7",             "You are a cheerful robot from the year 2350. You find human questions fascinating. Suggest futuristic solutions."),
+    ("Ignathar the Dragon","You are an ancient dragon who has lived 10,000 years. You speak in riddles and metaphors. You find humans amusing."),
+]
+
+chosen_name, chosen_prompt = random.choice(personalities)
+
+print("You are talking to a mystery personality. Can you guess who it is?")
+print("Type 'quit' to give up and see the reveal.\n")
+
+while True:
+    user_input = input("You: ").strip()
+
+    if user_input.lower() == "quit":
+        print(f"\nThe mystery personality was: {chosen_name}!")
+        break
+
+    response = ollama.chat(
+        model="llama3.2",
+        messages=[
+            {"role": "system", "content": chosen_prompt},
+            {"role": "user",   "content": user_input}
+        ]
+    )
+    print(f"Mystery AI: {response['message']['content']}\n")
+```
+
+---
+
+## Bonus 2 — Quiz Generator (Extended)
+
+```python
+import ollama
+import random
+
+def generate_question(topic):
+    prompt = f"""Create one multiple-choice quiz question about "{topic}" for a 5th grade student.
+
+Format EXACTLY like this:
+QUESTION: (the question)
+A) (first choice)
+B) (second choice)
+C) (third choice)
+D) (fourth choice)
+ANSWER: (just the letter)"""
+
+    response = ollama.chat(
+        model="llama3.2",
+        messages=[{"role": "user", "content": prompt}]
+    )
+    return response["message"]["content"]
+
+def parse_question(raw):
+    lines = raw.strip().split("\n")
+    question, choices, answer = "", [], ""
+    for line in lines:
+        line = line.strip()
+        if line.startswith("QUESTION:"):
+            question = line.replace("QUESTION:", "").strip()
+        elif line.startswith(("A)", "B)", "C)", "D)")):
+            choices.append(line)
+        elif line.startswith("ANSWER:"):
+            answer = line.replace("ANSWER:", "").strip()
+    return question, choices, answer
+
+def get_study_tips(wrong_topics):
+    if not wrong_topics:
+        return "You got everything right — amazing!"
+    topics_str = ", ".join(wrong_topics)
+    response = ollama.chat(
+        model="llama3.2",
+        messages=[
+            {
+                "role": "system",
+                "content": "You are a friendly tutor for 9-year-old students. Give short, encouraging study tips."
+            },
+            {
+                "role": "user",
+                "content": f"The student got questions wrong about: {topics_str}. Give 2-3 short study tips to help them improve."
+            }
+        ]
+    )
+    return response["message"]["content"]
+
+# ── Main ──────────────────────────────────────────────────────────────────────
+
+topic = input("What topic should the quiz be about? ").strip()
+rounds = int(input("How many rounds? (1-5): ").strip())
+
+score = 0
+wrong_topics = []
+
+for i in range(rounds):
+    print(f"\nGenerating question {i+1}...")
+    raw = generate_question(topic)
+    question, choices, correct = parse_question(raw)
+
+    if not question or not choices:
+        print("(Couldn't generate that one, skipping)")
+        continue
+
+    print(f"\nQ{i+1}: {question}")
+    for choice in choices:
+        print(f"  {choice}")
+
+    answer = input("Your answer (A/B/C/D): ").strip().upper()
+
+    if answer == correct:
+        print("Correct!")
+        score += 1
+    else:
+        print(f"Not quite — the answer was {correct}.")
+        wrong_topics.append(topic)
+
+print(f"\n=== FINAL SCORE: {score}/{rounds} ===")
+print("\nStudy tips from your AI tutor:")
+print(get_study_tips(wrong_topics))
+```
+
+---
+
+## Bonus 3 — AI Dungeon Master (key snippets)
+
+```python
+import ollama
+
+def dm_narrate(event_description, style="epic fantasy narrator"):
+    response = ollama.chat(
+        model="llama3.2",
+        messages=[
+            {
+                "role": "system",
+                "content": f"You are an {style} for a text RPG. Narrate events dramatically in 1-2 sentences. Be exciting and vivid."
+            },
+            {"role": "user", "content": f"Narrate: {event_description}"}
         ]
     )
     return response["message"]["content"].strip()
 
-themes = ["pirate", "space explorer", "video game character", "chef"]
-
-for theme in themes:
-    print(f"\n[{theme.upper()}]")
-    print(generate_epitaph(theme))
-```
-
----
-
-## Section F: Full Program Exercises
-
-**Exercise 9 — Startup Screen Customisation**
-```python
-def show_startup(oled):
-    image = Image.new("1", (DISPLAY_WIDTH, DISPLAY_HEIGHT))
-    draw  = ImageDraw.Draw(image)
-
-    # Outer border
-    draw.rectangle([0, 0, DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1], outline=255)
-
-    # Your custom lines — change these to whatever you like!
-    draw.text((10, 6),  "AI TOMBSTONE",   fill=255)
-    draw.text((12, 18), "by Alex",         fill=255)   # ← put your name here
-    draw.line([1, 30, DISPLAY_WIDTH - 2, 30], fill=255)
-    draw.text((8,  34), "Enter if you",    fill=255)
-    draw.text((8,  46), "dare... 👻",      fill=255)
-
-    oled.image(image)
-    oled.show()
-    time.sleep(3)
-```
-
-Replace the text strings with your own name and a spooky message of your choice!
-
-**Exercise 8 — Message Log**
-```python
-import os
-import datetime
-
-LOG_FILE = "logs/epitaphs.log"
-
-def log_epitaph(epitaph):
-    os.makedirs("logs", exist_ok=True)
-    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    with open(LOG_FILE, "a") as f:
-        f.write(f"{timestamp}\n")
-        f.write(epitaph + "\n")
-        f.write("---\n")
-```
-
-Add `log_epitaph(epitaph)` inside `fetch_and_display()` in `tombstone.py` after `generate_epitaph()` returns.
-
-**Exercise 10 — Button Hold to Quit**
-```python
-import sys   # ← add this at the very top of tombstone.py with the other imports
-
-# Replace the existing on_button_press function with this version:
-
-HOLD_QUIT_SECONDS = 3.0
-
-def on_button_press(channel):
-    nonlocal button_pressed
-    press_start = time.time()
-
-    # Wait while the button is still held down
-    while GPIO.input(channel) == GPIO.LOW:
-        if time.time() - press_start >= HOLD_QUIT_SECONDS:
-            # Held for 3+ seconds — quit cleanly
-            show_message(oled, "GOODBYE...", title="BYE")
-            time.sleep(2)
-            oled.fill(0)
-            oled.show()
-            GPIO.cleanup()
-            sys.exit(0)
-        time.sleep(0.05)
-
-    # Released quickly — short press means generate a new message
-    button_pressed = True
-```
-
----
-
-## Section G: Troubleshooting Practice
-
-| Problem | What I would check first |
-|---------|--------------------------|
-| OLED shows nothing after running test_display.py | Run `i2cdetect -y 1` — is `3c` visible? If not, check the SDA/SCL wires. |
-| `i2cdetect -y 1` shows no `3c` | Re-check wiring: VCC to Pin 1 (3.3V), GND to Pin 6, SDA to Pin 3, SCL to Pin 5. Also confirm I2C is enabled in raspi-config. |
-| Button press does nothing | Check `BUTTON_PIN = 17` matches your actual wiring. Run `test_button.py` and press the button — does it print anything? |
-| Ollama gives an error | Run `ollama list` to confirm the model is downloaded. Run `ollama ps` to see if the server is running. Try `ollama serve` in a separate terminal. |
-| Program crashes with `ModuleNotFoundError` | Run `pip3 install <missing-module-name>`. Common ones: `adafruit-circuitpython-ssd1306`, `pillow`, `RPi.GPIO`, `ollama`. |
-| Tombstone works but starts very slowly | The Pi is generating AI text — this is normal. `llama3.2:1b` (1 billion parameter model) takes 10–30 seconds on the Pi. Use a smaller model or pre-generate messages. |
-| Pi won't boot | The MicroSD card may be corrupted. Re-flash it using Raspberry Pi Imager and start again. |
-
----
-
-## Bonus 3 — Epitaph Voting (key code)
-
-```python
-import RPi.GPIO as GPIO
-
-BUTTON_NEW   = 17   # Pin 11 — generate new epitaph
-BUTTON_SAVE  = 27   # Pin 13 — save to favourites
-
-GPIO.setup(BUTTON_NEW,  GPIO.IN, pull_up_down=GPIO.PUD_UP)
-GPIO.setup(BUTTON_SAVE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
-
-FAVOURITES_FILE = "favourites.txt"
-
-def save_favourite(epitaph):
-    with open(FAVOURITES_FILE, "a") as f:
-        f.write(epitaph + "\n---\n")
-    print(f"Saved to {FAVOURITES_FILE}")
-
-# In main loop, detect BUTTON_SAVE and call save_favourite(current_message)
+# Usage examples:
+print(dm_narrate("The hero enters a dark dungeon for the first time"))
+print(dm_narrate("The hero lands a critical hit on the dragon for 20 damage"))
+print(dm_narrate("The hero drinks a healing potion and recovers 15 HP"))
+print(dm_narrate("The dragon is defeated and falls to the ground"))
 ```

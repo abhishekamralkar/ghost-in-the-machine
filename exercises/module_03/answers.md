@@ -1,468 +1,433 @@
-# Module 3 Answers — AI with Ollama
-
-Note: AI responses vary every time — your output will be different from any example shown here.
-These answers show the CODE, not the AI's text.
+# Module 2 Answers — Python
 
 ---
 
-## Section A: Terminal AI Warm-Up
+## Section A: Variables and Types
 
-These are open-ended — your answers will differ. The key thing is that you RAN the commands and read the responses.
-
-3. `ollama list` shows something like:
-```
-NAME              ID            SIZE    MODIFIED
-llama3.2:latest   a80c4f17acd5  2.0 GB  2 weeks ago
-llama3.2:1b       baf6a787fdff  1.3 GB  2 weeks ago
-```
-
----
-
-## Section B: First Python + AI Programs
-
-**Exercise 4 — Hello AI**
+**Exercise 1**
 ```python
-import ollama
+name = "Alex"
+age = 9
+height = 4.5
+likes_coding = True
 
-response = ollama.chat(
-    model="llama3.2",
-    messages=[
-        {"role": "user", "content": "What is your favourite thing about being an AI?"}
-    ]
-)
-
-print(response["message"]["content"])
+print(f"My name is {name}, I am {age} years old, {height} feet tall, and I like coding: {likes_coding}")
 ```
 
-**Exercise 5 — Three Questions**
-```python
-import ollama
-
-questions = [
-    "What is photosynthesis?",
-    "What is the fastest animal on Earth?",
-    "What causes thunder?",
-]
-
-for i, question in enumerate(questions, 1):
-    response = ollama.chat(
-        model="llama3.2",
-        messages=[{"role": "user", "content": question}]
-    )
-    print(f"Question {i}: {question}")
-    print(f"Answer: {response['message']['content']}")
-    print()
+**Exercise 2 — Expected Output**
+```
+13    # 10 + 3
+7     # 10 - 3
+30    # 10 * 3
+3.3333333333333335  # 10 / 3 (always float)
+3     # 10 // 3 (floor division — rounds down)
+1     # 10 % 3 (remainder: 10 = 3×3 + 1)
+1000  # 10 ** 3 (10 to the power of 3)
 ```
 
-**Exercise 6 — System Prompt Practice**
+**Exercise 3 — Bug Fix**
+The bug: `input()` returns a string, and you can't add 1 to a string. Fix: convert to `int`.
 ```python
-import ollama
-
-question = "What is a variable in Python?"
-
-# Pirate version
-pirate_response = ollama.chat(
-    model="llama3.2",
-    messages=[
-        {"role": "system", "content": "You are a pirate who teaches programming. Always talk like a pirate. Say 'Arrr!' a lot."},
-        {"role": "user", "content": question}
-    ]
-)
-
-# Child version
-child_response = ollama.chat(
-    model="llama3.2",
-    messages=[
-        {"role": "system", "content": "You are a 5-year-old child who just learned about coding. Explain things in the simplest possible words. Use short sentences. Be excited."},
-        {"role": "user", "content": question}
-    ]
-)
-
-print("=== PIRATE VERSION ===")
-print(pirate_response["message"]["content"])
-print()
-print("=== CHILD VERSION ===")
-print(child_response["message"]["content"])
+age = int(input("How old are you? "))
+next_year = age + 1
+print("Next year you will be", next_year)
 ```
 
 ---
 
-## Section C: Interactive Programs
+## Section B: If / Elif / Else
 
-**Exercise 7 — Ask Anything Loop**
+**Exercise 4**
 ```python
-import ollama
+temp = float(input("Enter the temperature in Fahrenheit: "))
 
-count = 0
+if temp < 32:
+    print("Freezing!")
+elif temp <= 59:
+    print("Cold")
+elif temp <= 79:
+    print("Warm")
+else:
+    print("Hot!")
+```
 
-print("Ask the AI anything! Type 'quit' to stop.\n")
+**Exercise 5**
+```python
+password = input("Enter the password: ")
 
+if password == "dragon123":
+    print("Access granted!")
+    print("SECRET: The treasure is hidden under the third stone.")
+else:
+    print("Wrong password. Access denied.")
+```
+
+**Exercise 6 — Output**
+```
+C
+Done
+```
+Reason: score is 75. It fails the `>= 90` and `>= 80` checks, but passes `>= 70`, so it prints "C". Then the loop ends and prints "Done".
+
+---
+
+## Section C: Loops
+
+**Exercise 7**
+```python
+for i in range(1, 11):
+    print(i)
+```
+
+**Exercise 8**
+```python
+for i in range(1, 20, 2):
+    print(i)
+```
+Prints: 1, 3, 5, 7, 9, 11, 13, 15, 17, 19
+
+**Exercise 9**
+```python
+coins = 100
+
+while coins >= 0:
+    print("Coins remaining:", coins)
+    coins -= 7
+
+print("Game over! You ran out of coins.")
+```
+
+**Exercise 10 — Loop Tracing**
+```
+i=1, total=1
+i=2, total=3
+i=3, total=6
+i=4, total=10
+i=5, total=15
+Final: 15
+```
+(This is 1+2+3+4+5 = 15)
+
+---
+
+## Section D: Lists and Dictionaries
+
+**Exercise 11**
+```python
+heroes = ["Spider-Man", "Thor", "Black Widow", "Iron Man", "Hulk"]
+
+print(heroes[0])       # Spider-Man
+print(heroes[-1])      # Hulk
+
+heroes.append("Captain America")
+heroes.remove("Thor")
+
+print(len(heroes))     # 5
+```
+
+**Exercise 12**
+```python
+numbers = [4, 17, 2, 9, 31]
+
+print(max(numbers))        # 31
+print(min(numbers))        # 2
+print(sum(numbers))        # 63
+print(sorted(numbers))     # [2, 4, 9, 17, 31]
+```
+
+**Exercise 13**
+```python
+character = {
+    "name": "Zara",
+    "class": "Ranger",
+    "level": 5,
+    "hp": 80,
+    "weapon": "Short Bow"
+}
+
+print(f"{character['name']} wields a {character['weapon']}.")
+
+character["weapon"] = "Elven Longbow"
+character["gold"] = 250
+
+for key, value in character.items():
+    print(f"{key}: {value}")
+```
+
+---
+
+## Section E: Functions
+
+**Exercise 14**
+```python
+def celsius_to_fahrenheit(c):
+    return (c * 9/5) + 32
+
+print(celsius_to_fahrenheit(0))    # 32.0
+print(celsius_to_fahrenheit(100))  # 212.0
+print(celsius_to_fahrenheit(37))   # 98.6
+```
+
+**Exercise 15**
+```python
+def is_even(number):
+    return number % 2 == 0
+
+for i in range(1, 11):
+    if is_even(i):
+        print(f"{i} is even")
+    else:
+        print(f"{i} is odd")
+```
+
+**Exercise 16**
+```python
+def grade(score):
+    if score >= 90:
+        return "A"
+    elif score >= 80:
+        return "B"
+    elif score >= 70:
+        return "C"
+    elif score >= 60:
+        return "D"
+    else:
+        return "F"
+
+for s in [95, 83, 71, 64, 42]:
+    print(f"{s} → {grade(s)}")
+```
+
+**Exercise 17 — Bug Fix**
+Two bugs: missing `:` after `def multiply(a, b)` and missing `)` in `multiply(6, 7`.
+```python
+def multiply(a, b):
+    result = a * b
+    return result
+
+answer = multiply(6, 7)
+print("6 x 7 =", answer)
+```
+
+---
+
+## Section F: Files
+
+**Exercise 18**
+```python
+with open("favourite_things.txt", "w") as f:
+    f.write("Pizza\n")
+    f.write("Minecraft\n")
+    f.write("Coding\n")
+    f.write("Dogs\n")
+    f.write("Ice cream\n")
+
+with open("favourite_things.txt", "r") as f:
+    for number, line in enumerate(f, 1):
+        print(f"{number}. {line.strip()}")
+```
+
+**Exercise 19**
+```python
+with open("favourite_things.txt", "r") as f:
+    lines = [line.strip() for line in f if line.strip()]
+
+print(f"You have {len(lines)} favourite things.")
+```
+
+---
+
+## Section G: Mini Programs
+
+**Exercise 20 — Simple Calculator**
+```python
 while True:
-    question = input("You: ").strip()
-
-    if question.lower() == "quit":
-        break
-
-    if not question:
-        continue
-
-    response = ollama.chat(
-        model="llama3.2",
-        messages=[{"role": "user", "content": question}]
-    )
-
-    print(f"AI: {response['message']['content']}\n")
-    count += 1
-
-print(f"\nYou asked {count} question(s). Goodbye!")
-```
-
-**Exercise 8 — Subject Tutor**
-```python
-import ollama
-
-subject = input("What subject do you want to learn about? ").strip()
-
-messages = [
-    {
-        "role": "system",
-        "content": f"You are an expert tutor in {subject}. You teach 9-year-old students. Keep all answers fun, short (under 80 words), and use simple words. Use one analogy per answer."
-    }
-]
-
-print(f"\nWelcome! I'm your {subject} tutor. Ask me anything!")
-print("Type 'exit' to leave.\n")
-
-while True:
-    user_input = input("You: ").strip()
-
-    if user_input.lower() == "exit":
-        print(f"Tutor: Great session! Keep learning about {subject}. Goodbye!")
-        break
-
-    if not user_input:
-        continue
-
-    messages.append({"role": "user", "content": user_input})
-
-    response = ollama.chat(model="llama3.2", messages=messages)
-    reply = response["message"]["content"]
-
-    print(f"Tutor: {reply}\n")
-    messages.append({"role": "assistant", "content": reply})
-```
-
-**Exercise 9 — Streaming Practice**
-```python
-import ollama
-
-def stream_response(prompt, title):
-    print(f"\n{'='*40}")
-    print(f"  {title}")
-    print(f"{'='*40}")
-
-    stream = ollama.chat(
-        model="llama3.2",
-        messages=[{"role": "user", "content": prompt}],
-        stream=True
-    )
-
-    for chunk in stream:
-        print(chunk["message"]["content"], end="", flush=True)
-
-    print("\n")
-
-stream_response(
-    "Write a short poem about a golden retriever",
-    "POEM: The Golden Retriever"
-)
-
-stream_response(
-    "Write step-by-step instructions for making the perfect sandwich, numbered 1 to 6",
-    "RECIPE: The Perfect Sandwich"
-)
-
-stream_response(
-    "Write a short story (100 words) about a robot who wants to be a chef but keeps burning the food",
-    "STORY: The Cooking Robot"
-)
-```
-
----
-
-## Section D: Creative Challenges
-
-**Exercise 10 — Personality Showdown**
-```python
-import ollama
-
-question = "What should I do if I'm bored?"
-
-personalities = [
-    ("Game Show Host", "You are BLASTER, an over-the-top excited game show host. EVERYTHING IS AMAZING. Use lots of capitals and exclamation marks."),
-    ("Grumpy Old Wizard", "You are Grognar, a 900-year-old grumpy wizard. You find the question tiresome but answer anyway. You complain a lot."),
-    ("Friendly Robot", "You are ARIA-7, a cheerful robot from the year 2350. You find human boredom fascinating. You give futuristic suggestions."),
-]
-
-for name, system_prompt in personalities:
-    response = ollama.chat(
-        model="llama3.2",
-        messages=[
-            {"role": "system", "content": system_prompt},
-            {"role": "user", "content": question}
-        ]
-    )
-    print(f"\n[{name}]")
-    print(response["message"]["content"])
-    print("-" * 40)
-```
-
-**Exercise 11 — AI Fact Checker**
-```python
-import ollama
-
-facts = [
-    ("The Eiffel Tower is in London.", False),
-    ("Sharks are mammals.", False),
-    ("Octopuses have three hearts.", True),
-    ("The Sun is a star.", True),
-    ("Cats can fly.", False),
-]
-
-print("=== AI FACT CHECKER ===\n")
-
-correct = 0
-for fact, actual_truth in facts:
-    response = ollama.chat(
-        model="llama3.2",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a fact checker. Answer with TRUE or FALSE only, followed by one short sentence explaining why."
-            },
-            {"role": "user", "content": f"Is this true or false? {fact}"}
-        ]
-    )
-
-    ai_answer = response["message"]["content"].strip()
-    ai_says_true = ai_answer.upper().startswith("TRUE")
-
-    status = "✓" if ai_says_true == actual_truth else "✗ (AI was wrong!)"
-
-    print(f"Fact: {fact}")
-    print(f"AI says: {ai_answer}")
-    print(f"Result: {status}\n")
-```
-
-**Exercise 12 — Story Continuer**
-```python
-import ollama
-
-print("=== COLLABORATIVE STORY ===\n")
-print("You write the first sentence to start our story.\n")
-
-first_sentence = input("Your opening sentence: ").strip()
-story = first_sentence + " "
-
-for round_num in range(1, 6):
-    print(f"\n[Round {round_num}] AI is writing...")
-
-    response = ollama.chat(
-        model="llama3.2",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are writing a collaborative story with a child. Continue the story with exactly 2 exciting sentences. Do not end the story yet (except on round 5). Output ONLY the 2 sentences, nothing else."
-            },
-            {
-                "role": "user",
-                "content": f"Here is the story so far:\n\n{story}\n\nContinue with 2 sentences."
-            }
-        ]
-    )
-
-    ai_part = response["message"]["content"].strip()
-    story += ai_part + " "
-
-    if round_num < 5:
-        print("\nYour turn — add one sentence to continue the story:")
-        your_part = input("> ").strip()
-        story += your_part + " "
-
-print("\n" + "="*50)
-print("THE COMPLETE STORY")
-print("="*50)
-print(story)
-```
-
----
-
-## Section E: Understanding AI
-
-1. **System prompt:** A secret instruction you give the AI before the conversation starts. It tells the AI how to behave — its personality, what it knows, and how to respond. It's powerful because you can turn the same AI into completely different characters just by changing a few sentences.
-
-2. **What happened:** The AI "hallucinated" — it confidently stated a wrong fact. You should verify with a real source (Wikipedia, an encyclopedia, a trusted website). The AI isn't lying; it just predicted the wrong words based on its training.
-
-3. **Why local is good:** Your questions stay private on your own machine. No company sees them. No internet is needed. It also works even without Wi-Fi.
-
-4. **Memory between chats:** No — the AI has NO memory between separate conversations. Each new chat starts fresh. Within one chat it remembers because you pass the conversation history in the `messages` list. But close the program and start again, and it forgets everything.
-
-5. **Good use:** "Ask the AI to explain a hard concept from your textbook in simple words, then check the explanation in your book." This speeds up understanding while you still verify the content.
-   **Bad use:** "Copy the AI's answer directly into your homework and submit it as your own work." This is dishonest and means you don't actually learn anything. Also, the AI might be wrong.
-
----
-
-## Bonus 1 — Random Personality
-
-```python
-import ollama
-import random
-
-personalities = [
-    ("Captain CodeBeard",  "You are a pirate who teaches programming. Always talk like a pirate. Say 'Arrr!' a lot. Use nautical metaphors."),
-    ("BLASTER",            "You are an over-the-top excited game show host. EVERYTHING IS AMAZING. Use lots of capitals and exclamation marks!!!"),
-    ("Grognar the Wizard", "You are a 900-year-old grumpy wizard. You find questions tiresome but answer anyway. You complain about modern times."),
-    ("ARIA-7",             "You are a cheerful robot from the year 2350. You find human questions fascinating. Suggest futuristic solutions."),
-    ("Ignathar the Dragon","You are an ancient dragon who has lived 10,000 years. You speak in riddles and metaphors. You find humans amusing."),
-]
-
-chosen_name, chosen_prompt = random.choice(personalities)
-
-print("You are talking to a mystery personality. Can you guess who it is?")
-print("Type 'quit' to give up and see the reveal.\n")
-
-while True:
-    user_input = input("You: ").strip()
+    user_input = input("\nEnter calculation (e.g. 5 + 3) or 'quit': ").strip()
 
     if user_input.lower() == "quit":
-        print(f"\nThe mystery personality was: {chosen_name}!")
+        print("Goodbye!")
         break
 
-    response = ollama.chat(
-        model="llama3.2",
-        messages=[
-            {"role": "system", "content": chosen_prompt},
-            {"role": "user",   "content": user_input}
-        ]
-    )
-    print(f"Mystery AI: {response['message']['content']}\n")
-```
-
----
-
-## Bonus 2 — Quiz Generator (Extended)
-
-```python
-import ollama
-import random
-
-def generate_question(topic):
-    prompt = f"""Create one multiple-choice quiz question about "{topic}" for a 5th grade student.
-
-Format EXACTLY like this:
-QUESTION: (the question)
-A) (first choice)
-B) (second choice)
-C) (third choice)
-D) (fourth choice)
-ANSWER: (just the letter)"""
-
-    response = ollama.chat(
-        model="llama3.2",
-        messages=[{"role": "user", "content": prompt}]
-    )
-    return response["message"]["content"]
-
-def parse_question(raw):
-    lines = raw.strip().split("\n")
-    question, choices, answer = "", [], ""
-    for line in lines:
-        line = line.strip()
-        if line.startswith("QUESTION:"):
-            question = line.replace("QUESTION:", "").strip()
-        elif line.startswith(("A)", "B)", "C)", "D)")):
-            choices.append(line)
-        elif line.startswith("ANSWER:"):
-            answer = line.replace("ANSWER:", "").strip()
-    return question, choices, answer
-
-def get_study_tips(wrong_topics):
-    if not wrong_topics:
-        return "You got everything right — amazing!"
-    topics_str = ", ".join(wrong_topics)
-    response = ollama.chat(
-        model="llama3.2",
-        messages=[
-            {
-                "role": "system",
-                "content": "You are a friendly tutor for 9-year-old students. Give short, encouraging study tips."
-            },
-            {
-                "role": "user",
-                "content": f"The student got questions wrong about: {topics_str}. Give 2-3 short study tips to help them improve."
-            }
-        ]
-    )
-    return response["message"]["content"]
-
-# ── Main ──────────────────────────────────────────────────────────────────────
-
-topic = input("What topic should the quiz be about? ").strip()
-rounds = int(input("How many rounds? (1-5): ").strip())
-
-score = 0
-wrong_topics = []
-
-for i in range(rounds):
-    print(f"\nGenerating question {i+1}...")
-    raw = generate_question(topic)
-    question, choices, correct = parse_question(raw)
-
-    if not question or not choices:
-        print("(Couldn't generate that one, skipping)")
+    parts = user_input.split()
+    if len(parts) != 3:
+        print("Please enter: number operator number (e.g. 5 + 3)")
         continue
 
-    print(f"\nQ{i+1}: {question}")
-    for choice in choices:
-        print(f"  {choice}")
+    try:
+        a = float(parts[0])
+        op = parts[1]
+        b = float(parts[2])
 
-    answer = input("Your answer (A/B/C/D): ").strip().upper()
+        if op == "+":
+            print(a + b)
+        elif op == "-":
+            print(a - b)
+        elif op == "*":
+            print(a * b)
+        elif op == "/":
+            if b == 0:
+                print("Can't divide by zero!")
+            else:
+                print(a / b)
+        else:
+            print(f"Unknown operator: {op}")
+    except ValueError:
+        print("Please enter valid numbers.")
+```
 
-    if answer == correct:
-        print("Correct!")
-        score += 1
-    else:
-        print(f"Not quite — the answer was {correct}.")
-        wrong_topics.append(topic)
+**Exercise 21 — Word Counter**
+```python
+sentence = input("Type a sentence: ")
 
-print(f"\n=== FINAL SCORE: {score}/{rounds} ===")
-print("\nStudy tips from your AI tutor:")
-print(get_study_tips(wrong_topics))
+words = sentence.split()
+word_count = len(words)
+char_count = len(sentence)
+
+# Find the most common letter (ignoring spaces)
+letters_only = sentence.lower().replace(" ", "")
+if letters_only:
+    most_common = max(set(letters_only), key=letters_only.count)
+else:
+    most_common = "none"
+
+print(f"Words: {word_count}")
+print(f"Characters: {char_count}")
+print(f"Most common letter: '{most_common}'")
+```
+
+**Exercise 22 — Number Stats**
+```python
+numbers = []
+
+while True:
+    entry = input("Enter a number (or 'done'): ").strip()
+    if entry.lower() == "done":
+        break
+    try:
+        numbers.append(float(entry))
+    except ValueError:
+        print("That's not a number, try again.")
+
+if not numbers:
+    print("No numbers entered.")
+else:
+    print(f"Count:   {len(numbers)}")
+    print(f"Sum:     {sum(numbers)}")
+    print(f"Average: {sum(numbers) / len(numbers):.2f}")
+    print(f"Min:     {min(numbers)}")
+    print(f"Max:     {max(numbers)}")
 ```
 
 ---
 
-## Bonus 3 — AI Dungeon Master (key snippets)
+## Bonus: RPG Extension Challenges
 
+**1. Run Away option**
 ```python
-import ollama
+elif choice == "3":   # Add inside the turn loop
+    if random.random() < 0.5:
+        print("  💨 You successfully ran away!")
+        return
+    else:
+        print("  ❌ Failed to escape! The monster blocks your path.")
+```
 
-def dm_narrate(event_description, style="epic fantasy narrator"):
-    response = ollama.chat(
-        model="llama3.2",
-        messages=[
-            {
-                "role": "system",
-                "content": f"You are an {style} for a text RPG. Narrate events dramatically in 1-2 sentences. Be exciting and vivid."
-            },
-            {"role": "user", "content": f"Narrate: {event_description}"}
-        ]
-    )
-    return response["message"]["content"].strip()
+**2. Level-up after winning**
+```python
+# After the battle loop, if hero_hp > 0:
+hero_max_hp += 10
+hero_atk += 2
+print(f"  ⬆️  LEVEL UP! Max HP is now {hero_max_hp}, Attack is now {hero_atk}")
+```
 
-# Usage examples:
-print(dm_narrate("The hero enters a dark dungeon for the first time"))
-print(dm_narrate("The hero lands a critical hit on the dragon for 20 damage"))
-print(dm_narrate("The hero drinks a healing potion and recovers 15 HP"))
-print(dm_narrate("The dragon is defeated and falls to the ground"))
+**3. Shop between battles**
+```python
+def visit_shop(hero_hp, hero_max_hp, hero_atk, potions, gold):
+    print("\n=== SHOP ===")
+    print(f"  Gold: {gold}")
+    print("  1) Buy potion (heal 20 HP)  — 10 gold")
+    print("  2) Upgrade attack (+2)       — 15 gold")
+    print("  3) Leave shop")
+
+    while True:
+        choice = input("Buy what? ").strip()
+
+        if choice == "1":
+            if gold >= 10:
+                heal = min(20, hero_max_hp - hero_hp)
+                hero_hp += heal
+                potions += 1
+                gold -= 10
+                print(f"  Bought a potion! HP: {hero_hp}, Gold left: {gold}")
+            else:
+                print("  Not enough gold!")
+
+        elif choice == "2":
+            if gold >= 15:
+                hero_atk += 2
+                gold -= 15
+                print(f"  Attack upgraded to {hero_atk}! Gold left: {gold}")
+            else:
+                print("  Not enough gold!")
+
+        elif choice == "3":
+            break
+
+    return hero_hp, hero_atk, potions, gold
+
+# Call visit_shop() between battles, passing hero stats and gold earned
+```
+
+**4. Second harder monster**
+```python
+def play_campaign(hero_name):
+    monsters = [
+        {"name": "Cave Goblin",  "hp": 40, "atk": 8},
+        {"name": "Stone Golem",  "hp": 70, "atk": 13},   # harder second monster
+    ]
+
+    hero_hp     = 50
+    hero_max_hp = 50
+    hero_atk    = 10
+    potions     = 2
+    gold        = 0
+
+    for i, monster in enumerate(monsters):
+        print(f"\n--- Fight {i + 1} ---")
+        hero_hp, hero_atk, potions, gold = battle(
+            hero_name, hero_hp, hero_max_hp, hero_atk, potions, gold,
+            monster["name"], monster["hp"], monster["atk"]
+        )
+        if hero_hp <= 0:
+            print("Campaign over — the hero fell!")
+            return
+        if i < len(monsters) - 1:
+            print(f"\nYou have {gold} gold. Visiting the shop...")
+            hero_hp, hero_atk, potions, gold = visit_shop(
+                hero_hp, hero_max_hp, hero_atk, potions, gold
+            )
+
+    print(f"\n🏆 CAMPAIGN COMPLETE! {hero_name} is a legend!")
+```
+
+**5. Save high score to file**
+```python
+import os
+
+SCORE_FILE = "highscore.txt"
+
+def save_score(turns):
+    best = float("inf")
+    if os.path.exists(SCORE_FILE):
+        with open(SCORE_FILE) as f:
+            try:
+                best = int(f.read().strip())
+            except ValueError:
+                pass
+    if turns < best:
+        with open(SCORE_FILE, "w") as f:
+            f.write(str(turns))
+        print(f"  🏆 NEW HIGH SCORE: {turns} turns!")
+    else:
+        print(f"  Your score: {turns} turns. Best: {best} turns.")
 ```

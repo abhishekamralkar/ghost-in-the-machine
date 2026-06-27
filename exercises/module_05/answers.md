@@ -1,538 +1,345 @@
-# Module 5 Answers — Git & GitHub
-
-> **Reminder:** Try each exercise yourself before reading the answer. Git is a tool you learn by doing — reading answers without trying first won't build the muscle memory you need.
+# Module 4 Answers — Raspberry Pi Tombstone Project
 
 ---
 
-## Section A: Local Git Warm-Up
+## Section A: Raspberry Pi Basics
 
-### Exercise 1 — Answer
+1. `sudo apt update && sudo apt upgrade -y`
 
-```bash
-mkdir ~/git-practice
-cd ~/git-practice
-echo "Hello, Git!" > hello.txt
-git init
-git status          # hello.txt shows in RED = untracked
-git add hello.txt
-git status          # hello.txt shows in GREEN = staged
-git commit -m "first commit: add hello.txt"
-git log --oneline
-```
+2. **SSH = Secure Shell.** It lets you control the Pi remotely from another computer over the network — so you don't need to plug in a monitor or keyboard directly to the Pi.
 
-**Expected output of `git log --oneline`:**
-```
-a1b2c3d (HEAD -> main) first commit: add hello.txt
-```
+3. `sudo i2cdetect -y 1`
 
-The red/green colour in `git status` tells you whether a file is staged (green = ready to commit) or not yet staged (red = git sees it but isn't saving it).
+4. You should see **`3c`** — that is the I2C address of the SSD1306 OLED display.
+
+5. The Pi has no slot for a traditional hard drive. MicroSD cards are tiny, cheap, and have no moving parts — perfect for a small board computer.
 
 ---
 
-### Exercise 2 — Answer
+## Section B: Setup Checklist
 
-```bash
-echo "A second line of text" >> hello.txt
-git diff
-```
+This is hands-on — there are no "right answers" here, but here are common errors:
 
-`git diff` shows:
-```diff
--Hello, Git!
-+Hello, Git!
-+A second line of text
-```
+**Common problems and fixes:**
 
-Lines with `+` are new. Lines with `-` were removed (none here).
-
-```bash
-git add hello.txt
-git commit -m "add second line to hello.txt"
-
-echo "My notes go here" > notes.txt
-git add notes.txt
-git commit -m "add notes.txt"
-
-git log --oneline
-```
-
-**Expected:**
-```
-9f4e2b1 (HEAD -> main) add notes.txt
-7c3a1d0 add second line to hello.txt
-a1b2c3d first commit: add hello.txt
-```
-
-- `git show HEAD` — shows the MOST RECENT commit (the `notes.txt` one)
-- `git show HEAD~1` — shows ONE commit BEFORE the most recent (the "second line" commit)
-- `HEAD~1` means "go back 1 step from the current position"
+- **SSH connection refused:** Make sure SSH was enabled in the Imager settings before flashing. Enable with `sudo raspi-config → Interface Options → SSH`.
+- **`3c` not showing in i2cdetect:** Double-check the SDA/SCL wiring. Swap VCC and GND and try again (a common beginner mistake).
+- **Ollama download hangs:** The Pi's internet connection may be slow. Let it run — `llama3.2:1b` is ~1.3 GB.
 
 ---
 
-### Exercise 3 — Answer
+## Section C: Display Exercises
 
-```bash
-# Delete the content (pretend this was an accident)
-echo "" > hello.txt    # overwrites file with nothing
+**Exercise 1 — Hello Display with Date**
+```python
+import board
+import busio
+import adafruit_ssd1306
+import datetime
+from PIL import Image, ImageDraw
 
-git status
-# Shows: modified: hello.txt (in red)
+i2c = busio.I2C(board.SCL, board.SDA)
+oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
+oled.fill(0)
+oled.show()
 
-git diff
-# Shows all your text deleted (in red with -)
+image = Image.new("1", (oled.width, oled.height))
+draw = ImageDraw.Draw(image)
 
-git restore hello.txt
+today = datetime.date.today().strftime("%b %d, %Y")
 
-# Open the file — everything is back
-cat hello.txt
+draw.text((0, 0),  "YOUR NAME HERE", fill=255)
+draw.text((0, 20), today, fill=255)
+
+oled.image(image)
+oled.show()
+print("Done!")
 ```
 
-`git restore` works because Git still has the last committed version of the file. It just overwrites your broken local copy with the safe saved version.
+**Exercise 2 — Countdown Display**
+```python
+import board
+import busio
+import adafruit_ssd1306
+import time
+from PIL import Image, ImageDraw, ImageFont
 
-> **Important:** `git restore` only works if you haven't committed the mistake. If you already committed the bad version, use `git revert` instead.
+i2c = busio.I2C(board.SCL, board.SDA)
+oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
 
----
+def show_centered(oled, text):
+    image = Image.new("1", (oled.width, oled.height))
+    draw = ImageDraw.Draw(image)
+    # Approximate centering for default font (6px wide, 8px tall)
+    x = (oled.width - len(text) * 6) // 2
+    draw.text((x, 24), text, fill=255)
+    oled.image(image)
+    oled.show()
 
-### Exercise 4 — Answer
+for i in range(5, 0, -1):
+    show_centered(oled, str(i))
+    time.sleep(1)
 
-```bash
-git switch -c experiment
-echo "This is my experiment" > experiment.txt
-git add experiment.txt
-git commit -m "add experiment file"
+show_centered(oled, "GO!")
+time.sleep(2)
 
-git switch main
-ls
-# Output: hello.txt  notes.txt   (experiment.txt is GONE from main)
-
-git switch experiment
-ls
-# Output: experiment.txt  hello.txt  notes.txt   (it's back!)
+oled.fill(0)
+oled.show()
 ```
 
-`experiment.txt` appears and disappears because each branch keeps its own set of files. Switching branches literally changes the files in your folder. Git is the one swapping them in and out.
+**Exercise 3 — Two-Line Message**
+```python
+import board
+import busio
+import adafruit_ssd1306
+from PIL import Image, ImageDraw
 
----
+def show_two_lines(oled, line1, line2):
+    image = Image.new("1", (oled.width, oled.height))
+    draw = ImageDraw.Draw(image)
+    draw.text((4, 10), line1, fill=255)
+    draw.text((4, 30), line2, fill=255)
+    oled.image(image)
+    oled.show()
 
-### Exercise 5 — Answer
+i2c = busio.I2C(board.SCL, board.SDA)
+oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
+oled.fill(0)
+oled.show()
 
-```bash
-git switch main
-git merge experiment
-# Output: Fast-forward ... experiment.txt | 1 + ...
-
-ls
-# Output: experiment.txt  hello.txt  notes.txt  (all three on main now!)
-
-git branch -d experiment
-# Output: Deleted branch experiment (was 9f4e2b1).
-
-git log --oneline --graph --all
-```
-
-**Expected graph:**
-```
-* 9f4e2b1 (HEAD -> main) add experiment file
-* 7c3a1d0 add notes.txt
-* a1b2c3d first commit: add hello.txt
-```
-
-Note: When Git can do a "fast-forward" merge (your branch was directly ahead of main with no conflicts), it doesn't create a merge commit — it just moves the main pointer forward. That's why the graph looks like a straight line, not a fork.
-
----
-
-## Section B: Setting Up GitHub
-
-### Exercise 6 — No code answer
-
-Just follow the steps. Checklist:
-- [ ] Account created
-- [ ] Email verified
-- [ ] Profile picture added
-- [ ] Username noted down
-
----
-
-### Exercise 7 — Answer
-
-```bash
-# Generate the key
-ssh-keygen -t ed25519 -C "your@email.com"
-# Press Enter three times
-
-# See the public key to copy
-cat ~/.ssh/id_ed25519.pub
-# Copy everything from "ssh-ed25519" to your email address
-
-# Test connection after adding key to GitHub
-ssh -T git@github.com
-```
-
-**Expected output:**
-```
-Hi your-username! You've successfully authenticated, but GitHub
-does not provide shell access.
-```
-
-Your SSH directory now has two files:
-```bash
-ls ~/.ssh/
-# id_ed25519      ← PRIVATE key — never share this
-# id_ed25519.pub  ← PUBLIC key — safe to share, goes on GitHub
-```
-
-The private key stays on your computer. The public key goes on GitHub. Together they prove "yes, this computer belongs to this GitHub user" — like a lock and key.
-
----
-
-## Section C: Pushing to GitHub
-
-### Exercise 8 — Answer
-
-```bash
-cd ~/git-practice
-
-# Connect to GitHub (replace YOUR-USERNAME with your actual username)
-git remote add origin git@github.com:YOUR-USERNAME/git-practice.git
-
-# First push (sets up the upstream tracking)
-git push -u origin main
-```
-
-**Expected output:**
-```
-Enumerating objects: 9, done.
-Counting objects: 100% (9/9), done.
-Writing objects: 100% (9/9), 1.23 KiB | 1.23 MiB/s, done.
-Branch 'main' set up to track remote branch 'main' from 'origin'.
-```
-
-From now on, in this repo, `git push` (no extra flags) is enough.
-
-Verify the connection:
-```bash
-git remote -v
-# origin  git@github.com:YOUR-USERNAME/git-practice.git (fetch)
-# origin  git@github.com:YOUR-USERNAME/git-practice.git (push)
+show_two_lines(oled, "Hello Pi!", "I am alive")
 ```
 
 ---
 
-### Exercise 9 — Answer
+## Section D: Button Exercises
 
-**Part 1 — Edit on GitHub:** Done via the browser (no terminal commands needed).
+**Exercise 4 — Button Counter**
+```python
+import board
+import busio
+import adafruit_ssd1306
+import RPi.GPIO as GPIO
+import time
+from PIL import Image, ImageDraw
 
-**Part 2 — Pull to your computer:**
-```bash
-git pull
-# Output: Updating a1b2c3d..9f4e2b1
-#         Fast-forward
-#          hello.txt | 1 +
-#          1 file changed, 1 insertion(+)
+BUTTON_PIN = 17
 
-cat hello.txt
-# Shows the new line you added on GitHub
+i2c = busio.I2C(board.SCL, board.SDA)
+oled = adafruit_ssd1306.SSD1306_I2C(128, 64, i2c)
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+def show_count(oled, count):
+    image = Image.new("1", (oled.width, oled.height))
+    draw = ImageDraw.Draw(image)
+    draw.text((4, 4), "Button Count:", fill=255)
+    draw.text((50, 28), str(count), fill=255)
+    oled.image(image)
+    oled.show()
+
+def show_win(oled):
+    image = Image.new("1", (oled.width, oled.height))
+    draw = ImageDraw.Draw(image)
+    draw.text((20, 24), "YOU WIN!", fill=255)
+    oled.image(image)
+    oled.show()
+
+count = 0
+show_count(oled, count)
+
+try:
+    while count < 10:
+        if GPIO.input(BUTTON_PIN) == GPIO.LOW:
+            count += 1
+            if count == 10:
+                show_win(oled)
+            else:
+                show_count(oled, count)
+            time.sleep(0.3)   # Debounce
+        time.sleep(0.05)
+finally:
+    GPIO.cleanup()
 ```
 
-**Part 3 — Edit locally and push:**
-```bash
-echo "Edited on my computer" >> hello.txt
-git add hello.txt
-git commit -m "add line from local computer"
-git push
-```
+**Exercise 5 — Button Morse Code**
+```python
+import RPi.GPIO as GPIO
+import time
 
-**After both changes, `git log --oneline` shows:**
-```
-3a7f9c2 (HEAD -> main, origin/main) add line from local computer
-b2d4e81 Edit directly on GitHub
-9f4e2b1 add notes.txt
-...
-```
+BUTTON_PIN = 17
 
-This is the normal daily workflow for any developer working on a real project.
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(BUTTON_PIN, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+print("Press the button. Short = DOT, Long = DASH. Ctrl+C to quit.")
+
+try:
+    while True:
+        # Wait for button press (goes LOW)
+        while GPIO.input(BUTTON_PIN) == GPIO.HIGH:
+            time.sleep(0.01)
+
+        press_start = time.time()
+
+        # Wait for button release (goes HIGH again)
+        while GPIO.input(BUTTON_PIN) == GPIO.LOW:
+            time.sleep(0.01)
+
+        duration = time.time() - press_start
+
+        if duration < 0.5:
+            print("DOT  (·)")
+        else:
+            print("DASH (—)")
+
+except KeyboardInterrupt:
+    GPIO.cleanup()
+    print("\nDone.")
+```
 
 ---
 
-## Section D: Collaboration Features
+## Section E: AI Epitaph Exercises
 
-### Exercise 10 — Answer
+**Exercise 7 — Themed Generator**
+```python
+import ollama
 
-```bash
-git clone git@github.com:YOUR-USERNAME/Hello-World.git
-cd Hello-World
-git log --oneline
-ls
+def generate_epitaph(theme="Halloween"):
+    prompt = (
+        f"Write a short funny {theme} themed tombstone epitaph. "
+        "Include a made-up punny name on the first line. "
+        "Add a one-line message below it. "
+        "Keep total under 55 characters. "
+        "Only output the epitaph, no explanation."
+    )
+    response = ollama.chat(
+        model="llama3.2:1b",
+        messages=[
+            {
+                "role": "system",
+                "content": f"You write short funny {theme} themed tombstone epitaphs. Two lines max. Under 55 characters. Only output the epitaph."
+            },
+            {"role": "user", "content": prompt}
+        ]
+    )
+    return response["message"]["content"].strip()
+
+themes = ["pirate", "space explorer", "video game character", "chef"]
+
+for theme in themes:
+    print(f"\n[{theme.upper()}]")
+    print(generate_epitaph(theme))
 ```
-
-`ls` shows: `README`
-
-`git log --oneline` shows the full commit history from the original repo, going back years. This history was copied to your fork exactly.
 
 ---
 
-### Exercise 11 — Answer
+## Section F: Full Program Exercises
 
-```bash
-git switch -c my-first-pr
-echo "" >> README
-echo "Improved by YOUR-NAME" >> README
-git add README
-git commit -m "add my name to README"
-git push origin my-first-pr
+**Exercise 9 — Startup Screen Customisation**
+```python
+def show_startup(oled):
+    image = Image.new("1", (DISPLAY_WIDTH, DISPLAY_HEIGHT))
+    draw  = ImageDraw.Draw(image)
+
+    # Outer border
+    draw.rectangle([0, 0, DISPLAY_WIDTH - 1, DISPLAY_HEIGHT - 1], outline=255)
+
+    # Your custom lines — change these to whatever you like!
+    draw.text((10, 6),  "AI TOMBSTONE",   fill=255)
+    draw.text((12, 18), "by Alex",         fill=255)   # ← put your name here
+    draw.line([1, 30, DISPLAY_WIDTH - 2, 30], fill=255)
+    draw.text((8,  34), "Enter if you",    fill=255)
+    draw.text((8,  46), "dare... 👻",      fill=255)
+
+    oled.image(image)
+    oled.show()
+    time.sleep(3)
 ```
 
-Go to GitHub → your fork → you'll see: **"my-first-pr had recent pushes — Compare & pull request"**
+Replace the text strings with your own name and a spooky message of your choice!
 
-Click it. Fill in the description. Click **Create pull request**.
+**Exercise 8 — Message Log**
+```python
+import os
+import datetime
 
-To merge it into your own fork (not into `octocat`'s original):
-1. Click **Pull requests** tab in YOUR fork
-2. Click your PR
-3. Click **Merge pull request** → **Confirm merge**
+LOG_FILE = "logs/epitaphs.log"
 
-Your `main` branch now contains your change.
+def log_epitaph(epitaph):
+    os.makedirs("logs", exist_ok=True)
+    timestamp = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    with open(LOG_FILE, "a") as f:
+        f.write(f"{timestamp}\n")
+        f.write(epitaph + "\n")
+        f.write("---\n")
+```
+
+Add `log_epitaph(epitaph)` inside `fetch_and_display()` in `tombstone.py` after `generate_epitaph()` returns.
+
+**Exercise 10 — Button Hold to Quit**
+```python
+import sys   # ← add this at the very top of tombstone.py with the other imports
+
+# Replace the existing on_button_press function with this version:
+
+HOLD_QUIT_SECONDS = 3.0
+
+def on_button_press(channel):
+    nonlocal button_pressed
+    press_start = time.time()
+
+    # Wait while the button is still held down
+    while GPIO.input(channel) == GPIO.LOW:
+        if time.time() - press_start >= HOLD_QUIT_SECONDS:
+            # Held for 3+ seconds — quit cleanly
+            show_message(oled, "GOODBYE...", title="BYE")
+            time.sleep(2)
+            oled.fill(0)
+            oled.show()
+            GPIO.cleanup()
+            sys.exit(0)
+        time.sleep(0.05)
+
+    # Released quickly — short press means generate a new message
+    button_pressed = True
+```
 
 ---
 
-### Exercise 12 — Answer
+## Section G: Troubleshooting Practice
 
-Example README.md:
+| Problem | What I would check first |
+|---------|--------------------------|
+| OLED shows nothing after running test_display.py | Run `i2cdetect -y 1` — is `3c` visible? If not, check the SDA/SCL wires. |
+| `i2cdetect -y 1` shows no `3c` | Re-check wiring: VCC to Pin 1 (3.3V), GND to Pin 6, SDA to Pin 3, SCL to Pin 5. Also confirm I2C is enabled in raspi-config. |
+| Button press does nothing | Check `BUTTON_PIN = 17` matches your actual wiring. Run `test_button.py` and press the button — does it print anything? |
+| Ollama gives an error | Run `ollama list` to confirm the model is downloaded. Run `ollama ps` to see if the server is running. Try `ollama serve` in a separate terminal. |
+| Program crashes with `ModuleNotFoundError` | Run `pip3 install <missing-module-name>`. Common ones: `adafruit-circuitpython-ssd1306`, `pillow`, `RPi.GPIO`, `ollama`. |
+| Tombstone works but starts very slowly | The Pi is generating AI text — this is normal. `llama3.2:1b` (1 billion parameter model) takes 10–30 seconds on the Pi. Use a smaller model or pre-generate messages. |
+| Pi won't boot | The MicroSD card may be corrupted. Re-flash it using Raspberry Pi Imager and start again. |
 
-```markdown
-# Summer 2026 Projects
+---
 
-Five coding projects I built during summer 2026 — from Linux basics to AI hardware.
-
-## What I Built
-
-- **Linux Terminal** — Learned to navigate the filesystem, write shell scripts, and use Git
-- **Python Games** — Built a text-based RPG with battles, inventory, and random loot
-- **AI Chatbot** — Ran a local AI using Ollama and gave it custom personalities
-- **Raspberry Pi Tombstone Display** — Wired up an OLED screen and button, powered by AI
-- **People in Space Indicator** — Fetched live astronaut data from a real API
-
-## What I Learned
-
-1. How computers actually work: CPU, RAM, storage, and the OS
-2. Python is one of the world's most useful programming languages — and it's readable
-3. AI models are just programs you can control with code, not magic
-
-## Example Code
+## Bonus 3 — Epitaph Voting (key code)
 
 ```python
-response = ollama.chat(
-    model="llama3.2",
-    messages=[{"role": "user", "content": "Write me a spooky epitaph"}]
-)
-print(response["message"]["content"])
+import RPi.GPIO as GPIO
+
+BUTTON_NEW   = 17   # Pin 11 — generate new epitaph
+BUTTON_SAVE  = 27   # Pin 13 — save to favourites
+
+GPIO.setup(BUTTON_NEW,  GPIO.IN, pull_up_down=GPIO.PUD_UP)
+GPIO.setup(BUTTON_SAVE, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+
+FAVOURITES_FILE = "favourites.txt"
+
+def save_favourite(epitaph):
+    with open(FAVOURITES_FILE, "a") as f:
+        f.write(epitaph + "\n---\n")
+    print(f"Saved to {FAVOURITES_FILE}")
+
+# In main loop, detect BUTTON_SAVE and call save_favourite(current_message)
 ```
-
-## Interesting Reading
-
-- [Raspberry Pi Projects](https://projects.raspberrypi.org) — where the hardware ideas came from
-```
-
----
-
-## Section E: GitHub Pages
-
-### Exercise 13 — Answer
-
-After creating `index.html` and pushing:
-
-```bash
-git add index.html
-git commit -m "add portfolio website"
-git push
-```
-
-GitHub Pages settings:
-- Settings → Pages → Source: **Deploy from a branch** → Branch: **main** → Folder: **/ (root)** → Save
-
-Your URL will be: `https://YOUR-USERNAME.github.io/summer-2026`
-
-If you want to make the page look nicer, add CSS inside the `<style>` tag in the `<head>`. For example:
-
-```html
-<head>
-  <title>My Summer 2026 Projects</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      max-width: 700px;
-      margin: 60px auto;
-      padding: 0 20px;
-      background: #f9f9f9;
-      color: #333;
-    }
-    h1 { color: #2d8a4e; }
-    li  { margin: 6px 0; }
-  </style>
-</head>
-```
-
----
-
-## Section F: Understanding Git
-
-**Q1 — `git add` vs `git commit`**
-
-`git add` is the STAGING step — you're picking which changes you want to include in the next snapshot. `git commit` is the SAVING step — it creates the permanent snapshot.
-
-Two steps exist so you can be selective. If you changed 10 files but only 3 are ready, you `git add` just those 3 and commit. The other 7 wait for the next commit. This lets you make small, focused commits instead of one giant "changed everything" commit.
-
----
-
-**Q2 — HEAD and HEAD~1**
-
-`HEAD` is a pointer to the commit you are currently on — usually the most recent commit on your branch. Think of it as "where you are right now in history."
-
-`HEAD~1` means "one commit before HEAD". `HEAD~2` means two commits back. It's a way of saying "go back N steps" without having to type the actual commit ID.
-
----
-
-**Q3 — What is a branch?**
-
-A branch is a separate copy of your code history that you can make changes on without affecting the main copy.
-
-You'd use one when you want to try something risky, add a big new feature, or experiment — without breaking the code that already works. If the experiment works, you merge the branch back. If it breaks, you delete the branch and nothing is lost on `main`.
-
----
-
-**Q4 — `git pull` vs `git clone`**
-
-`git clone` is for starting fresh — it downloads a repository from GitHub to your computer for the first time. You only do it once per project.
-
-`git pull` is for keeping in sync — it downloads any NEW commits that were added to GitHub since you last pulled. You run it every time you sit down to work.
-
----
-
-**Q5 — Simultaneous changes / push rejected**
-
-Git will reject your push with a message like: `error: failed to push some refs`. This is Git saying "GitHub has commits you don't have yet — get those first."
-
-Fix it with:
-```bash
-git pull        # download GitHub's changes and merge them with yours
-git push        # now push your combined changes up
-```
-
-If the same line was changed in both versions, you'll get a merge conflict. Open the file, resolve it (choose which version to keep), `git add` and `git commit`, then `git push`.
-
----
-
-**Q6 — Why commit messages matter**
-
-Commit messages are notes to your future self (and your teammates). Three months from now when something breaks, you'll search through the history trying to find when the bug was introduced. A message like `"stuff"` tells you nothing. A message like `"fix score counter resetting on player death"` lets you find the bug in seconds.
-
-**Bad commit messages:**
-- `"stuff"`
-- `"fix"`
-- `"wip"`
-- `"asdfg"`
-
-**Good commit messages:**
-- `"add inventory system to RPG game"`
-- `"fix button debounce causing double-presses"`
-- `"add README with project description and setup steps"`
-
-The rule: write the message as if you're explaining to your future self what you changed and why.
-
----
-
-## Bonus Challenges
-
-### Bonus 1 — Git Archaeology: Sample Answers
-
-Going to `github.com/microsoft/vscode` (at the time of writing):
-- Over 100,000 commits
-- Multiple contributors active daily
-- Hundreds of open pull requests at any time
-- Commits from 2015 show a much simpler editor with far fewer features
-
-Finding old commits: click the commit count → scroll through history → click any commit to see the diff.
-
----
-
-### Bonus 2 — Resolve a Merge Conflict: Answer
-
-```bash
-cd ~/git-practice
-
-# --- Set up the conflict ---
-
-# On main: change first line
-git switch main
-# Edit hello.txt, change line 1 to: "Hello from main!"
-git add hello.txt
-git commit -m "change greeting on main"
-
-# On conflict-test: change the SAME first line differently
-git switch -c conflict-test
-# Edit hello.txt, change line 1 to: "Hello from my branch!"
-git add hello.txt
-git commit -m "change greeting on conflict-test"
-
-# --- Trigger the conflict ---
-git switch main
-git merge conflict-test
-# OUTPUT: CONFLICT (content): Merge conflict in hello.txt
-#         Automatic merge failed; fix conflicts and then commit the result.
-```
-
-**Open `hello.txt` — you'll see:**
-```
-<<<<<<< HEAD
-Hello from main!
-=======
-Hello from my branch!
->>>>>>> conflict-test
-```
-
-**Edit it to keep what you want (e.g. keep both lines):**
-```
-Hello from main!
-Hello from my branch!
-```
-
-**Finish the merge:**
-```bash
-git add hello.txt
-git commit -m "merge conflict-test: keep both greetings"
-git log --oneline --graph --all
-```
-
-**Expected graph:**
-```
-*   (HEAD -> main) merge conflict-test: keep both greetings
-|\
-| * (conflict-test) change greeting on conflict-test
-* | change greeting on main
-|/
-* add notes.txt
-```
-
-Merge conflicts look scary but they're just Git asking "I can't decide — you choose." Once you've resolved a few, they feel routine.
-
----
-
-### Bonus 3 — Contribute to Open Source
-
-There's no single "answer" here — every project is different. Tips for finding good first issues:
-
-1. Search GitHub: `label:"good first issue" language:python`
-2. Check the project's `CONTRIBUTING.md` — it tells you exactly how they want PRs formatted
-3. Start with documentation fixes — fixing a typo or improving a README explanation is a completely valid first contribution
-4. Be patient — maintainers are volunteers and might take weeks to review
-
-A good PR description:
-```
-## What this PR does
-Fixed a typo in the README where "recieve" should be "receive".
-
-## Why
-Noticed this while reading the docs. Small fix but it improves the project.
-```
-
-You just completed the full open source contribution workflow. That's exactly how improvements to Python, Linux, and VS Code happen — thousands of people making small improvements just like this one.
