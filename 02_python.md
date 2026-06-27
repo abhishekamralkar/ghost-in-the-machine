@@ -110,7 +110,7 @@ The `.` means "open VS Code in the current directory" — it will show all your 
 |----------|-------------|
 | `Ctrl+S` | Save the file |
 | `F5` | Run the program (with debugger) |
-| `Ctrl+` ` | Open / close the terminal |
+| ``Ctrl+` `` | Open / close the terminal |
 | `Ctrl+Shift+P` | Command palette — search for any action |
 | `Ctrl+/` | Comment or uncomment a line |
 | `Ctrl+Z` | Undo |
@@ -151,10 +151,54 @@ code my_program.py
 
 ---
 
+### Virtual Environments: Your Project's Own Sandbox
+
+Before installing extra packages, you need to know about **virtual environments**.
+
+Imagine every project is a separate backpack. A virtual environment is like giving each
+project its own backpack so packages you install for one project don't mess up another.
+Without it, everything gets thrown into one big pile — and things break.
+
+**Create a virtual environment:**
+
+```bash
+# Go to your project folder first
+cd ~/projects
+
+# Create a virtual environment called "venv"
+python3 -m venv venv
+```
+
+This creates a folder called `venv/` that holds a clean copy of Python just for this project.
+
+**Activate it** (you must do this every time you open a new terminal):
+
+```bash
+# On Linux / Mac
+source venv/bin/activate
+```
+
+You'll see `(venv)` appear at the start of your terminal prompt — that means it's active:
+
+```
+(venv) alex@computer:~/projects$
+```
+
+**Deactivate it** when you're done:
+
+```bash
+deactivate
+```
+
+> **Rule:** Always activate your virtual environment before running `pip install`.
+> If you don't see `(venv)` in your prompt, you're installing into the wrong place.
+
+---
+
 ### Installing Extra Packages with pip
 
 Python's built-in modules are great, but thousands of extra ones are available to download.
-**pip** is the tool that installs them.
+**pip** is the tool that installs them — always run it **inside an activated virtual environment**.
 
 ```bash
 # Install a package
@@ -377,7 +421,7 @@ for i in range(1, 13):
     print(f"{number} x {i:2} = {result}")
 ```
 
-**Super Challenge:** After printing the table, ask the user a random question from it and check if they get it right. Use `import random` and `random.randint(1, 12)` to pick a random number.
+**Super Challenge:** After printing the table, ask the user a random question from it and check if they get it right. You'll need `import random` and `random.randint(1, 12)` to pick a random number — you'll learn exactly how `import` works in Week 5, but give it a try now!
 
 ---
 
@@ -532,6 +576,9 @@ print(f"Area = {width * height}")
 ---
 
 ### Mini Project: Number Guessing Game
+
+> **Note:** This project uses `import random` — a sneak peek at Week 5's modules lesson.
+> Just put it at the top of your file and it works!
 
 ```python
 import random
@@ -1036,17 +1083,17 @@ monsters = [
     "Zombie Pirate",
 ]
 
-import random
 monster = random.choice(monsters)
 print(f"\nA wild {monster} appears!")
 
 battle(hero_name, monster)
 
 again = input("Play again? (y/n): ").strip().lower()
-if again == "y":
+while again == "y":
     monster = random.choice(monsters)
     print(f"\nA {monster} steps out of the shadows...")
     battle(hero_name, monster)
+    again = input("Play again? (y/n): ").strip().lower()
 ```
 
 Run it:
